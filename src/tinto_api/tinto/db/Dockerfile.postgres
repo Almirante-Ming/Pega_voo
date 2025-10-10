@@ -1,0 +1,16 @@
+FROM postgres:17
+
+ENV POSTGRES_DB=task_fly_db
+ENV POSTGRES_USER=tinto
+ENV POSTGRES_PASSWORD=masterkey
+
+RUN apt-get update && apt-get install -y \
+    postgresql-contrib \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docs/init.sql /docker-entrypoint-initdb.d/01-init.sql
+
+COPY postgresql.conf /etc/postgresql/postgresql.conf
+
+EXPOSE 5432
+CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
