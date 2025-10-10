@@ -1,0 +1,86 @@
+[project]
+name = "tinto"
+version = "0.1.0"
+description = "python rest api for rose app"
+authors = [
+    {name = "V. Guilherme",email = "v.guilherme.barreto@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "fastapi[standard] (>=0.115.12,<0.116.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "pydantic[emailstr] (>=2.11.5,<3.0.0)",
+    "python-dotenv (>=1.1.0,<2.0.0)",
+    "alembic (>=1.15.2,<2.0.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
+    "passlib (>=1.7.4,<2.0.0)",
+    "argon2-cffi (>=23.1.0,<24.0.0)",
+    "validate-docbr (>=1.10.0,<2.0.0)",
+    "python-jose (>=3.4.0,<4.0.0)"
+]
+
+[tool.poetry.group.dev.dependencies]
+honcho = "^2.0.0"
+pytest = "^8.4.0"
+ruff = "^0.11.12"
+taskipy = "^1.14.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = '.'
+addopts = '-p no:warnings'
+
+[tool.ruff]
+line-length = 90
+exclude = [
+    '.bzr',
+    '.direnv',
+    '.eggs',
+    '.git',
+    '.git-rewrite',
+    '.hg',
+    '.ipynb_checkpoints',
+    '.mypy_cache',
+    '.nox',
+    '.pants.d',
+    '.pyenv',
+    '.pytest_cache',
+    '.pytype',
+    '.ruff_cache',
+    '.svn',
+    '.tox',
+    '.venv',
+    '.vscode',
+    '__pypackages__',
+    '_build',
+    'buck-out',
+    'build',
+    'dist',
+    'migrations',
+    'node_modules',
+    'site-packages',
+    'venv'
+]
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+[tool.taskipy.tasks]
+dev = 'fastapi dev tinto/main.py  --host 0.0.0.0 --port 7777'
+run = 'fastapi run tinto/main.py'
+pre_test = 'task lint'
+clean = 'find . -type d -name "__pycache__" -exec rm -rf {} + && find . -type f -name "*.pyc" -delete'
+test = 'pytest -s -x --cov=bordeux -vv'
+post_test = 'coverage html'
+lint = 'ruff check . && ruff check . --diff'
+format = 'ruff check . --fix && ruff format .'
