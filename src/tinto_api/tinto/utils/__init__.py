@@ -1,4 +1,4 @@
-from .database import get_db, SessionLocal, engine, DBSession
+from .database import get_db, SessionLocal, engine, DBSession, db_uri
 from .types import User_Type, User_Status
 from .auth import (
     get_password_hash,
