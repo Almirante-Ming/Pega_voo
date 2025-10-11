@@ -15,3 +15,22 @@ class Booking_Status(Enum):
     RESERVED = "reserved"
     CANCELLED = "cancelled"
     COMPLETED = "completed"
+
+class Purchase_Status(Enum):
+    ACTIVE = "ativas"
+    PLANNED = "planejadas"
+    PAST = "passadas"
+
+class Flight_Status(Enum):
+    SCHEDULED = "scheduled"
+    CANCELLED = "cancelled"
+
+class Flight_Class(Enum):
+    ECONOMY = "economy"
+    BUSINESS = "business"
+    FIRST = "first"
+
+class Gender(Enum):
+    MALE = "male"
+    FEMALE = "female"
+    OTHER = "other"

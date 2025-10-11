@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, field_validator, EmailStr
 from datetime import datetime
 from typing import Annotated, Optional, Any
 from validate_docbr import CPF
-from tinto.utils import User_Status, User_Type
+from tinto.utils import User_Status, User_Type, Gender
 
 def validate_cpf_util(value: str) -> str:
     digits = ''.join(filter(str.isdigit, value))
@@ -16,6 +16,7 @@ class PersonBase(BaseModel):
     email: EmailStr
     phone: str
     dt_birth: str
+    gender: Gender
     state: User_Status = Field(default=User_Status.ACTIVE)
     p_type: User_Type = Field(default=User_Type.CUSTOMER)
     password: Optional[str] = Field(None, description="User password")
@@ -45,6 +46,16 @@ class PersonBase(BaseModel):
                 raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in User_Type])}")
         return v
 
+    @field_validator('gender', mode='before')
+    @classmethod
+    def validate_gender(cls, v: Any) -> Gender:
+        if isinstance(v, str):
+            try:
+                return Gender(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Gender])}")
+        return v
+
 class PersonCreateInternal(PersonBase):
     password: str = Field(..., description="User password is required")
 
@@ -54,6 +65,7 @@ class PersonRegister(BaseModel):
     email: EmailStr
     phone: str
     dt_birth: str
+    gender: Gender
     password: str = Field(..., description="User password is required")
 
     @field_validator("cpf")
@@ -61,12 +73,23 @@ class PersonRegister(BaseModel):
     def validate_cpf_format(cls, v: str) -> str:
         return validate_cpf_util(v)
 
+    @field_validator('gender', mode='before')
+    @classmethod
+    def validate_gender(cls, v: Any) -> Gender:
+        if isinstance(v, str):
+            try:
+                return Gender(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Gender])}")
+        return v
+
 class PersonUpdate(BaseModel):
     cpf: Optional[Annotated[str, Field(description="Valid CPF")]] = None
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
     dt_birth: Optional[str] = None
+    gender: Optional[Gender] = None
     state: Optional[User_Status] = None
     p_type: Optional[User_Type] = None
     password: Optional[str] = Field(None, description="New password (if changing)")
@@ -97,6 +120,17 @@ class PersonUpdate(BaseModel):
                 return User_Type(v.lower())
             except ValueError:
                 raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in User_Type])}")
+        return v
+
+    @field_validator('gender', mode='before')
+    @classmethod
+    def validate_gender_update(cls, v: Any) -> Optional[Gender]:
+        if v is None: return None
+        if isinstance(v, str):
+            try:
+                return Gender(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Gender])}")
         return v
 
 class Person(PersonBase):
