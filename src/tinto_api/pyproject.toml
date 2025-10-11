@@ -1,7 +1,7 @@
 [project]
 name = "tinto"
 version = "0.1.0"
-description = "python rest api for rose app"
+description = "python rest api for chatch-flights"
 authors = [
     {name = "V. Guilherme",email = "v.guilherme.barreto@gmail.com"}
 ]

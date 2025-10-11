@@ -1,7 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from tinto.routes import auth_router, persons_router
+from tinto.routes import (
+    auth_router, 
+    persons_router, 
+    airlines_router, 
+    flights_router, 
+    purchase_history_router, 
+    tickets_router
+)
+
 tinto = FastAPI(title="Tinto Booking API")
 
 tinto.add_middleware(
@@ -14,6 +22,10 @@ tinto.add_middleware(
 
 tinto.include_router(auth_router)
 tinto.include_router(persons_router)
+tinto.include_router(airlines_router)
+tinto.include_router(flights_router)
+tinto.include_router(purchase_history_router)
+tinto.include_router(tickets_router)
 
 @tinto.get('/', tags=['Health check'])
 def health_response():
