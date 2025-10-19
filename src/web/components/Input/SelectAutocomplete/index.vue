@@ -52,12 +52,12 @@
 				<span v-if="!selectedOption" class="text-grayScale-600">Selecione uma opção</span>
 				<div class="flex items-center gap-1.5" v-else>
 					<span class="max-w-[90%] truncate">{{ selectedOption?.descricao }}</span>
-					<DesignV2IconHero v-if="excluirItem" @click.stop="removeSelectedOption" name-icon="XCircleIcon"
+					<Icon v-if="excluirItem" @click.stop="removeSelectedOption" name-icon="XCircleIcon"
 						class="text-grayScale-700 hover:text-red-400 duration-150 w-6 h-6" />
 				</div>
 			</div>
 			<div>
-				<DesignV2IconHero name-icon="ChevronDownIcon" class="text-grayScale-700 duration-150"
+				<Icon name-icon="ChevronDownIcon" class="text-grayScale-700 duration-150"
 					:class="clsx({ 'rotate-180': isOpen })" />
 			</div>
 		</div>

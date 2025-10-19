@@ -6,7 +6,7 @@
 			class="mb-1 block font-medium text-grayScale-800"
 			>{{ props.label }}
 		</label>
-        <VueDatePicker v-model="inputDateRange" class="dp__theme_dark" :dark="true" :format="formatacaoData" :enableTime="true" :time24hr="true" />
+        <VueDatePicker v-model="inputDateRange" :enable-time-picker="mostrarHora" class="dp__theme_dark" :dark="true" :format="formatacaoData" :time24hr="mostrarHora" />
 		<span v-if="errorMessage" class="text-[#ff3b3b] text-sm">{{ errorMessage }}</span>
     </div>
 </template>
@@ -27,12 +27,14 @@
         valor?:any
         hasError:boolean;
         errorMessage:string;
+        mostrarHora: boolean
     }
     const props = withDefaults(defineProps<Props>(), {
         tipoDeDado: "string", //string, number, boolean
         habilitado: true,
         visivel: true,
-        obrigatorio: false
+        obrigatorio: false,
+        mostrarHora: true
     });
 
     const emits = defineEmits(["inputEmitValue"]);
@@ -47,9 +49,14 @@
             const day = d.getDate();
             const month = d.getMonth() + 1;
             const year = d.getFullYear();
-            const hours = d.getHours();
-            const minutes = d.getMinutes();
-            return `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}/${year} ${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+            
+            if (props.mostrarHora) {
+                const hours = d.getHours();
+                const minutes = d.getMinutes();
+                return `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}/${year} ${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+            } else {
+                return `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}/${year}`;
+            }
         };
 
         if (Array.isArray(date)) {
@@ -66,9 +73,13 @@
         if (event) { 
             const date = new Date(event);
 
-            const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-
-            emits("inputEmitValue", formattedDate);
+            if (props.mostrarHora) {
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                emits("inputEmitValue", formattedDate);
+            } else {
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                emits("inputEmitValue", formattedDate);
+            }
         }
     };
 
@@ -85,15 +96,32 @@
         }
     });
 
-    // Função para converter "DD/MM/YYYY - HH:mm" para um objeto Date
+    // Função para converter "DD/MM/YYYY - HH:mm" ou "DD/MM/YYYY" para um objeto Date
     const parseDateString = (dateString: string) => {
-        const [datePart, timePart] = dateString.split(" - ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const [hours, minutes] = timePart.split(":").map(Number);
+        if (dateString.includes(" - ")) {
+            // Formato com hora: "DD/MM/YYYY - HH:mm"
+            const parts = dateString.split(" - ");
+            const datePart = parts[0];
+            const timePart = parts[1];
+            
+            if (datePart && timePart) {
+                const [day, month, year] = datePart.split("/").map(Number);
+                const [hours, minutes] = timePart.split(":").map(Number);
 
-        // Verifica se todos os valores são válidos antes de criar o Date
-        if (!isNaN(day) && !isNaN(month) && !isNaN(year) && !isNaN(hours) && !isNaN(minutes)) {
-            return new Date(year, month - 1, day, hours, minutes);
+                // Verifica se todos os valores são válidos antes de criar o Date
+                if (day && month && year && !isNaN(day) && !isNaN(month) && !isNaN(year) && 
+                    hours !== undefined && minutes !== undefined && !isNaN(hours) && !isNaN(minutes)) {
+                    return new Date(year, month - 1, day, hours, minutes);
+                }
+            }
+        } else {
+            // Formato sem hora: "DD/MM/YYYY"
+            const [day, month, year] = dateString.split("/").map(Number);
+
+            // Verifica se todos os valores são válidos antes de criar o Date
+            if (day && month && year && !isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                return new Date(year, month - 1, day);
+            }
         }
         return null; // Retorna null se a data não puder ser convertida
     };

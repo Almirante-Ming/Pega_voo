@@ -26,7 +26,7 @@
         >
           <span class="truncate text-grayScale-800">{{ s }}</span>
           <div>
-            <DesignV2IconHero name-icon="XMarkIcon" class="text-grayScale-600 w-5 h-5" />
+            <Icon name-icon="XMarkIcon" class="text-grayScale-600 w-5 h-5" />
           </div>
         </div>
 

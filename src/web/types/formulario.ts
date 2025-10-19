@@ -1,8 +1,10 @@
 export type ModelType = "static" | "dynamic" | "static-list" | "dynamic-list";
 
-export type TipoDeDado = "string" | "number" | "boolean";
+export type TipoDeDado = "string" | "number" | "boolean" | null;
 
-export type TipoDeInput = "string" | "number" | "select" | "data" | "cpf" | "telefone" | "email" | "senha" | "fileUpload";
+export type TipoDeInput = "string" | "number" | "select" | "data" | "cpf" | "telefone" | "email" | "senha" | "fileUpload" | "timestamp";
+
+export type Validacao = "dateOfBirth" | "cpf" | "telefone" | "email" | "senha" | "data";
 
 export interface ModelItem {
     chave: string | number;
@@ -11,12 +13,12 @@ export interface ModelItem {
 
 export interface Campo {
     label: string;
-    tipoDeDado: TipoDeDado;
     propriedade: string;
     tipoDeInput: TipoDeInput;
-    obrigatorio: boolean;
+    obrigatorio?: boolean;
+    tipoDeDado?: TipoDeDado;
     placeholder?: string;
-    validation?: string;
+    validacao?: Validacao;
     modelType?: ModelType;
     model?: ModelItem[];
     valoresNegativos?: boolean;
@@ -25,7 +27,7 @@ export interface Campo {
     habilitado?: boolean;
     icone?: string;
     query?: string;
-    firstOption?: any;
+    mostrarHora?: boolean
 }
 
 export interface GrupoFormulario {

@@ -33,8 +33,6 @@
 			"
 		/>
 		<span v-if="props.errorMessage" class="text-[#ff3b3b] text-sm">{{ props.errorMessage }}</span>
-		<span v-else class="text-[#ff3b3b] text-sm">{{ errorsMessage }}</span>
-
 	</div>
 </template>
 
@@ -71,13 +69,10 @@ const hasErrors = ref();
 
 const hasSuccess = ref(false);
 
-const errorsMessage = ref();
-
 const handleInput = (event: any) => {
 	
 	if(valueInput.value == '' && !props.obrigatorio){
 		hasErrors.value = false
-		errorsMessage.value = "";
 		emits("inputEmitValue", '');
 
 	}else{		
@@ -106,7 +101,6 @@ const handleInputFocus = () => {
 
 const handleInputBlur = () => {
 	isInputFocused.value = false;
-	if(hasErrors.value) errorsMessage.value = "Data inválida";
 };
 
 onMounted(() => {

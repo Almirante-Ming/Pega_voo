@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from "nuxt/config";
+
 export default defineNuxtConfig({
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: "2024-07-15",
   devtools: { enabled: true },
   modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
   css: ["~/assets/css/main.css"],
@@ -11,21 +13,17 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Pega voo",
-      script: [
-        {
-          defer: true,
-        },
-      ],
+      script: [{ defer: true }],
       link: [{ rel: "icon", href: "favicon.ico" }],
       meta: [
-        {
-          name: "viewport",
-          content: "width=device-width, initial-scale=1",
-        },
-        {
-          charset: "utf-8",
-        },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { charset: "utf-8" },
       ],
+    },
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: "http://localhost:8000",
     },
   },
 });

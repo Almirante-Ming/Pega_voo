@@ -15,7 +15,7 @@
 			:propriedade="props.propriedade" :label="props.label" :obrigatorio="props.obrigatorio"
 			:valorPadrao="props.valorPadrao" :tipoDeDado="props.tipoDeDado" :visivel="props.visivel"
 			:hasSuccess="props.hasSuccess" :hasError="props.hasError" :errorMessage="props.errorMessage"
-			:habilitado="props.habilitado" />
+			:habilitado="props.habilitado" :mostrarHora="props.mostrarHora"/>
 
 		<InputCheckboxUnica v-else-if="props.tipoDeComponente == 'checkbox'"
 			@inputEmitValue="emitValue" :propriedade="props.propriedade" :valor="props.valorVmodel" :label="props.label"
@@ -138,6 +138,7 @@ interface Props {
 	marginBottom?: boolean;
 	tamanhoMaximo?: number;
 	automatico?: boolean;
+	mostrarHora?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -5,10 +5,10 @@
             <button
                 @click="emit('removeimage')" 
                 class="hover:ring-red-500 text-white text-sm ring-1 ring-grayScale-400 rounded-lg duration-150">
-				<DesignV2IconHero
+				<Icon
 				:name-icon="'TrashIcon'"
 				:class="'text-grayScale-500 duration-150 hover:text-red-500 w-7 h-7 px-1 py-1'"
-				></DesignV2IconHero>
+				></Icon>
             </button>
         </div>
 
@@ -38,10 +38,10 @@
 		</div>
 
 		<div v-if="loadingUpload" class="w-full mt-5 flex justify-center">
-			<DesignV2IconHero
+			<Icon
 				:name-icon="'ArrowPathIcon'"
 				:class="'text-grayScale-600 animate-spin'"
-			></DesignV2IconHero>
+			></Icon>
 		</div>
 		<div v-if="!requesting" class="w-full pl-1 mt-1">
 			<span class="text-[#ec6464] text-sm">{{ mensagemErro }}</span>

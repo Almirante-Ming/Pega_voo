@@ -9,7 +9,6 @@
                 :key="campo.propriedade"
                 :tipoDeComponente="campo.tipoDeInput"
                 :tipoDeInput="campo.tipoDeInput"
-                :validation="campo.validation"
                 :label="campo.label"
                 :propriedade="campo.propriedade"
                 :model="campo.model"
@@ -18,8 +17,10 @@
                 :placeholder="campo.placeholder"
                 :tipoDeDado="campo.tipoDeDado"
                 :valoresNegativos="campo.valoresNegativos"
+                :hasError="Boolean(errors[campo.propriedade])"
                 :errorMessage="errors[campo.propriedade]"
-                @emiteValor="atualizarFormulario(campo.propriedade, $event)"
+                :mostrarHora="campo.mostrarHora"
+                @emiteValor="atualizarFormulario(campo.propriedade, $event, campo?.validacao)"
             />
         </div>
     </div>
@@ -27,20 +28,35 @@
         <p>Estado do formulário:</p>
         {{ form }}
     </div>
+    <div class="w-full mt-3">
+        <button :disabled="loading" class="bg-green-600 disabled:bg-grayScale-500 w-full rounded-md text-white h-10 shadow flex justify-center items-center" @click="login">
+            <span v-if="!loading">Login</span>
+            <Icon v-else nameIcon="ArrowPathIcon" class="text-white animate-spin"></Icon>
+        </button>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { useForm } from "@/composables/useForm";
-import type { Formulario, GrupoFormulario } from "~/types/formulario";
+import type { Formulario } from "~/types/formulario";
+
+const { data, loading, error, execute } = useApi('post', '/login', {}, {
+  username: 'user@email.com',
+  password: 'password123'
+})
+
+async function login(){
+    await execute()
+}
 
 const formulario: Formulario = [
     {
         title: "Perguntas Importantes",
         columns: [
             {
-                label: "Namora comigo?",
+                label: "Tudo bem com você?",
                 tipoDeDado: "string",
-                propriedade: "namoraComigo",
+                propriedade: "tudoBem",
                 tipoDeInput: "select",
                 obrigatorio: true,
                 modelType: "static" as const,
@@ -48,7 +64,7 @@ const formulario: Formulario = [
                 model: [
                     { chave: "sim", descricao: "Sim" },
                     { chave: "nao", descricao: "Não" },
-                    { chave: "talvez", descricao: "Talvez" }
+                    { chave: "claro", descricao: "Claro que sim" }
                 ]
             }
         ]
@@ -58,21 +74,60 @@ const formulario: Formulario = [
         columns: [
             {
                 label: "CPF",
-                tipoDeDado: "string",
-                propriedade: "cpf",
-                tipoDeInput: "string",
-                validation: "cpf",
+                propriedade: "cpfCliente",
+                tipoDeInput: "cpf",
+                validacao: "cpf",
                 obrigatorio: true,
                 placeholder: "000.000.000-00"
             },
             {
+                label: "Sexo",
+                propriedade: "sexo",
+                tipoDeInput: "select",
+                modelType: "static",
+                model: [
+                    {
+                        chave: 'M',
+                        descricao: "Masculino"
+                    },
+                    {
+                    chave: 'F',
+                        descricao: "Feminino"
+                    },
+                    {
+                        chave: 'O',
+                        descricao: "Outro"
+                    },
+                ],
+            },
+            {
                 label: "Celular",
                 tipoDeDado: "string",
-                propriedade: "phone",
-                tipoDeInput: "string",
-                validation: "telefone",
+                propriedade: "telefoneUsuario",
+                tipoDeInput: "telefone",
+                validacao: "telefone",
                 obrigatorio: true,
                 placeholder: "(00) 00000-0000"
+            }
+        ]
+    },
+        {
+        title: "Campos não obrigatórios",
+        columns: [
+            {
+                label: "Data de nascimento",
+                propriedade: "dataNascimento",
+                validacao: "data",
+                tipoDeInput: "data",
+                obrigatorio: false,
+            },
+            {
+                label: "Data de hoje",
+                propriedade: "dataAtual",
+                tipoDeInput: "timestamp",
+                validacao: "data",
+                obrigatorio: false,
+                mostrarHora: false
             }
         ]
     }
@@ -95,7 +150,7 @@ const camposOpcionais = computed(() => {
 const { form, errors, formIsValid, handleValidateField, handleValidateFields } = useForm(camposObrigatorios.value, camposOpcionais.value);
 
 
-function atualizarFormulario(field: string, value: any){
+function atualizarFormulario(field: string, value: any, validar?:string){
     form.value[field] = value?.target?.value
         ? value.target.value
         : typeof value === "boolean"
@@ -104,10 +159,13 @@ function atualizarFormulario(field: string, value: any){
         ? value
         : value?.chave ?? ""
     
-    handleValidateField(field);
+    
+    if(validar){        
+        handleValidateField(field, validar);
+    } else{
+        handleValidateField(field);
+    }
 }
-
-
 
 
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-grayScale-200 min-h-screen">
+  <div class="bg-background min-h-screen">
     <Header />
-    <div class="px-3">
+    <div class="px-2.5 mt-2 pb-10">
       <slot />
     </div>
   </div>

@@ -31,6 +31,9 @@ module.exports = {
         "grayScale-900": "var(--grayScale-900)",
         "grayScale-950": "var(--grayScale-950)",
 
+        "input-100": "var(--input-100)",
+        "input-200": "var(--input-200)",
+
         "text-color": "var(--text-color)",
         "text-secondary": "var(--text-secondary)",
         black: "var(--black)",
