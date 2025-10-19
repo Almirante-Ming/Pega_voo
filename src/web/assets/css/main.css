@@ -24,7 +24,10 @@
     --grayScale-900: #18181b;
     --grayScale-950: #09090b;
 
-    --background: var(--grayScale-100);
+    --input-100: var(--grayScale-50);
+    --input-200: var(--grayScale-300);
+
+    --background: var(--grayScale-200);
     --error: #ef4444;
     --warning: #f59e0b;
     --success: #10b981;
@@ -46,6 +49,9 @@
     --grayScale-800: #e4e4e7;
     --grayScale-900: #f4f4f5;
     --grayScale-950: #fafafa;
+
+    --input-100: var(--grayScale-200);
+    --input-200: var(--grayScale-300);
 
     --black: #030712;
     --white: #f9fafb;

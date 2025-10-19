@@ -4,7 +4,12 @@
   </NuxtLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+const { initTheme } = useTheme();
+
+onMounted(() => {
+  initTheme();
+});
 </script>
 
 <style lang="css" scoped>
