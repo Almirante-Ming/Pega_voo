@@ -5,15 +5,15 @@ type Method = "get" | "post" | "put" | "delete";
 export default function useApi(
   method: Method,
   route: string,
-  options?: AxiosRequestConfig,
-  body?: object
+  options?: AxiosRequestConfig
 ) {
   const { $axios } = useNuxtApp();
   const data = ref<any>(null);
   const error = ref<any>(null);
   const loading = ref(false);
   const response = ref<any>(null)
-  async function execute() {
+  
+  async function execute(body?: object) {
     try {
       loading.value = true;
       /* Quando vier body, é algum método diferente do get. Do contrário, é get. */
