@@ -40,13 +40,13 @@
 import { useForm } from "@/composables/useForm";
 import type { Formulario } from "~/types/formulario";
 
-const { data, loading, error, execute } = useApi('post', '/login', {}, {
-  username: 'user@email.com',
-  password: 'password123'
-})
+const { data, loading, error, execute } = useApi('post', '/login')
 
 async function login(){
-    await execute()
+    await execute({
+      username: 'user@email.com',
+      password: 'password123'
+    })
 }
 
 const formulario: Formulario = [
