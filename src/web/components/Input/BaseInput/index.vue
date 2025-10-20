@@ -6,13 +6,11 @@
       @keydown.enter.prevent="$event.preventDefault()" @focusout="handleInput($event)" @focus="handleInputFocus"
       @blur="handleInputBlur" :maxLength="props.maxLength" :type="inputType" :valorPadrao="props.valorPadrao"
       :placeholder="placeholder" :disabled="!habilitado" autocomplete="off" :class="clsx(
-        'custom-number-input block w-full rounded-lg p-2.5 text-sm text-grayScale-800 placeholder:text-grayScale-450 bg-input-100 border border-input-200 focus:border-primary focus:ring-primary',
+        'block w-full rounded-lg p-2.5 text-sm custom-number-input text-grayScale-800 placeholder:text-grayScale-450 bg-input-100 border border-input-200 focus:border-primary focus:ring-primary focus:outline-none',
         {
           'cursor-not-allowed opacity-[0.55]': !habilitado,
           'ring-[0.0600rem] ring-[#ff3b3b]': hasError && !hasSuccess,
-          'ring-[0.0600rem] ring-primary': isInputFocused && !hasError,
-          'block w-full rounded-lg p-2.5 text-sm':
-            inputType != 'file',
+          'ring-[0.0600rem] ring-primary': isInputFocused && !hasError
         }
       )
         " />
