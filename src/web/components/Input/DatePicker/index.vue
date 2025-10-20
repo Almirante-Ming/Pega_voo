@@ -30,7 +30,7 @@
         mostrarHora: boolean
     }
     const props = withDefaults(defineProps<Props>(), {
-        tipoDeDado: "string", //string, number, boolean
+        tipoDeDado: "string",
         habilitado: true,
         visivel: true,
         obrigatorio: false,
@@ -96,10 +96,8 @@
         }
     });
 
-    // Função para converter "DD/MM/YYYY - HH:mm" ou "DD/MM/YYYY" para um objeto Date
     const parseDateString = (dateString: string) => {
         if (dateString.includes(" - ")) {
-            // Formato com hora: "DD/MM/YYYY - HH:mm"
             const parts = dateString.split(" - ");
             const datePart = parts[0];
             const timePart = parts[1];
@@ -108,22 +106,19 @@
                 const [day, month, year] = datePart.split("/").map(Number);
                 const [hours, minutes] = timePart.split(":").map(Number);
 
-                // Verifica se todos os valores são válidos antes de criar o Date
                 if (day && month && year && !isNaN(day) && !isNaN(month) && !isNaN(year) && 
                     hours !== undefined && minutes !== undefined && !isNaN(hours) && !isNaN(minutes)) {
                     return new Date(year, month - 1, day, hours, minutes);
                 }
             }
         } else {
-            // Formato sem hora: "DD/MM/YYYY"
             const [day, month, year] = dateString.split("/").map(Number);
 
-            // Verifica se todos os valores são válidos antes de criar o Date
             if (day && month && year && !isNaN(day) && !isNaN(month) && !isNaN(year)) {
                 return new Date(year, month - 1, day);
             }
         }
-        return null; // Retorna null se a data não puder ser convertida
+        return null;
     };
 
 </script>
