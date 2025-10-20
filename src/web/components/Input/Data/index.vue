@@ -21,7 +21,7 @@
 			autocomplete="off"
 			:class="
 				clsx(
-					'block w-full rounded-lg bg-input-100 border-input-200 placeholder:text-grayScale-450 p-2.5 text-sm text-grayScale-800 focus:border-primary focus:ring-primary focus:outline-none outline-none',
+					'block w-full rounded-lg p-2.5 text-sm custom-number-input text-grayScale-800 placeholder:text-grayScale-450 bg-input-100 border border-input-200 focus:border-primary focus:ring-primary focus:outline-none',
 					{
 						'cursor-not-allowed opacity-[0.55]': !habilitado,
 						'ring-[0.0600rem] ring-[#ff3b3b]': props.hasError && !hasSuccess || hasErrors && !hasSuccess,

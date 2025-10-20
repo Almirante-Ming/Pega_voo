@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-background min-h-screen">
+  <div class="bg-background min-h-screen  flex items-center flex-col">
     <Header />
-    <div class="px-2.5 mt-2 pb-10">
+    <div class="px-2.5 mt-2 pb-10 w-full max-w-[1100px]">
       <slot />
     </div>
   </div>
