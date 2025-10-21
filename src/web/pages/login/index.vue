@@ -106,7 +106,7 @@
             }
             
             toast.success({ mensagem: 'Login realizado com sucesso!' })
-            // router.push('/')
+            router.push('/')
         } catch (err) {
             toast.error({ mensagem: 'Erro ao tentar fazer login. Tente novamente.' })
         }
