@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visivel" class="mb-4">
+  <div v-if="visivel" :class="clsx({'mb-4' : props.marginBottom})">
     <label v-if="props.label" for="default-input" class="mb-1 block font-medium text-grayScale-800">{{ props.label }}
     </label>
     <input v-model="valueInput" @input="handleInput($event)" @keydown="handleInput($event)"
@@ -40,6 +40,7 @@ interface Props {
   valor?: any;
   valoresNegativos?: boolean;
   tresCasasDecimais?: boolean;
+  marginBottom: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -48,7 +49,8 @@ const props = withDefaults(defineProps<Props>(), {
   visivel: true,
   obrigatorio: false,
   valoresNegativos: false,
-  tresCasasDecimais: false
+  tresCasasDecimais: false,
+  marginBottom: true
 });
 
 const inputTypes = {

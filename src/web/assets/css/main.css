@@ -27,7 +27,7 @@
     --input-100: var(--grayScale-50);
     --input-200: var(--grayScale-300);
 
-    --background: var(--grayScale-200);
+    --background: #F2F2F2;
     --error: #ef4444;
     --warning: #f59e0b;
     --success: #10b981;

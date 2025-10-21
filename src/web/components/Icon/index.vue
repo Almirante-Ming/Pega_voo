@@ -1,5 +1,5 @@
 <template>
-  <component :is="iconComponent" :class="clsx('size-6 text-primary', props.class)" />
+  <component :is="iconComponent" :class="clsx('size-6', props.class)" />
 </template>
 
 <script setup lang="ts">

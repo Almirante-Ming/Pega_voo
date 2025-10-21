@@ -1,7 +1,9 @@
 <template>
   <header class="header w-full">
     <div class="w-full h-[60px] bg-primary flex items-center justify-between px-5 font-bold text-white">
-      <div>
+
+      <div class="flex gap-2">
+        <Icon name-icon="PaperAirplaneIcon" class="text-white"></Icon>
         Pega voo
       </div>
       
