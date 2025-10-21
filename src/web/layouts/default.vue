@@ -4,10 +4,13 @@
     <div class="px-2.5 mt-2 pb-10 w-full max-w-[1100px]">
       <slot />
     </div>
+    <!-- Toast Container -->
+    <ToastContainer />
   </div>
 </template>
 
 <script setup>
+import ToastContainer from '@/components/Toast/ToastContainer.vue'
 </script>
 
 <style>
