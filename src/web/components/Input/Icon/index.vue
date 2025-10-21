@@ -1,29 +1,28 @@
 <template>
-	<div v-if="visivel" class="mb-5">
+	<div v-if="visivel" :class="clsx({'mb-4' : props.marginBottom})">
 		<label v-if="props.label" for="default-input" class="mb-1 block font-medium text-grayScale-800">
 			{{ props.label}}
 		</label>
 		<div :class="clsx({
 			'cursor-not-allowed opacity-[0.55]': !habilitado,
 			'ring-[0.0600rem] ring-[#ff3b3b]': hasError && !hasSuccess && !isInputFocused,
-			'ring-[0.0600rem] ring-primary ': isInputFocused,
+			'ring-[0.0600rem] ring-primary border-primary': isInputFocused,
 			'ring-[0.0600rem] ring-[#22bb33]': !hasError && hasSuccess && !isInputFocused,
-		}, 'flex w-full rounded-lg  text-sm text-primary items-center relative ')
+		}, 'flex w-full rounded-lg  text-sm text-primary items-center relative border border-input-200 bg-input-100')
 			">
 			<input v-model="valueInput" @input="handleInput($event)" @keydown="handleInput($event)"
 				:maxlength="props.maxLength" @focusout="handleInput($event)" @focus="handleInputFocus"
 				@blur="handleInputBlur" :type="inputType" @keydown.enter.prevent="$event.preventDefault()"
 				:valorPadrao="props.valorPadrao" :placeholder="placeholder" :disabled="!habilitado" :class="clsx({
 					'cursor-not-allowed opacity-[0.55]': !habilitado,
-					'block w-full mb-5 text-sm  rounded-lg  border border-input-200 cursor-pointer text-grayScale-200 bg-grayScale-700 placeholder-grayScale-400':
-						inputType == 'file',
-					'block w-full rounded-lg border border-input-200 p-2.5 text-sm text-grayScale-800 placeholder:text-grayScale-450 bg-input-100 focus:!ring-0 focus:border-primary':
+
+					'block w-[90%] rounded-lg p-2.5 bg-transparent focus:outline-none focus:ring-0 text-sm text-grayScale-800 placeholder:text-grayScale-450':
 						inputType != 'file',
 				})
 					" />
-			<div class=" absolute right-1 cursor-pointer flex justify-center text-grayScale-500 items-center"
+			<div class="absolute right-2 cursor-pointer flex justify-center text-grayScale-500 items-center"
 				v-if="props.icone" @click="handleEvent">
-				<Icon :name-icon="props.icone" class="size-5" />
+				<Icon :nameIcon="props.icone" class="w-5 h-5" />
 			</div>
 		</div>
 
@@ -60,6 +59,7 @@ interface Props {
 	propriedade?: string;
 	valor?: any;
 	icone: any;
+	marginBottom: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,7 +67,8 @@ const props = withDefaults(defineProps<Props>(), {
 	tipoDeInput: String as PropType<Value>,
 	habilitado: true,
 	visivel: true,
-	obrigatorio: false
+	obrigatorio: false,
+	marginBottom: true
 });
 
 const inputTypes = {
@@ -140,33 +141,6 @@ const handleInput = (event: any) => {
 		emits("inputEmitValue", event.target.value);
 	}
 };
-
-// const campoObrigatorio = computed(() => {
-// 	if (props.obrigatorio && valueInput.value) return true;
-// 	else return false;
-// });
-
-function unformatCurrency(value: string) {
-	return value.replace(/[^0-9]/g, "");
-}
-
-function formatCurrency(value: any) {
-	const number =
-		typeof value === "string"
-			? parseFloat(value.replace(/[^0-9.-]+/g, "")) / 100
-			: value;
-
-	/* Se for NaN, retorna uma string vazia */
-	if (isNaN(number)) return "";
-
-	/* Retorna o valor formatado como R$ n^X,XX
-			Notação n^X: lê-se "n X", no sentido de "invariáveis quantidades de X"
-		*/
-	return new Intl.NumberFormat("pt-BR", {
-		style: "currency",
-		currency: "BRL",
-	}).format(number);
-}
 
 const isInputFocused = ref(false);
 
