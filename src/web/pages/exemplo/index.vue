@@ -17,10 +17,10 @@
                 :placeholder="campo.placeholder"
                 :tipoDeDado="campo.tipoDeDado"
                 :valoresNegativos="campo.valoresNegativos"
-                :hasError="Boolean(errors[campo.propriedade])"
-                :errorMessage="errors[campo.propriedade]"
+                :hasError="Boolean(erros[campo.propriedade])"
+                :errorMessage="erros[campo.propriedade]"
                 :mostrarHora="campo.mostrarHora"
-                @emiteValor="atualizarFormulario(campo.propriedade, $event, campo?.validacao)"
+                @emiteValor="atualizarForm(campo.propriedade, $event, campo?.validacao)"
             />
         </div>
     </div>
@@ -38,6 +38,7 @@
 
 <script setup lang="ts">
 import { useForm } from "@/composables/useForm";
+import { atualizarFormulario } from "@/functions/atualizarFormulario";
 import type { Formulario } from "~/types/formulario";
 
 const { data, loading, error, execute } = useApi('post', '/login', { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
@@ -152,26 +153,10 @@ const camposOpcionais = computed(() => {
         .map(campo => campo.propriedade);
 });
 
-const { form, errors, formIsValid, handleValidateField, handleValidateFields } = useForm(camposObrigatorios.value, camposOpcionais.value);
+const { form, erros, formValido, validarCampo, validarFormulario } = useForm(camposObrigatorios.value, camposOpcionais.value);
 
-
-function atualizarFormulario(field: string, value: any, validar?:string){
-    form.value[field] = value?.target?.value
-        ? value.target.value
-        : typeof value === "boolean"
-        ? value
-        : typeof value === "string" || typeof value === "number"
-        ? value
-        : value?.chave ?? ""
-    
-    
-    if(validar){        
-        handleValidateField(field, validar);
-    } else{
-        handleValidateField(field);
-    }
-}
-
+// Cria a função de atualização do formulário usando o helper componentizado
+const atualizarForm = atualizarFormulario(form, validarCampo);
 
 
 // Caso o formulario seja de edição (precisa receber os valores ao abrir a página ou componente)
