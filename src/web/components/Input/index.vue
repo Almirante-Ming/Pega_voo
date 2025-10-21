@@ -52,7 +52,7 @@
 			:maxLength="props.maxLength" :valorPadrao="props.valorPadrao" :tipoDeInput="props.tipoDeInput"
 			:tipoDeDado="props.tipoDeDado" :visivel="props.visivel" :placeholder="props.placeholder"
 			:hasSuccess="props.hasSuccess" :hasError="props.hasError" :errorMessage="props.errorMessage"
-			:habilitado="props.habilitado" :icone="props?.icone">
+			:habilitado="props.habilitado" :icone="props?.icone" :marginBottom="props.marginBottom">
 		</InputIcon>
 
 		<InputUpload v-else-if="props.tipoDeComponente == 'fileUpload'" @inputEmitValue="emitValue"
@@ -86,7 +86,7 @@
 			:maxLength="props.maxLength" :valorPadrao="props.valorPadrao" :tipoDeInput="props.tipoDeInput"
 			:tipoDeDado="props.tipoDeDado" :visivel="props.visivel" :placeholder="props.placeholder" 
 			:hasSuccess="props.hasSuccess" :hasError="props.hasError" :errorMessage="props.errorMessage"
-			:habilitado="props.habilitado" :tresCasasDecimais="props.tresCasasDecimais">
+			:habilitado="props.habilitado" :tresCasasDecimais="props.tresCasasDecimais" :marginBottom="props.marginBottom">
 		</InputBaseInput>
 	</div>
 </template>
