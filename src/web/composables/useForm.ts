@@ -8,26 +8,26 @@ interface FormFields {
 
 interface Form {
   form: FormFields;
-  errors: FormFields;
+  erros: FormFields;
 }
 
 export const useForm = (fields: string[], optionalFields: string[]) => {
-  const formIsValid = ref(false);
+  const formValido = ref(false);
 
   const state = reactive<Form>({
     form: {},
-    errors: {}
+    erros: {}
   });
 
   onBeforeMount(() => {
 
     fields.forEach((field) => {
       state.form[field] = "";
-      state.errors[field] = "";
+      state.erros[field] = "";
     });
   });
 
-  function handleValidateField(field: string, validationType?: string) {
+  function validarCampo(field: string, validationType?: string) {
     const schemaKey = validationType || field;
     let fieldToValidate: string = "";
 
@@ -44,27 +44,27 @@ export const useForm = (fields: string[], optionalFields: string[]) => {
           [field]: fieldToValidate
         });
 
-        state.errors[field] = error;
+        state.erros[field] = error;
       } else {
         if (!schemas[schemaKey] && fields.includes(field) && state.form[field]?.length === 0) {
-          state.errors[field] = "Campo obrigatório";
+          state.erros[field] = "Campo obrigatório";
           return;
         }
 
         if (optionalFields.includes(field) && state.form[field]?.length === 0) {
-          state.errors[field] = "";
+          state.erros[field] = "";
           return;
         }
 
         const { error } = validate.field(schemas[schemaKey] as any, {
           [schemaKey]: fieldToValidate
         });
-        state.errors[field] = error;
+        state.erros[field] = error;
       }
     }
   }
 
-  function handleValidateFields(fieldToValidationMap?: Record<string, string>) {
+  function validarFormulario(fieldToValidationMap?: Record<string, string>) {
     let fields: string[] = Object.keys(state.form) as string[];
 
     fields = fields.filter((field) => {
@@ -73,14 +73,14 @@ export const useForm = (fields: string[], optionalFields: string[]) => {
 
     fields.forEach((field) => {
       const validationType = fieldToValidationMap?.[field];
-      handleValidateField(field, validationType);
+      validarCampo(field, validationType);
     });
   }
 
   watch(
     () => state,
     (state) => {
-      const thereIsNoErrors = Object.values(state.errors).every(
+      const thereIsNoErrors = Object.values(state.erros).every(
         (error) => !error
       );
 
@@ -122,10 +122,10 @@ export const useForm = (fields: string[], optionalFields: string[]) => {
             
       if (thereIsNoErrors && thereIsNoEmptyFields) {
         // true se não houver erros
-        formIsValid.value = true;
+        formValido.value = true;
       } else if (!thereIsNoErrors || !thereIsNoEmptyFields) {
         // false se houver erros
-        formIsValid.value = false;
+        formValido.value = false;
       }
     },
     {
@@ -134,9 +134,9 @@ export const useForm = (fields: string[], optionalFields: string[]) => {
   );
 
   return {
-    formIsValid,
+    formValido,
     ...toRefs(state),
-    handleValidateField,
-    handleValidateFields
+    validarCampo,
+    validarFormulario
   };
 };
