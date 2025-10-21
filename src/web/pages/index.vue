@@ -6,7 +6,9 @@
 </template>
 
 <script setup lang="ts">
-
+  definePageMeta({
+    middleware: ["rota-autenticada"],
+  });
 </script>
 
 <style scoped>
