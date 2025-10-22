@@ -60,6 +60,7 @@
     import { useForm } from "@/composables/useForm";
     import { atualizarFormulario } from "@/functions/atualizarFormulario";
     import { useToast } from "@/composables/useToast";
+import { useStoreDeUsuario } from "~/store/useStoreUsuario";
 
     const router = useRouter();
     const toast = useToast();
@@ -85,6 +86,8 @@
 
     const atualizarForm = atualizarFormulario(form, validarCampo);
 
+    const storeDeUsuario = useStoreDeUsuario();
+
     async function login(){
         validarFormulario({ username: 'email' })
 
@@ -104,9 +107,11 @@
                 toast.error({ mensagem: 'Usuário ou senha incorretos', titulo: 'Erro no login' })
                 return
             }
+
+            storeDeUsuario.setToken(data.value.access_token)
             
             toast.success({ mensagem: 'Login realizado com sucesso!' })
-            // router.push('/')
+            router.push('/')
         } catch (err) {
             toast.error({ mensagem: 'Erro ao tentar fazer login. Tente novamente.' })
         }
