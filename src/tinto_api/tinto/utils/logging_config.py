@@ -1,5 +1,9 @@
 import logging.config
+import os
+from datetime import datetime
 
+log_filename = datetime.now().strftime("%Y_%m_%d") + ".log"
+log_path = os.path.join('logs', log_filename)
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -11,7 +15,7 @@ LOGGING_CONFIG = {
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": "_latest.log",
+            "filename": log_path,
             "formatter": "default",
         },
         "console": {
