@@ -19,7 +19,11 @@ dependencies = [
     "argon2-cffi (>=23.1.0,<24.0.0)",
     "validate-docbr (>=1.10.0,<2.0.0)",
     "python-jose (>=3.4.0,<4.0.0)",
-    "taskipy (>=1.14.1,<2.0.0)"
+    "taskipy (>=1.14.1,<2.0.0)",
+    "pytest (>=8.4.2,<9.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)",
+    "pytest-asyncio (>=1.2.0,<2.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
 ]
 
 [tool.poetry.group.dev.dependencies]

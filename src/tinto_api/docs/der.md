@@ -16,7 +16,7 @@ This document outlines the updated SQL data model for the Tinto flight booking s
 
 ## Tables
 
-### 1. `users`
+### 1. `persons`
 
 | Field           | Type       | Description |
 |----------------|------------|-------------|
@@ -29,7 +29,7 @@ This document outlines the updated SQL data model for the Tinto flight booking s
 | email          | string     | Unique, required |
 | hashed_password| string     | Nullable |
 | status         | enum       | ACTIVE, INACTIVE, DELETED |
-| user_type      | enum       | CUSTOMER, COMPANY_ADMIN, SYSADMIN |
+| person_type      | enum       | CUSTOMER, COMPANY_ADMIN, SYSADMIN |
 | created_at     | datetime   | Auto-set |
 | updated_at     | datetime   | Auto-update |
 
@@ -40,7 +40,7 @@ This document outlines the updated SQL data model for the Tinto flight booking s
 | Field           | Type       | Description |
 |----------------|------------|-------------|
 | id             | integer    | Primary key |
-| user_id        | integer    | FK → `users.id` |
+| person_id        | integer    | FK → `persons.id` |
 | status         | enum       | ACTIVE, PLANNED, PAST |
 | total_amount   | decimal    | Total purchase value |
 | payment_method | enum       | CREDIT, DEBIT, PIX, CASH |
@@ -55,7 +55,7 @@ This document outlines the updated SQL data model for the Tinto flight booking s
 |------------------|------------|-------------|
 | id               | integer    | Primary key |
 | airline_id       | integer    | FK → `airlines.id` |
-| aircraft_model   | string     | Required |
+| aircraft_model   | string     | Required | 
 | flight_number    | string     | Unique |
 | origin_city      | string     | Required |
 | origin_airport   | string     | IATA code |
@@ -79,7 +79,7 @@ This document outlines the updated SQL data model for the Tinto flight booking s
 | id               | integer    | Primary key |
 | purchase_id      | integer    | FK → `purchase_history.id` |
 | flight_id        | integer    | FK → `flights.id` |
-| passenger_id     | integer    | FK → `users.id` |
+| passenger_id     | integer    | FK → `persons.id` |
 | seat_class       | enum       | ECONOMY, BUSINESS, FIRST |
 | seat_number      | string     | Optional |
 | price            | decimal    | Required |
@@ -128,15 +128,15 @@ This document outlines the updated SQL data model for the Tinto flight booking s
 | old_status    | enum     | Previous status |
 | new_status    | enum     | New status |
 | changed_at    | datetime | Timestamp |
-| changed_by    | integer  | FK → `users.id` |
+| changed_by    | integer  | FK → `persons.id` |
 
 ---
 
 ## 🔗 Relationships
 
-- `users` → `purchase_history` (1:N)
-- `users` → `tickets` (1:N)
-- `users` → `ticket_status_log` (1:N)
+- `persons` → `purchase_history` (1:N)
+- `persons` → `tickets` (1:N)
+- `persons` → `ticket_status_log` (1:N)
 - `purchase_history` → `tickets` (1:N)
 - `flights` → `tickets` (1:N)
 - `flights` → `seats` (1:N)

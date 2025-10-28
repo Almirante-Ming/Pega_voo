@@ -1,18 +1,19 @@
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
-from typing import Optional, Any, List, Dict
+from typing import Optional, Any
 from decimal import Decimal
-from tinto.utils import Booking_Status
-import json
+from tinto.utils import Booking_Status, Seat_Class
 
 
 class TicketBase(BaseModel):
-    purchase_history_id: int = Field(..., description="Reference to purchase history")
+    purchase_id: int = Field(..., description="Reference to purchase history")
     flight_id: int = Field(..., description="Reference to flight")
-    passengers: str = Field(..., description="JSON string with passenger information")
-    valor: Decimal = Field(..., description="Ticket price")
-    horario_embarque: datetime = Field(..., description="Boarding time")
-    horario_desembarque: datetime = Field(..., description="Arrival time")
+    passenger_id: int = Field(..., description="Reference to passenger (person)")
+    seat_class: Seat_Class = Field(..., description="Seat class")
+    seat_number: Optional[str] = Field(None, description="Seat number")
+    price: Decimal = Field(..., description="Ticket price")
+    boarding_time: datetime = Field(..., description="Boarding time")
+    arrival_time: datetime = Field(..., description="Arrival time")
     status: Booking_Status = Field(default=Booking_Status.MARKED)
 
     @field_validator('status', mode='before')
@@ -25,52 +26,30 @@ class TicketBase(BaseModel):
                 raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Booking_Status])}")
         return v
 
-    @field_validator('passengers', mode='before')
+    @field_validator('seat_class', mode='before')
     @classmethod
-    def validate_passengers(cls, v: Any) -> str:
-        if isinstance(v, (list, dict)):
-            return json.dumps(v)
+    def validate_seat_class(cls, v: Any) -> Seat_Class:
         if isinstance(v, str):
-            # Validate it's valid JSON
             try:
-                json.loads(v)
-                return v
-            except json.JSONDecodeError:
-                raise ValueError("Passengers must be valid JSON")
-        raise ValueError("Passengers must be a JSON string, list, or dict")
+                return Seat_Class(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Seat_Class])}")
+        return v
 
 
 class TicketCreate(TicketBase):
     pass
 
 
-class TicketCreateWithPassengerList(BaseModel):
-    purchase_history_id: int = Field(..., description="Reference to purchase history")
-    flight_id: int = Field(..., description="Reference to flight")
-    passengers: List[Dict] = Field(..., description="List of passenger information")
-    valor: Decimal = Field(..., description="Ticket price")
-    horario_embarque: datetime = Field(..., description="Boarding time")
-    horario_desembarque: datetime = Field(..., description="Arrival time")
-    status: Booking_Status = Field(default=Booking_Status.MARKED)
-
-    @field_validator('status', mode='before')
-    @classmethod
-    def validate_status(cls, v: Any) -> Booking_Status:
-        if isinstance(v, str):
-            try:
-                return Booking_Status(v.lower())
-            except ValueError:
-                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Booking_Status])}")
-        return v
-
-
 class TicketUpdate(BaseModel):
-    purchase_history_id: Optional[int] = None
+    purchase_id: Optional[int] = None
     flight_id: Optional[int] = None
-    passengers: Optional[str] = None
-    valor: Optional[Decimal] = None
-    horario_embarque: Optional[datetime] = None
-    horario_desembarque: Optional[datetime] = None
+    passenger_id: Optional[int] = None
+    seat_class: Optional[Seat_Class] = None
+    seat_number: Optional[str] = None
+    price: Optional[Decimal] = None
+    boarding_time: Optional[datetime] = None
+    arrival_time: Optional[datetime] = None
     status: Optional[Booking_Status] = None
 
     @field_validator('status', mode='before')
@@ -84,39 +63,21 @@ class TicketUpdate(BaseModel):
                 raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Booking_Status])}")
         return v
 
-    @field_validator('passengers', mode='before')
+    @field_validator('seat_class', mode='before')
     @classmethod
-    def validate_passengers_update(cls, v: Any) -> Optional[str]:
+    def validate_seat_class_update(cls, v: Any) -> Optional[Seat_Class]:
         if v is None: return None
-        if isinstance(v, (list, dict)):
-            return json.dumps(v)
         if isinstance(v, str):
             try:
-                json.loads(v)
-                return v
-            except json.JSONDecodeError:
-                raise ValueError("Passengers must be valid JSON")
-        raise ValueError("Passengers must be a JSON string, list, or dict")
+                return Seat_Class(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Seat_Class])}")
+        return v
 
 
 class Ticket(TicketBase):
     id: int
-    dt_create: datetime
-    dt_update: datetime
-
-    model_config = {"from_attributes": True}
-
-
-class TicketWithParsedPassengers(BaseModel):
-    id: int
-    purchase_history_id: int
-    flight_id: int
-    passengers: List[Dict] = Field(..., description="Parsed passenger information")
-    valor: Decimal
-    horario_embarque: datetime
-    horario_desembarque: datetime
-    status: Booking_Status
-    dt_create: datetime
-    dt_update: datetime
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}

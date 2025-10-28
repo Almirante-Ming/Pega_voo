@@ -1,0 +1,12 @@
+[2025-10-28 15:17:37,177] INFO in logger: request: GET http://localhost:7777/docs
+[2025-10-28 15:17:37,178] INFO in logger: response: 200
+[2025-10-28 15:17:37,178] INFO in httptools_impl: 127.0.0.1:45092 - "GET /docs HTTP/1.1" 200
+[2025-10-28 15:17:37,883] INFO in logger: request: GET http://localhost:7777/openapi.json
+[2025-10-28 15:17:37,926] INFO in logger: response: 200
+[2025-10-28 15:17:37,926] INFO in httptools_impl: 127.0.0.1:45092 - "GET /openapi.json HTTP/1.1" 200
+[2025-10-28 15:19:18,813] INFO in logger: request: GET http://localhost:7777/docs
+[2025-10-28 15:19:18,814] INFO in logger: response: <starlette.middleware.base._StreamingResponse object at 0x7f41417a1b20>
+[2025-10-28 15:19:18,814] INFO in httptools_impl: 127.0.0.1:56646 - "GET /docs HTTP/1.1" 200
+[2025-10-28 15:19:19,067] INFO in logger: request: GET http://localhost:7777/openapi.json
+[2025-10-28 15:19:19,116] INFO in logger: response: <starlette.middleware.base._StreamingResponse object at 0x7f414130cdd0>
+[2025-10-28 15:19:19,116] INFO in httptools_impl: 127.0.0.1:56646 - "GET /openapi.json HTTP/1.1" 200

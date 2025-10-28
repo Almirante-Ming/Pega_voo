@@ -1,9 +1,12 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, declarative_base
 import os
 from dotenv import load_dotenv
 from typing import Annotated
 from fastapi import Depends
+
+Base = declarative_base()
+metadata = Base.metadata
 
 load_dotenv('.env')
 db_uri = os.getenv('DATABASE_URL')

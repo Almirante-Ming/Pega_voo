@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import or_
 from typing import Annotated
 from datetime import timedelta
-from http import HTTPStatus as HttpStatusCodes
+from http import HTTPStatus
 
 from tinto import schemas, models
 from tinto.utils import (
@@ -29,13 +29,13 @@ def login_for_access_token(
     user = db.query(models.Person).filter(
         or_(
             models.Person.email == identifier,
-            models.Person.phone == identifier
+            models.Person.phone_number == identifier
         )
     ).first()
 
     if not user:
         raise HTTPException(
-            status_code=HttpStatusCodes.UNAUTHORIZED,
+            status_code=HTTPStatus.UNAUTHORIZED,
             detail="Incorrect identifier or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -47,37 +47,36 @@ def login_for_access_token(
     hashed_password = getattr(user, 'hashed_password', None)
     if not hashed_password:
         raise HTTPException(
-            status_code=HttpStatusCodes.UNAUTHORIZED,
+            status_code=HTTPStatus.UNAUTHORIZED,
             detail="Incorrect identifier or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Convert to string to ensure proper type
     password_str = str(hashed_password) if hashed_password else ""
     if not verify_password(password, password_str):
         raise HTTPException(
-            status_code=HttpStatusCodes.UNAUTHORIZED,
+            status_code=HTTPStatus.UNAUTHORIZED,
             detail="Incorrect identifier or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    user_state = getattr(user, 'state', None)
+    user_state = getattr(user, 'status', None)
     if user_state != User_Status.ACTIVE:
         raise HTTPException(
-            status_code=HttpStatusCodes.FORBIDDEN,
+            status_code=HTTPStatus.FORBIDDEN,
             detail="User account is not active. Please contact support.",
         )
 
     acc_level = 0 
-    user_type = getattr(user, 'p_type', None)
-    if user_type == User_Type.C_ADMIN:
+    user_type = getattr(user, 'person_type', None)
+    if user_type == User_Type.COMPANY_ADMIN:
         acc_level = 1
     elif user_type == User_Type.SYSADMIN:
         acc_level = 2
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.name, "user_id": user.id, "acc_level": acc_level},
+        data={"sub": user.full_name, "user_id": user.id, "acc_level": acc_level},
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -91,10 +90,10 @@ def register_person(person_data: schemas.PersonRegister, db: DBSession):
         )
     ).first()
     if db_person_check:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="already registered.")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="already registered.")
     
     if not person_data.password:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Password is required for registration.")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Password is required for registration.")
         
     hashed_password = get_password_hash(person_data.password)
     
@@ -103,8 +102,8 @@ def register_person(person_data: schemas.PersonRegister, db: DBSession):
     registered_person = models.Person(
         **new_person_dict,
         hashed_password=hashed_password,
-        state=User_Status.ACTIVE,
-        p_type=User_Type.CUSTOMER
+        status=User_Status.ACTIVE,
+        person_type=User_Type.CUSTOMER
     )
     
     db.add(registered_person)

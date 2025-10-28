@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy import and_
 from typing import Annotated, List, Optional
-from http import HTTPStatus as HttpStatusCodes
+from http import HTTPStatus as HTTPStatus
 
 from tinto import schemas, models
 from tinto.utils import DBSession, Purchase_Status, require_authenticated_user, require_c_admin_or_sysadmin, get_current_active_user
@@ -14,12 +14,12 @@ def create_purchase_history(
     db: DBSession,
     current_user: models.Person = Depends(get_current_active_user)
 ):
-    user = db.query(models.Person).filter(models.Person.id == purchase_history.user_id).first()
+    user = db.query(models.Person).filter(models.Person.id == purchase_history.person_id).first()
     if not user:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="User not found")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="User not found")
     
-    if str(current_user.p_type.value) == "customer" and int(current_user.id) != int(purchase_history.user_id):#type: ignore
-        raise HTTPException(status_code=HttpStatusCodes.FORBIDDEN, detail="You can only create purchase history for yourself")
+    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(purchase_history.person_id):#type: ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only create purchase history for yourself")
     
     new_purchase_history = models.PurchaseHistory(**purchase_history.model_dump())
     db.add(new_purchase_history)
@@ -30,19 +30,19 @@ def create_purchase_history(
 @router.get("/", response_model=List[schemas.PurchaseHistory], dependencies=[Depends(require_c_admin_or_sysadmin)])
 def get_all_purchase_history(
     db: DBSession,
-    user_id: Optional[int] = Query(None, description="Filter by user ID"),
+    person_id: Optional[int] = Query(None, description="Filter by person ID"),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
     query = db.query(models.PurchaseHistory)
     
-    if user_id:
-        query = query.filter(models.PurchaseHistory.user_id == user_id)
+    if person_id:
+        query = query.filter(models.PurchaseHistory.person_id == person_id)
     if status:
         try:
             status_enum = Purchase_Status(status.lower())
             query = query.filter(models.PurchaseHistory.status == status_enum)
         except ValueError:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Invalid status")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid status")
     
     return query.all()
 
@@ -52,14 +52,14 @@ def get_my_purchase_history(
     current_user: models.Person = Depends(get_current_active_user),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
-    query = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.user_id == current_user.id)
+    query = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.person_id == current_user.id)
     
     if status:
         try:
             status_enum = Purchase_Status(status.lower())
             query = query.filter(models.PurchaseHistory.status == status_enum)
         except ValueError:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Invalid status")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid status")
     
     return query.all()
 
@@ -71,10 +71,10 @@ def get_purchase_history(
 ):
     purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == purchase_id).first()
     if not purchase_history:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Purchase history not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Purchase history not found")
     
-    if str(current_user.p_type.value) == "customer" and int(current_user.id) != int(purchase_history.user_id): #type:ignore
-        raise HTTPException(status_code=HttpStatusCodes.FORBIDDEN, detail="You can only access your own purchase history")
+    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(purchase_history.person_id): #type:ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only access your own purchase history")
     
     return purchase_history
 
@@ -87,20 +87,20 @@ def update_purchase_history(
 ):
     db_purchase = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == purchase_id).first()
     if not db_purchase:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Purchase history not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Purchase history not found")
     
-    if str(current_user.p_type.value) == "customer" and int(current_user.id) != int(db_purchase.user_id): #type:ignore
-        raise HTTPException(status_code=HttpStatusCodes.FORBIDDEN, detail="You can only update your own purchase history")
+    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(db_purchase.person_id): #type:ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own purchase history")
     
     update_data = purchase_update.model_dump(exclude_unset=True)
     
-    if "user_id" in update_data:
-        user = db.query(models.Person).filter(models.Person.id == update_data["user_id"]).first()
+    if "person_id" in update_data:
+        user = db.query(models.Person).filter(models.Person.id == update_data["person_id"]).first()
         if not user:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="User not found")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="User not found")
         
-        if str(current_user.p_type.value) == "customer" and int(update_data["user_id"]) != int(current_user.id): #type:ignore
-            raise HTTPException(status_code=HttpStatusCodes.FORBIDDEN, detail="You cannot transfer purchase history to another user")
+        if str(current_user.person_type.value) == "customer" and int(update_data["person_id"]) != int(current_user.id): #type:ignore
+            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You cannot transfer purchase history to another user")
     
     for key, value in update_data.items():
         setattr(db_purchase, key, value)
@@ -116,7 +116,7 @@ def delete_purchase_history(
 ):
     purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == purchase_id).first()
     if not purchase_history:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Purchase history not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Purchase history not found")
     
     db.delete(purchase_history)
     db.commit()

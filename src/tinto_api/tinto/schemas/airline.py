@@ -45,7 +45,7 @@ class AirlineUpdate(BaseModel):
 
 class Airline(AirlineBase):
     id: int
-    dt_create: datetime
-    dt_update: datetime
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}

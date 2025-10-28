@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy import and_, or_
 from typing import Annotated, List, Optional
-from http import HTTPStatus as HttpStatusCodes
+from http import HTTPStatus as HTTPStatus
 from datetime import datetime
 
 from tinto import schemas, models
@@ -17,12 +17,12 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
     # Check if airline exists
     airline = db.query(models.Airline).filter(models.Airline.id == flight.airline_id).first()
     if not airline:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Airline not found")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline not found")
     
     # Check if flight number already exists
     existing_flight = db.query(models.Flight).filter(models.Flight.flight_number == flight.flight_number).first()
     if existing_flight:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Flight number already exists")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight number already exists")
     
     new_flight = models.Flight(**flight.model_dump())
     db.add(new_flight)
@@ -38,7 +38,7 @@ def update_flight(
 ):
     db_flight = db.query(models.Flight).filter(models.Flight.id == flight_id).first()
     if not db_flight:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Flight not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
     
     update_data = flight_update.model_dump(exclude_unset=True)
     
@@ -46,7 +46,7 @@ def update_flight(
     if "airline_id" in update_data:
         airline = db.query(models.Airline).filter(models.Airline.id == update_data["airline_id"]).first()
         if not airline:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Airline not found")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline not found")
     
     # Check for flight number conflicts if it's being updated
     if "flight_number" in update_data and update_data["flight_number"] != db_flight.flight_number:
@@ -55,7 +55,7 @@ def update_flight(
             models.Flight.id != flight_id
         ).first()
         if existing_flight:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Flight number already exists")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight number already exists")
     
     for key, value in update_data.items():
         setattr(db_flight, key, value)
@@ -71,7 +71,7 @@ def delete_flight(
 ):
     flight = db.query(models.Flight).filter(models.Flight.id == flight_id).first()
     if not flight:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Flight not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
     
     # Mark as cancelled instead of hard delete
     setattr(flight, 'status', Flight_Status.CANCELLED)
@@ -82,23 +82,23 @@ def delete_flight(
 @router.get("/", response_model=List[schemas.Flight], dependencies=[Depends(require_authenticated_user)])
 def get_flights(
     db: DBSession,
-    origin: Optional[str] = Query(None, description="Filter by origin"),
-    destiny: Optional[str] = Query(None, description="Filter by destination"),
+    origin_city: Optional[str] = Query(None, description="Filter by origin city"),
+    destination_city: Optional[str] = Query(None, description="Filter by destination city"),
     departure_date: Optional[str] = Query(None, description="Filter by departure date (YYYY-MM-DD)"),
     airline_id: Optional[int] = Query(None, description="Filter by airline ID")
 ):
     query = db.query(models.Flight).filter(models.Flight.status == Flight_Status.SCHEDULED)
     
-    if origin:
-        query = query.filter(models.Flight.origin.ilike(f"%{origin}%"))
-    if destiny:
-        query = query.filter(models.Flight.destiny.ilike(f"%{destiny}%"))
+    if origin_city:
+        query = query.filter(models.Flight.origin_city.ilike(f"%{origin_city}%"))
+    if destination_city:
+        query = query.filter(models.Flight.destination_city.ilike(f"%{destination_city}%"))
     if departure_date:
         try:
             date_obj = datetime.strptime(departure_date, "%Y-%m-%d").date()
-            query = query.filter(models.Flight.departure.date() == date_obj)
+            query = query.filter(models.Flight.departure_time.date() == date_obj)
         except ValueError:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Invalid date format. Use YYYY-MM-DD")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid date format. Use YYYY-MM-DD")
     if airline_id:
         query = query.filter(models.Flight.airline_id == airline_id)
     
@@ -114,7 +114,7 @@ def get_flight(
         models.Flight.status == Flight_Status.SCHEDULED
     ).first()
     if not flight:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Flight not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
     return flight
 
 # Include admin routes
