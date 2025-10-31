@@ -43,6 +43,8 @@ from .ticket_status_log import (
     TicketStatusLog
 )
 
+from .rec_token import RecToken
+
 __all__ = [
     "PersonBase", "PersonCreateInternal", "PersonRegister", "PersonUpdate", "Person", "Token", "TokenData",
     "AirlineBase", "AirlineCreate", "AirlineUpdate", "Airline",
@@ -50,5 +52,5 @@ __all__ = [
     "PurchaseHistoryBase", "PurchaseHistoryCreate", "PurchaseHistoryUpdate", "PurchaseHistory",
     "TicketBase", "TicketCreate", "TicketUpdate", "Ticket",
     "SeatBase", "SeatCreate", "SeatUpdate", "Seat",
-    "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog"
+    "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog","RecToken"
 ]
