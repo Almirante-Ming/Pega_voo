@@ -21,7 +21,7 @@
       />
 
       <button
-        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:bg-primary-light"
+        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80"
         @click="nextStep"
       >
         <span>Prosseguir</span>
@@ -49,7 +49,7 @@
       />
 
       <button
-        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:bg-primary-light"
+        class="bg-primary disabled:bg-grayScale-600 text-primary-light w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80"
         @click="cadastrar"
       >
         <span>Cadastrar</span>

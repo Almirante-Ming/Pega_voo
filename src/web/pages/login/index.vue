@@ -33,14 +33,14 @@
                 @emiteValor="atualizarForm(senha.propriedade, $event, '')"
             />
             <div class="w-full flex justify-end">
-                <button @click="router.push('/recuperarSenha')" class="text-sm text-end underline text-grayScale-600 duration-150 hover:text-primary-light">Esqueci minha senha</button>
+                <button @click="router.push('/recuperarSenha')" class="text-sm text-end underline text-grayScale-600 duration-150 hover:text-grayScale-900">Esqueci minha senha</button>
             </div>
         </form>
 
 
         <div class="w-full flex flex-col gap-2 mt-6">
-            <button @click="login" :disabled="loading" class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:bg-primary-light">
-                <span v-if="!loading" class="font-semibold tracking-wide">Entrar</span>
+            <button @click="login" :disabled="loading" class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80">
+                <span v-if="!loading" class="font-semibold text-primary-light tracking-wide">Entrar</span>
                 <Icon v-else name-icon="ArrowPathIcon" class="animate-spin text-grayScale-100"></Icon>
             </button>
 
@@ -49,7 +49,7 @@
                 <span class="font-semibold">Entre com o Google</span>
             </button>
 
-            <button @click="router.push('/cadastro')" class="text-center text-lg mt-2 duration-150 hover:text-primary-light">
+            <button @click="router.push('/cadastro')" class="text-center text-lg mt-2 text-grayScale-700 duration-150 hover:text-grayScale-900">
                 ou <span class="underline font-semibold">Cadastre-se</span>
             </button>
         </div>
