@@ -33,7 +33,7 @@
                 @emiteValor="atualizarForm(senha.propriedade, $event, '')"
             />
             <div class="w-full flex justify-end">
-                <button @click="router.push('/recuperarSenha')" class="text-sm text-end underline text-grayScale-600 duration-150 hover:text-grayScale-900">Esqueci minha senha</button>
+                <button type="button" @click="router.push('/recuperarSenha')" class="text-sm text-end underline text-grayScale-600 duration-150 hover:text-grayScale-900">Esqueci minha senha</button>
             </div>
         </form>
 
