@@ -1,5 +1,5 @@
 <template>
-    <button @click="voltar" class="flex w-fit pr-4 py-1.5">
+    <button @click="voltar" class="flex w-fit pr-4 py-1.5 text-grayScale-700">
         <Icon nameIcon="ChevronLeftIcon"></Icon>
         Voltar
     </button>
@@ -22,7 +22,7 @@
 
             <div v-else-if="step == 2" class="w-full flex flex-col gap-2">
                 <InputConfirmation  
-                    @complete="console.log('completo')"
+                    @complete="code = $event"
                 />
             
                 <span class="text-sm">
@@ -54,9 +54,10 @@
 
         <div class="w-full">
             <button 
-            class="bg-primary hover:opacity-80 duration-200 disabled:bg-grayScale-500 w-full rounded-md text-white h-12 shadow flex justify-center items-center" 
-            @click="enviarCodigo">
-                <span v-if="true" class="text-primary-light font-semibold">{{stepInfo.textoBotao}}</span>
+            class="bg-primary hover:opacity-80 duration-200 disabled:bg-grayScale-500 w-full rounded-md h-12 shadow flex justify-center items-center" 
+            @click="enviarCodigo"
+            :disabled="loading">
+                <span v-if="!loading" class="text-primary-light font-semibold">{{stepInfo.textoBotao}}</span>
                 <Icon v-else nameIcon="ArrowPathIcon" class="text-white animate-spin"></Icon>
             </button>
         </div>
@@ -71,6 +72,10 @@ import type { Campo } from "~/types/formulario";
 const router = useRouter();
 
 const step = ref(1)
+
+const code = ref('')
+
+const loading = ref(false)
 
 const stepInfo = computed(() => {
     const steps = {
@@ -93,7 +98,8 @@ const stepInfo = computed(() => {
     return steps[step.value as keyof typeof steps]
 })
 
-    
+const toast = useToast();
+
 const senhaVisivel = ref(false)
 
 const senha = [
@@ -121,18 +127,46 @@ async function enviarCodigo(){
 
     if (!formValido.value) return
 
-    step.value++
+    if(step.value == 1){
+        const { data: dataRecovery, loading:loadingRecovery, error: errorRecovery, execute: executeRecovery } = useApi('post', '/recovery')
+        
+        loading.value = true
+        await executeRecovery({"identifier": form.value.email})
+        loading.value = false
+        if(!errorRecovery.value && dataRecovery.value) step.value++
+
+        return
+    }
 
 
-    // const { data, loading, error, execute } = useApi('post', '/login')
-    // await execute({username: 'username', password: '1234'});
+    if (step.value == 2){
+        console.log(code.value);
+        
+        if(code.value) step.value++
+
+        return
+    }
+
+    if(step.value == 3) confirmarNovaSenha()
 }
 
-function novaSenha(){
+async function confirmarNovaSenha(){
     if (form.value.password !== form.value.confirmarSenha) {
-    erros.value.confirmarSenha = "As senhas não coincidem"
-    return
-  }
+        erros.value.confirmarSenha = "As senhas não coincidem"
+        return
+    }
+
+    const { data: dataAuth, loading:loadingAuth, error: errorAuth, execute: executeAuth } = useApi('post', '/auth2r')
+
+    loading.value = true
+    await executeAuth({code: code.value, new_password: form.value.password});
+    loading.value = false
+
+    console.log(errorAuth.value);
+    
+    if(errorAuth.value) toast.error({mensagem: 'Ocorreu um erro'})
+    else toast.success({mensagem: 'Senha alterada com sucesso'})
+
 }
 
 function voltar(){

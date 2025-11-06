@@ -1,7 +1,7 @@
 <template>
   <div class="bg-background min-h-screen flex items-center flex-col">
     <Header />
-    <div class="px-2.5 mt-2 pb-10 w-full min-h-full max-w-[1100px]">
+    <div class="px-4 mt-2 pb-10 w-full min-h-full max-w-[1100px]">
       <slot />
     </div>
     <!-- Toast Container -->
