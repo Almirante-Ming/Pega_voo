@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from typing import Optional, List, Annotated, TYPE_CHECKING
-from http import HTTPStatus as HttpStatusCodes
+from http import HTTPStatus as HTTPStatus
 
 from tinto import models
 from .auth import SECRET_KEY, ALGORITHM
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 credentials_exception = HTTPException(
-    status_code=HttpStatusCodes.UNAUTHORIZED,
+    status_code=HTTPStatus.UNAUTHORIZED,
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
 )
@@ -41,8 +41,8 @@ async def get_current_active_user(
     user = db.query(models.Person).filter(models.Person.id == token_data.user_id).first()
     if user is None:
         raise credentials_exception
-    if user.state != User_Status.ACTIVE: #type: ignore
-        raise HTTPException(status_code=HttpStatusCodes.FORBIDDEN, detail="Inactive user")
+    if user.status != User_Status.ACTIVE: #type: ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="Inactive user")
     return user
 
 def require_acc_level(allowed_acc_levels: List[int]):
@@ -51,7 +51,7 @@ def require_acc_level(allowed_acc_levels: List[int]):
     ):
         if token_data.acc_level not in allowed_acc_levels:
             raise HTTPException(
-                status_code=HttpStatusCodes.FORBIDDEN,
+                status_code=HTTPStatus.FORBIDDEN,
                 detail="You do not have permission to perform this action."
             )
         return token_data

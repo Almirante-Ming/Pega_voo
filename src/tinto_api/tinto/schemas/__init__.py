@@ -28,16 +28,29 @@ from .purchase_history import (
 from .ticket import (
     TicketBase,
     TicketCreate,
-    TicketCreateWithPassengerList,
     TicketUpdate,
-    Ticket,
-    TicketWithParsedPassengers
+    Ticket
 )
+from .seat import (
+    SeatBase,
+    SeatCreate,
+    SeatUpdate,
+    Seat
+)
+from .ticket_status_log import (
+    TicketStatusLogBase,
+    TicketStatusLogCreate,
+    TicketStatusLog
+)
+
+from .rec_token import RecToken
 
 __all__ = [
     "PersonBase", "PersonCreateInternal", "PersonRegister", "PersonUpdate", "Person", "Token", "TokenData",
     "AirlineBase", "AirlineCreate", "AirlineUpdate", "Airline",
     "FlightBase", "FlightCreate", "FlightUpdate", "Flight",
     "PurchaseHistoryBase", "PurchaseHistoryCreate", "PurchaseHistoryUpdate", "PurchaseHistory",
-    "TicketBase", "TicketCreate", "TicketCreateWithPassengerList", "TicketUpdate", "Ticket", "TicketWithParsedPassengers"
+    "TicketBase", "TicketCreate", "TicketUpdate", "Ticket",
+    "SeatBase", "SeatCreate", "SeatUpdate", "Seat",
+    "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog","RecToken"
 ]

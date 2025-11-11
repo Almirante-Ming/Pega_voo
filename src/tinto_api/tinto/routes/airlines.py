@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy import or_
 from typing import Annotated, List
-from http import HTTPStatus as HttpStatusCodes
+from http import HTTPStatus as HTTPStatus
 
 from tinto import schemas, models
 from tinto.utils import DBSession, User_Status, require_c_admin_or_sysadmin
@@ -18,7 +18,7 @@ def create_airline(airline: schemas.AirlineCreate, db: DBSession):
         )
     ).first()
     if db_airline_check:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Airline name or code already exists.")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline name or code already exists.")
     
     new_airline = models.Airline(**airline.model_dump())
     db.add(new_airline)
@@ -40,7 +40,7 @@ def get_airline(
         models.Airline.status != User_Status.DELETED
     ).first()
     if not airline:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Airline not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Airline not found")
     return airline
 
 @router.put("/{airline_id}", response_model=schemas.Airline)
@@ -54,7 +54,7 @@ def update_airline(
         models.Airline.status != User_Status.DELETED
     ).first()
     if not db_airline:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Airline not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Airline not found")
     
     update_data = airline_update.model_dump(exclude_unset=True)
     
@@ -65,7 +65,7 @@ def update_airline(
             models.Airline.id != airline_id
         ).first()
         if existing_name_check:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Airline name already exists")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline name already exists")
     
     if "code" in update_data and update_data["code"] != db_airline.code:
         existing_code_check = db.query(models.Airline).filter(
@@ -73,7 +73,7 @@ def update_airline(
             models.Airline.id != airline_id
         ).first()
         if existing_code_check:
-            raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Airline code already exists")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline code already exists")
     
     for key, value in update_data.items():
         setattr(db_airline, key, value)
@@ -92,7 +92,7 @@ def delete_airline(
         models.Airline.status != User_Status.DELETED
     ).first()
     if not airline:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Airline not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Airline not found")
     
     # Soft delete
     setattr(airline, 'status', User_Status.DELETED)

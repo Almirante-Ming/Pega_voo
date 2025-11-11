@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from .person import Base
+from tinto.utils import Base
 
 
 class TicketPassenger(Base):
@@ -10,6 +10,5 @@ class TicketPassenger(Base):
     ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=False)
     person_id = Column(Integer, ForeignKey("persons.id"), nullable=False)
 
-    # Relationships
     ticket = relationship("Ticket", back_populates="ticket_passengers")
     person = relationship("Person", back_populates="passenger_tickets")

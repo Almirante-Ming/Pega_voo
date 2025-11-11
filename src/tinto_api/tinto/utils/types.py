@@ -2,7 +2,7 @@ from enum import Enum
 
 class User_Type(Enum):
     CUSTOMER = "customer"
-    C_ADMIN= "c_admin"
+    COMPANY_ADMIN = "company_admin"
     SYSADMIN = "sysadmin"
     
 class User_Status(Enum):
@@ -17,15 +17,21 @@ class Booking_Status(Enum):
     COMPLETED = "completed"
 
 class Purchase_Status(Enum):
-    ACTIVE = "ativas"
-    PLANNED = "planejadas"
-    PAST = "passadas"
+    ACTIVE = "active"
+    PLANNED = "planned"
+    PAST = "past"
+
+class Payment_Method(Enum):
+    CREDIT = "credit"
+    DEBIT = "debit"
+    PIX = "pix"
+    CASH = "cash"
 
 class Flight_Status(Enum):
     SCHEDULED = "scheduled"
     CANCELLED = "cancelled"
 
-class Flight_Class(Enum):
+class Seat_Class(Enum):
     ECONOMY = "economy"
     BUSINESS = "business"
     FIRST = "first"

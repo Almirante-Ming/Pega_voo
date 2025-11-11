@@ -5,8 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from tinto.models import Base
-from tinto.utils import db_uri, engine
+from tinto.utils import db_uri, engine, Base
 
 config = context.config
 

@@ -32,7 +32,7 @@ export function useApi(
 
       //@ts-ignore
       // sentry.captureException(err);
-      error.value = e;
+      error.value = e.response.data;
     } finally {
       loading.value = false;
     }

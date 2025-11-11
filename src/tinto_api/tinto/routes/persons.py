@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy import or_
 from typing import Annotated, List
-from http import HTTPStatus as HttpStatusCodes
+from http import HTTPStatus
 
 from tinto import schemas, models
 from tinto.utils import DBSession, User_Status, get_password_hash, require_sysadmin
@@ -17,10 +17,10 @@ def create_person_internal(person: schemas.PersonCreateInternal, db: DBSession):
             )
         ).first()
     if db_person_check:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Email or CPF already registered.")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Email or CPF already registered.")
     
     if not person.password:
-        raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="Password is required.")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Password is required.")
 
     person_data_dict = person.model_dump(exclude={"password"}) 
     hashed_password = get_password_hash(person.password)
@@ -43,7 +43,7 @@ def get_person(
 ):
     person = db.query(models.Person).filter(models.Person.email == email).first()
     if not person:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Person not found with this email")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Person not found with this email")
     return person
 
 @router.put("/{email}", response_model=schemas.Person)
@@ -54,14 +54,14 @@ def update_person(
 ):
     db_person = db.query(models.Person).filter(models.Person.email == email).first()
     if not db_person:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Person not found with this email")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Person not found with this email")
     
     update_data = person_update.model_dump(exclude_unset=True)
 
     if "email" in update_data and update_data["email"] != email:
         existing_email_check = db.query(models.Person).filter(models.Person.email == update_data["email"]).first()
         if existing_email_check and getattr(existing_email_check, 'id', None) != getattr(db_person, 'id', None):
-             raise HTTPException(status_code=HttpStatusCodes.BAD_REQUEST, detail="New email already registered by another user")
+             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="New email already registered by another user")
     
     if "password" in update_data and update_data["password"] is not None:
         setattr(db_person, 'hashed_password', get_password_hash(update_data.pop("password")))
@@ -80,8 +80,8 @@ def delete_person(
 ):
     person = db.query(models.Person).filter(models.Person.email == email).first()
     if not person:
-        raise HTTPException(status_code=HttpStatusCodes.NOT_FOUND, detail="Person not found with this email")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Person not found with this email")
     
-    setattr(person, 'state', User_Status.DELETED)
+    setattr(person, 'status', User_Status.DELETED)
     db.commit()
     return {"message": "Person marked as deleted"}
