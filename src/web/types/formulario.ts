@@ -30,9 +30,10 @@ export interface Campo {
     mostrarHora?: boolean
 }
 
-export interface GrupoFormulario {
+export interface SecaoFormulario {
     title?: string;
     columns: Campo[];
 }
 
-export type Formulario = GrupoFormulario[];
+export type GrupoFormulario = SecaoFormulario[];
+

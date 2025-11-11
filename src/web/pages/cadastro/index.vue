@@ -21,7 +21,7 @@
       />
 
       <button
-        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:bg-primary-light"
+        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80"
         @click="nextStep"
       >
         <span>Prosseguir</span>
@@ -49,7 +49,7 @@
       />
 
       <button
-        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:bg-primary-light"
+        class="bg-primary disabled:bg-grayScale-600 text-primary-light w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80"
         @click="cadastrar"
       >
         <span>Cadastrar</span>
@@ -76,7 +76,7 @@ const formularios = [
     },
     {
         label: "Nome",
-        propriedade: "name",
+        propriedade: "full_name",
         tipoDeInput: "nome",
         validacao: "nome",
         obrigatorio: true,
@@ -84,14 +84,14 @@ const formularios = [
     },
     {
         label: "Data de nascimento",
-        propriedade: "dt_birth",
+        propriedade: "birth_date",
         validacao: "data",
         tipoDeInput: "data",
         obrigatorio: true,
     },
     {
         label: "Celular",
-        propriedade: "phone",
+        propriedade: "phone_number",
         tipoDeInput: "telefone",
         validacao: "telefone",
         obrigatorio: true,
@@ -125,7 +125,7 @@ const formularios = [
     },
 ]
 
-const { form, erros, formValido, validarCampo, validarFormulario } = useForm(["name", "cpf", "dt_birth", "phone", "email", "gender"], ["senha", "confirmarSenha"]);
+const { form, erros, formValido, validarCampo, validarFormulario } = useForm(["full_name", "cpf", "birth_date", "phone_number", "email", "gender"], ["senha", "confirmarSenha"]);
 const { data, loading, error, execute } = useApi('post', '/register/')
 const toast = useToast();
 
@@ -170,7 +170,7 @@ async function cadastrar() {
     return
   }
 
-  const body = form.value
+  const body = {...form.value}
 
   delete body.confirmarSenha
 

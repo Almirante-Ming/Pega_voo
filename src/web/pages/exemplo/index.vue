@@ -24,7 +24,7 @@
             />
         </div>
     </div>
-    <div class="bg-primary-light text-white p-3 rounded-md">
+    <div class="bg-primary text-white p-3 rounded-md">
         <p>Estado do formulário:</p>
         {{ form }}
     </div>
