@@ -1,47 +1,15 @@
 from fastapi import APIRouter, HTTPException, status
-from redis import Redis
 from sqlalchemy import or_
-from pydantic import BaseModel, EmailStr, field_validator, ValidationError, Field
-from datetime import datetime, timedelta, UTC
-from typing import Optional
+from datetime import datetime, UTC
+from tinto.models import Person
+from tinto.utils import send_mail, DBSession, kcode, get_password_hash, verify_password, minerva
+from tinto.schemas import RecoveryRequest, PasswordResetRequest, CodeCheckRequest
 import json
 
-from tinto.models import Person
-from tinto.utils import send_mail, DBSession, kcode, get_password_hash, verify_password
 
-import os
+router = APIRouter(tags=['Access Recovery'])
 
-router = APIRouter(tags=['access recovery'])
 
-minerva = Redis(host=str(os.getenv('CELERY_HOST')), port=30059, password=str(os.getenv('CELERY_PASS')))
-
-class RecoveryRequest(BaseModel):
-    identifier: str
-    
-    @field_validator('identifier')
-    @classmethod
-    def validate_identifier(cls, v: str) -> str:
-        v = v.strip()
-
-        try:
-            class EmailValidator(BaseModel):
-                email: EmailStr
-            
-            EmailValidator(email=v)
-            return v
-        
-        except ValidationError:
-            pass 
-        
-        if len(v) == 11 and v.isdigit():
-            try:
-                int(v)
-                return v
-            
-            except ValueError:
-                pass
-        
-        raise ValueError("Invalid identifier")
 
 @router.post('/recovery', status_code=status.HTTP_200_OK)
 def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
@@ -62,8 +30,7 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found with provided identifier"
         )
-    
-    expire_time = datetime.now(UTC) + timedelta(minutes=5)
+
     
     recovery_key = f"recovery:{kcode}"
     payload = {"code": kcode, "user": user.email}
@@ -83,17 +50,37 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to send email: {str(e)}"
         )
+    def format_cpf(cpf: str) -> str:
+        cpf_digits = ''.join(filter(str.isdigit, cpf))
+        return f"{cpf_digits[:3]}.***.**{cpf_digits[8]}-{cpf_digits[9:]}"
+        
+
     
     return {
         "message": "Recovery code sent successfully",
-        "redirect": "/auth2r"
+        "redirect": "/auth2r",
+        "user_info": {
+            "fullname": user.full_name,
+            "cpf": format_cpf(str(user.cpf))
+        }
     }
 
 
-class PasswordResetRequest(BaseModel):
-    code: str = Field(..., description="Recovery code received by email")
-    new_password: str = Field(..., min_length=8, description="New password (minimum 8 characters)")
 
+@router.post('/chkCode', status_code=status.HTTP_200_OK)
+def check_code(request: CodeCheckRequest):
+    code = request.code.strip()
+    recovery_key = f"recovery:{code}"
+
+    try:
+        raw = minerva.get(recovery_key)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    if not raw:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or expired recovery code")
+
+    return {}
 
 @router.post('/auth2r', status_code=status.HTTP_200_OK)
 def verify_recovery_code(reset_request: PasswordResetRequest, db: DBSession):
