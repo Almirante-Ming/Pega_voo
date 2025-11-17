@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, field_validator, ValidationError, Field
+
 class RecoveryRequest(BaseModel):
     identifier: str
     

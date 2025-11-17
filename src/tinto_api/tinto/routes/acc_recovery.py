@@ -52,7 +52,7 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
         )
     def format_cpf(cpf: str) -> str:
         cpf_digits = ''.join(filter(str.isdigit, cpf))
-        return f"{cpf_digits[:3]}.***.**{cpf_digits[8]}-{cpf_digits[9:]}"
+        return f"{cpf_digits[:2]}*.***.**{cpf_digits[8]}-{cpf_digits[9:]}"
         
 
     

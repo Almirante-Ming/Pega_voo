@@ -5,6 +5,8 @@ import os
 SENDER = str(os.getenv('SENDER'))
 LOCK = str(os.getenv('LOCK'))
 
+# if not SENDER or LOCK:
+     # raise ValueError("sender or lock environment variable is not set")
 
 def send_mail(reciver, kcode):
     corpo = f"Seu código de verificação é: {kcode}"
