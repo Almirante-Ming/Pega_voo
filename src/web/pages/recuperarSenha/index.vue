@@ -1,9 +1,13 @@
 <template>
-    <button @click="voltar" class="flex w-fit pr-4 py-1.5 text-grayScale-700">
+    <button @click="voltar" class="flex items-center w-fit pr-4 py-1 text-grayScale-700 text-sm underline gap-2 ">
         <Icon nameIcon="ChevronLeftIcon"></Icon>
         Voltar
     </button>
-    <div class="text-grayScale-800 flex flex-col gap-4">
+    <div class="text-grayScale-800 flex flex-col gap-4 mt-2">
+        <Stepper 
+            :steps="stepperSteps"
+            :currentStep="step"
+        />
 
         <div class="flex flex-col gap-1.5">
             <h1 class="text-2xl font-bold">{{stepInfo.titulo}}</h1>
@@ -12,6 +16,7 @@
 
 
         <div class="w-full">
+            
             <div v-if="step == 1">
                 <Input tipoDeComponente="email" tipoDeInput="email" label="Email" propriedade="email" 
                 :obrigatorio="true" :hasError="Boolean(erros['email'])" :errorMessage="erros['email']"
@@ -20,9 +25,9 @@
             </div>
 
 
-            <div v-else-if="step == 2" class="w-full flex flex-col gap-2">
+            <div v-else-if="step == 2" class="w-full flex flex-col gap-2 justify-center items-center">
                 <InputConfirmation  
-                    @complete="code = $event"
+                    @complete="enviarCodigo($event)"
                 />
             
                 <span class="text-sm">
@@ -77,6 +82,12 @@ const code = ref('')
 
 const loading = ref(false)
 
+const stepperSteps = [
+    { label: 'Identificação' },
+    { label: 'Informar código' },
+    { label: 'Redefinir senha' }
+]
+
 const stepInfo = computed(() => {
     const steps = {
         1: {
@@ -122,28 +133,42 @@ const { form, erros, formValido, validarCampo, validarFormulario } = useForm(['e
 
 const atualizarForm = atualizarFormulario(form, validarCampo);
 
-async function enviarCodigo(){
+async function enviarCodigo(codigo?: string){
     validarFormulario()
 
     if (!formValido.value) return
 
     if(step.value == 1){
-        const { data: dataRecovery, loading:loadingRecovery, error: errorRecovery, execute: executeRecovery } = useApi('post', '/recovery')
+        const { data: dataRecovery, error: errorRecovery, execute: executeRecovery, response: responseRecovery } = useApi('post', '/recovery')
         
         loading.value = true
         await executeRecovery({"identifier": form.value.email})
         loading.value = false
-        if(!errorRecovery.value && dataRecovery.value) step.value++
 
+        if(!errorRecovery.value && dataRecovery.value) step.value++
+        else {
+            if(responseRecovery.value.status == '404'){                
+                toast.error({mensagem: "E-mail não encontrado"} )
+            }
+        }
         return
     }
 
 
     if (step.value == 2){
-        console.log(code.value);
+        const { data: dataCheckCode, loading:loadingCheckCode, error: errorCheckCode, execute: executeCheckCode } = useApi('post', '/chkCode')
         
-        if(code.value) step.value++
+        code.value = codigo ?? ''
+        
+        loading.value = true
+        await executeCheckCode({code: code.value})
+        loading.value = false
 
+        if(dataCheckCode.value && !errorCheckCode.value){
+            step.value++
+        } else{
+            toast.error({mensagem:"Código inválido"})
+        }
         return
     }
 
@@ -161,19 +186,22 @@ async function confirmarNovaSenha(){
     loading.value = true
     await executeAuth({code: code.value, new_password: form.value.password});
     loading.value = false
-
-    console.log(errorAuth.value);
     
-    if(errorAuth.value) toast.error({mensagem: 'Ocorreu um erro'})
-    else toast.success({mensagem: 'Senha alterada com sucesso'})
-
+    if(dataAuth.value && !errorAuth.value) {
+        toast.success({mensagem: 'Senha alterada com sucesso'})
+        router.push('/login')
+    } else toast.error({mensagem: 'Ocorreu um erro'})
 }
 
 function voltar(){
     if(step.value == 1){
         router.go(-1)
-    } else{
+    } 
+    else if(step.value == 2){
         step.value--
+    }
+    else if(step.value == 3){
+        step.value = 1
     }
 }
 </script>

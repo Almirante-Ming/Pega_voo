@@ -22,16 +22,14 @@ export function useApi(
 
       data.value = response.value.data;
     } catch (e: any) {
-      // useSentry(e)
-      // const sentry = useSentry();
-
+      // Captura o response mesmo em caso de erro
+      response.value = e.response;
+      
       const err = new Error();
       if (e?.response?.data?.errors?.[0].message) err.name = `Status ${e?.response?.status} - ${e?.response?.data?.errors[0].message}`;
       else err.name = `Status ${e?.response?.status}`;
       err.message = JSON.stringify(e?.response?.data?.errors);
 
-      //@ts-ignore
-      // sentry.captureException(err);
       error.value = e.response.data;
     } finally {
       loading.value = false;

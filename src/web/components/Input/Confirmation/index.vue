@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-3 w-full">
+  <div class="flex gap-3 w-full max-w-[500px]">
       <input
         v-for="(digit, index) in digits"
         :key="index"
@@ -8,7 +8,7 @@
         type="text"
         inputmode="numeric"
         maxlength="1"
-        class=" h-14 min-w-0 flex-1 text-center text-xl font-semibold border border-grayScale-400 rounded-lg bg-white text-grayScale-900 transition-all outline-none focus:border-primary focus:drop-shadow disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+        class=" h-14 md:h-20 min-w-0 flex-1 text-center text-xl font-semibold border border-grayScale-400 rounded-lg bg-white text-grayScale-900 transition-all outline-none focus:border-primary focus:drop-shadow disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
         :class="{ 'border-blue-500 bg-blue-50': digits[index] }"
         @input="handleInput(index, $event)"
         @keydown="handleKeyDown(index, $event)"
