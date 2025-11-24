@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[85dvh] w-full flex flex-col items-center justify-center px-4 text-grayScale-800">
+    <div class="h-[85dvh] w-full flex flex-col items-center justify-center text-grayScale-800">
         <div class="w-full flex flex-col items-center gap-1.5">
            <p class="text-2xl font-semibold">Malas Prontas?</p>
            <p class="text-lg">Faça login para continuar</p>

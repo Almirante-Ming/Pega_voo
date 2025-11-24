@@ -1,9 +1,18 @@
 <template lang="">
   <div>
-    <div v-if="step === 1">
-      <p>Criar sua conta</p>
-      <p>Informe seus dados para prosseguirmos!</p>
 
+    <div v-if="step === 1">
+      <div class="flex flex-col gap-1.5 mb-4">
+        <div class="flex gap-1.5 items-center">
+          <button @click="router.go(-1)" underline gap-2 bg-gray class="flex w-7 h-7 text-grayScale-100 bg-grayScale-500 rounded-md items-center justify-center">
+                <Icon nameIcon="ChevronLeftIcon"></Icon>
+          </button>
+          <p class="text-2xl font-semibold">Criar sua conta</p>
+        </div>
+        <p class="text-grayScale-600">Informe seus dados para prosseguirmos!</p>
+      </div>
+
+      
       <Input
         v-for="(campo, index) in formularios"
         :key="index"
@@ -21,7 +30,7 @@
       />
 
       <button
-        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80"
+        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80 mt-8"
         @click="nextStep"
       >
         <span>Prosseguir</span>
