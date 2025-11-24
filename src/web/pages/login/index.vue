@@ -60,7 +60,7 @@
     import { useForm } from "@/composables/useForm";
     import { atualizarFormulario } from "@/functions/atualizarFormulario";
     import { useToast } from "@/composables/useToast";
-import { useStoreDeUsuario } from "~/store/useStoreUsuario";
+    import { useStoreDeUsuario } from "~/store/useStoreUsuario";
 
     const router = useRouter();
     const toast = useToast();
