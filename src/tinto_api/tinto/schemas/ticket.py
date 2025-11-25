@@ -6,7 +6,6 @@ from tinto.utils import Booking_Status, Seat_Class
 
 
 class TicketBase(BaseModel):
-    purchase_id: int = Field(..., description="Reference to purchase history")
     flight_id: int = Field(..., description="Reference to flight")
     passenger_id: int = Field(..., description="Reference to passenger (person)")
     seat_class: Seat_Class = Field(..., description="Seat class")
@@ -37,12 +36,37 @@ class TicketBase(BaseModel):
         return v
 
 
-class TicketCreate(TicketBase):
-    pass
+class TicketCreate(BaseModel):
+    flight_id: int = Field(..., description="Reference to flight")
+    seat_class: Seat_Class = Field(..., description="Seat class")
+    seat_number: Optional[str] = Field(None, description="Seat number")
+    price: Decimal = Field(..., description="Ticket price")
+    boarding_time: datetime = Field(..., description="Boarding time")
+    arrival_time: datetime = Field(..., description="Arrival time")
+    status: Booking_Status = Field(default=Booking_Status.MARKED)
+
+    @field_validator('status', mode='before')
+    @classmethod
+    def validate_status(cls, v: Any) -> Booking_Status:
+        if isinstance(v, str):
+            try:
+                return Booking_Status(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Booking_Status])}")
+        return v
+
+    @field_validator('seat_class', mode='before')
+    @classmethod
+    def validate_seat_class(cls, v: Any) -> Seat_Class:
+        if isinstance(v, str):
+            try:
+                return Seat_Class(v.lower())
+            except ValueError:
+                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Seat_Class])}")
+        return v
 
 
 class TicketUpdate(BaseModel):
-    purchase_id: Optional[int] = None
     flight_id: Optional[int] = None
     passenger_id: Optional[int] = None
     seat_class: Optional[Seat_Class] = None

@@ -9,7 +9,6 @@ class Ticket(Base):
     __tablename__ = "tickets"
 
     id = Column(Integer, primary_key=True, index=True)
-    purchase_id = Column(Integer, ForeignKey("purchase_history.id"), nullable=False)
     flight_id = Column(Integer, ForeignKey("flights.id"), nullable=False)
     passenger_id = Column(Integer, ForeignKey("persons.id"), nullable=False)
     seat_class = Column(SqlEnum(Seat_Class, name="seat_class", native_enum=False, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
@@ -22,7 +21,6 @@ class Ticket(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
     # Relationships
-    purchase = relationship("PurchaseHistory", back_populates="tickets")
     flight = relationship("Flight", back_populates="tickets")
     passenger = relationship("Person", back_populates="tickets", foreign_keys=[passenger_id])
     seat = relationship("Seat", back_populates="ticket", uselist=False)

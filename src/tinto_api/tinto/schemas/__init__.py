@@ -19,12 +19,6 @@ from .flight import (
     FlightUpdate,
     Flight
 )
-from .purchase_history import (
-    PurchaseHistoryBase,
-    PurchaseHistoryCreate,
-    PurchaseHistoryUpdate,
-    PurchaseHistory
-)
 from .ticket import (
     TicketBase,
     TicketCreate,
@@ -53,7 +47,6 @@ __all__ = [
     "PersonBase", "PersonCreateInternal", "PersonRegister", "PersonUpdate", "Person", "Token", "TokenData",
     "AirlineBase", "AirlineCreate", "AirlineUpdate", "Airline",
     "FlightBase", "FlightCreate", "FlightUpdate", "Flight",
-    "PurchaseHistoryBase", "PurchaseHistoryCreate", "PurchaseHistoryUpdate", "PurchaseHistory",
     "TicketBase", "TicketCreate", "TicketUpdate", "Ticket",
     "SeatBase", "SeatCreate", "SeatUpdate", "Seat",
     "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog","RecoveryRequest", "CodeCheckRequest", "PasswordResetRequest"

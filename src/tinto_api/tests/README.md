@@ -11,7 +11,6 @@ The tests are organized by feature/endpoint:
 - **test_flights.py** - Tests for flight search and retrieval endpoints
 - **test_airlines.py** - Tests for airline endpoints
 - **test_tickets.py** - Tests for ticket booking and management endpoints
-- **test_purchase_history.py** - Tests for purchase history endpoints
 - **test_persons.py** - Tests for person management endpoints (admin only)
 - **test_health_resposnse.py** - Tests for health check endpoint
 - **conftest.py** - Shared fixtures and pytest configuration
@@ -109,10 +108,6 @@ Current test coverage includes:
 - ✅ User ticket retrieval
 - ✅ Ticket booking
 - ✅ Ticket cancellation
-
-### Purchase History
-- ✅ User purchase history
-- ✅ Individual purchase retrieval
 
 ### Persons (Admin)
 - ✅ Authentication requirement checks

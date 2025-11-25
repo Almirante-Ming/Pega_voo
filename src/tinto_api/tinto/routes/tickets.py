@@ -14,22 +14,9 @@ def create_ticket(
     db: DBSession,
     current_user: models.Person = Depends(get_current_active_user)
 ):
-    
-    purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == ticket.purchase_id).first()
-    if not purchase_history:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Purchase history not found")
-    
-    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(purchase_history.person_id): #type:ignore
-        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only create tickets for your own purchases")
-    
     flight = db.query(models.Flight).filter(models.Flight.id == ticket.flight_id).first()
     if not flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight not found")
-    
-    # Check if passenger exists
-    passenger = db.query(models.Person).filter(models.Person.id == ticket.passenger_id).first()
-    if not passenger:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Passenger not found")
     
     # Check seat availability based on seat class
     if ticket.seat_class == Seat_Class.ECONOMY:
@@ -48,10 +35,20 @@ def create_ticket(
         models.Ticket.status.in_([Booking_Status.MARKED, Booking_Status.RESERVED])
     ).count()
     
-    if booked_count >= available:
+    if booked_count >= available:  #type: ignore
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"No available {ticket.seat_class.value} seats on this flight")
     
-    new_ticket = models.Ticket(**ticket.model_dump())
+    # Create ticket with current user as passenger
+    new_ticket = models.Ticket(
+        flight_id=ticket.flight_id,
+        passenger_id=current_user.id,
+        seat_class=ticket.seat_class,
+        seat_number=ticket.seat_number,
+        price=ticket.price,
+        boarding_time=ticket.boarding_time,
+        arrival_time=ticket.arrival_time,
+        status=ticket.status
+    )
     db.add(new_ticket)
     
     db.commit()
@@ -61,15 +58,12 @@ def create_ticket(
 @router.get("/", response_model=List[schemas.Ticket], dependencies=[Depends(require_c_admin_or_sysadmin)])
 def get_all_tickets(
     db: DBSession,
-    purchase_id: Optional[int] = Query(None, description="Filter by purchase ID"),
     flight_id: Optional[int] = Query(None, description="Filter by flight ID"),
     passenger_id: Optional[int] = Query(None, description="Filter by passenger ID"),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
     query = db.query(models.Ticket)
     
-    if purchase_id:
-        query = query.filter(models.Ticket.purchase_id == purchase_id)
     if flight_id:
         query = query.filter(models.Ticket.flight_id == flight_id)
     if passenger_id:
@@ -89,8 +83,8 @@ def get_my_tickets(
     current_user: models.Person = Depends(get_current_active_user),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
-    query = db.query(models.Ticket).join(models.PurchaseHistory).filter(
-        models.PurchaseHistory.person_id == current_user.id
+    query = db.query(models.Ticket).filter(
+        models.Ticket.passenger_id == current_user.id
     )
     
     if status:
@@ -112,10 +106,8 @@ def get_ticket(
     if not ticket:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Ticket not found")
     
-    if str(current_user.person_type.value) == "customer":
-        purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == ticket.purchase_id).first()
-        if not purchase_history or int(current_user.id) != int(purchase_history.person_id): #type:ignore
-            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only access your own tickets")
+    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(ticket.passenger_id): #type:ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only access your own tickets")
     
     return ticket
 
@@ -130,20 +122,10 @@ def update_ticket(
     if not db_ticket:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Ticket not found")
     
-    if str(current_user.person_type.value) == "customer":
-        purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == db_ticket.purchase_id).first()
-        if not purchase_history or int(current_user.id) != int(purchase_history.person_id):  #type:ignore
-            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own tickets")
+    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(db_ticket.passenger_id):  #type:ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only update your own tickets")
     
     update_data = ticket_update.model_dump(exclude_unset=True)
-    
-    if "purchase_id" in update_data:
-        purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == update_data["purchase_id"]).first()
-        if not purchase_history:
-            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Purchase history not found")
-        
-        if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(purchase_history.person_id):  #type:ignore
-            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only link tickets to your own purchases")
     
     if "flight_id" in update_data:
         flight = db.query(models.Flight).filter(models.Flight.id == update_data["flight_id"]).first()
@@ -172,10 +154,8 @@ def cancel_ticket(
     if not ticket:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Ticket not found")
     
-    if str(current_user.person_type.value) == "customer":
-        purchase_history = db.query(models.PurchaseHistory).filter(models.PurchaseHistory.id == ticket.purchase_id).first()
-        if not purchase_history or int(current_user.id) != int(purchase_history.person_id):  #type:ignore
-            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only cancel your own tickets")
+    if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(ticket.passenger_id):  #type:ignore
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only cancel your own tickets")
     
     setattr(ticket, 'status', Booking_Status.CANCELLED)
     
