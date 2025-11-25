@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    container_name: Tinto
+    command: task run
+    volumes:
+      - .:/tinto_api
+    working_dir: /tinto_api
+    ports:
+      - "8000:8000"
+      - "5432:5432"
+    env_file:
+      - .env
