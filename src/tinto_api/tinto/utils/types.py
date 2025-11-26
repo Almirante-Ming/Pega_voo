@@ -31,9 +31,11 @@ class Flight_Status(Enum):
     SCHEDULED = "scheduled"
     CANCELLED = "cancelled"
 
+
 class Seat_Class(Enum):
     ECONOMY = "economy"
     BUSINESS = "business"
+    EXECUTIVE = "executive"
     FIRST = "first"
 
 class Gender(Enum):

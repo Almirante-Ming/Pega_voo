@@ -14,9 +14,10 @@ class FlightBase(BaseModel):
     destination_airport: str = Field(..., description="Destination airport IATA code")
     departure_time: datetime = Field(..., description="Scheduled departure time")
     estimated_arrival: datetime = Field(..., description="Scheduled arrival time")
+    stops_count: int = Field(..., description="Total connection flights, 0 for direct")
+    avaliable_seats: int = Field(...,description="Total of avaliable seats")
     economy_seats: int = Field(..., description="Total economy seats")
-    business_seats: int = Field(..., description="Total business seats")
-    first_seats: int = Field(..., description="Total first class seats")
+    premium_seats: int = Field(..., description="especial seats like as first, executive...")
     status: Flight_Status = Field(default=Flight_Status.SCHEDULED)
 
     @field_validator('status', mode='before')
@@ -44,9 +45,9 @@ class FlightUpdate(BaseModel):
     destination_airport: Optional[str] = None
     departure_time: Optional[datetime] = None
     estimated_arrival: Optional[datetime] = None
+    stops_count: Optional[int] = None
     economy_seats: Optional[int] = None
-    business_seats: Optional[int] = None
-    first_seats: Optional[int] = None
+    premium_seats: Optional[int] = None
     status: Optional[Flight_Status] = None
 
     @field_validator('status', mode='before')
