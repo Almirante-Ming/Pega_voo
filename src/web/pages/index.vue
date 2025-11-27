@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-md bg-grayScale-50 rounded-lg shadow-lg p-4 px-5">
+  <div class="w-full bg-grayScale-50 rounded-lg shadow-lg p-4 px-5">
     <h1 class="text-2xl font-bold mb-6 text-grayScale-900">Passagens aéreas</h1>
 
     <!-- Tipo de viagem -->
@@ -84,7 +84,7 @@ const formulario: Campo[] = [
     tipoDeDado: "string",
     propriedade: "origin_city",
     tipoDeInput: "string",
-    obrigatorio: true,
+    obrigatorio: false,
     placeholder: "Cidade ou aeroporto"
   },
   {
@@ -92,7 +92,7 @@ const formulario: Campo[] = [
     tipoDeDado: "string",
     propriedade: "destination_city",
     tipoDeInput: "string",
-    obrigatorio: true,
+    obrigatorio: false,
     placeholder: "Cidade ou aeroporto"
   },
   {
@@ -100,7 +100,7 @@ const formulario: Campo[] = [
     propriedade: "departure_date",
     tipoDeInput: "timestamp",
     validacao: "data",
-    obrigatorio: true,
+    obrigatorio: false,
   },
   {
     label: "Data de volta",
@@ -163,8 +163,9 @@ const atualizarForm = atualizarFormulario(form, validarCampo);
 async function buscarVoos() {
   validarFormulario();
   
-  if (!formValido.value) {
-    toast.error({ mensagem: 'Preencha todos os campos obrigatórios' });
+  // Valida se pelo menos origem OU destino está preenchido
+  if (!form.value.origin_city && !form.value.destination_city) {
+    toast.error({ mensagem: 'Preencha pelo menos a origem ou o destino' });
     return;
   }
 
@@ -174,20 +175,15 @@ async function buscarVoos() {
     departure_date: form.value.departure_date
   };
 
-  const { data, error, execute } = useApi('get', '/flights', { params: queryParams });
-
   loading.value = true;
 
-  await execute();
-  
-  loading.value = false;
+  // Redireciona para página de voos com os parâmetros
+  await router.push({
+    path: '/voos',
+    query: queryParams
+  });
 
-  if (data.value && !error.value) {
-    toast.success({ mensagem: 'Voos encontrados!' });
-    console.log('Voos:', data.value);
-  } else {
-    toast.error({ mensagem: 'Erro ao buscar voos' });
-  }
+  loading.value = false;
 }
 </script>
 

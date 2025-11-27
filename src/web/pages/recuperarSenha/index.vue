@@ -25,12 +25,15 @@
             </div>
 
 
-            <div v-else-if="step == 2" class="w-full flex flex-col gap-2 justify-center items-center">
-                <InputConfirmation  
-                    @complete="enviarCodigo($event)"
-                />
+            <div v-else-if="step == 2" class="w-full flex flex-col gap-2 justify-center">
+                <div class="flex w-full justify-center">
+                    <InputConfirmation  
+                        @complete="enviarCodigo($event)"
+                    />
+                </div>
+
             
-                <span class="text-sm">
+                <span class="text-sm text-start">
                     Não recebeu o código? 
                     <button v-if="true" class="text-primary underline px-1">Reenviar</button>
                     <span v-else class="text-grayScale-400">Aguarde: 2min 38seg</span>

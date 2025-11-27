@@ -7,19 +7,20 @@ export default defineNuxtPlugin(() => {
     baseURL: config.public.apiBase,
     headers: {
       'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
     },
   })
 
-  // Interceptor para adicionar token de autenticação (opcional)
+  // Interceptor para adicionar token de autenticação
   axiosInstance.interceptors.request.use((config) => {
-    // const token = useCookie('token').value
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`
-    // }
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     return config
   })
 
-  // Interceptor para tratamento de erros (opcional)
+  // Interceptor para tratamento de erros
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
