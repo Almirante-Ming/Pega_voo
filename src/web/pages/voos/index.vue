@@ -2,13 +2,13 @@
   <div class="w-full space-y-4">
     <!-- Header com filtros -->
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-2">
         <h2 class="text-xl font-bold text-grayScale-900">
-          {{ voos.length }} voos encontrados
+          {{ voos.length }} {{ voos.length == 0 ? 'Nenhum voo encontrado' : voos.length == 1 ? 'Voo encontrado' : 'Voos encontrados' }} 
         </h2>
         <button 
           @click="router.push('/')"
-          class="text-primary hover:text-primary-dark font-medium flex items-center gap-2"
+          class="text-primary hover:text-primary-dark font-medium text-sm bg-grayScale-200 shadow rounded-md p-2 flex items-center gap-2"
         >
           <Icon nameIcon="MagnifyingGlassIcon" class="w-5 h-5" />
           Nova busca
@@ -16,13 +16,19 @@
       </div>
 
       <!-- Info da busca -->
-      <div class="flex gap-4 text-sm text-grayScale-700">
-        <span v-if="filtros.origin_city">
-          <strong>Origem:</strong> {{ filtros.origin_city }}
-        </span>
-        <span v-if="filtros.destination_city">
-          <strong>Destino:</strong> {{ filtros.destination_city }}
-        </span>
+      <div class="flex flex-col gap-4 text-sm text-grayScale-700">
+        <h2>Resumo da pesquisa</h2>
+
+        <div class="flex gap-2 justify-around text-center">
+          <span v-if="filtros.origin_city">
+            <strong>Origem:</strong> {{ filtros.origin_city }}
+          </span>
+          <Icon nameIcon="ArrowRightIcon" class="w-5 h-5 self-center" />
+          <span v-if="filtros.destination_city">
+            <strong>Destino:</strong> {{ filtros.destination_city }}
+          </span>
+        </div>
+
         <span v-if="filtros.departure_date">
           <strong>Data:</strong> {{ formatarData(filtros.departure_date) }}
         </span>
@@ -134,9 +140,7 @@ function calcularPreco(voo: any) {
 }
 
 function selecionarVoo(voo: any) {
-  toast.success({ mensagem: `Voo ${voo.flight_number} selecionado!` });
-  // Aqui você pode navegar para página de checkout ou armazenar no store
-  console.log('Voo selecionado:', voo);
+  router.push(`/voos/${voo.id}`)
 }
 
 // Buscar voos ao montar componente
