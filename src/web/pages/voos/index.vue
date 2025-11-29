@@ -4,11 +4,12 @@
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-xl font-bold text-grayScale-900">
-          {{ voos.length }} {{ voos.length == 0 ? 'Nenhum voo encontrado' : voos.length == 1 ? 'Voo encontrado' : 'Voos encontrados' }} 
+          {{ voos.length ? voos.length : '' }} {{ voos.length == 0 ? 'Nenhum voo encontrado' : voos.length == 1 ? 'Voo encontrado' : 'Voos encontrados' }} 
         </h2>
         <button 
+          v-if="voos.length"
           @click="router.push('/')"
-          class="text-primary hover:text-primary-dark font-medium text-sm bg-grayScale-200 shadow rounded-md p-2 flex items-center gap-2"
+          class="text-primary hover:text-primary-dark font-medium text-sm bg-grayScale-200 shadow rounded-md p-2 flex items-center gap-1"
         >
           <Icon nameIcon="MagnifyingGlassIcon" class="w-5 h-5" />
           Nova busca
@@ -20,12 +21,12 @@
         <h2>Resumo da pesquisa</h2>
 
         <div class="flex gap-2 justify-around text-center">
-          <span v-if="filtros.origin_city">
-            <strong>Origem:</strong> {{ filtros.origin_city }}
+          <span>
+            <strong>Origem:</strong> {{ filtros.origin_city ? filtros.origin_city : 'Não informado' }}
           </span>
           <Icon nameIcon="ArrowRightIcon" class="w-5 h-5 self-center" />
-          <span v-if="filtros.destination_city">
-            <strong>Destino:</strong> {{ filtros.destination_city }}
+          <span>
+            <strong>Destino:</strong> {{ filtros.destination_city ? filtros.destination_city : 'Não informado' }}
           </span>
         </div>
 
@@ -160,6 +161,8 @@ onMounted(async () => {
   if (data.value && !error.value) {
     voos.value = data.value;
   } else {
+      loading.value = false;
+
     toast.error({ mensagem: 'Erro ao buscar voos' });
   }
 });
