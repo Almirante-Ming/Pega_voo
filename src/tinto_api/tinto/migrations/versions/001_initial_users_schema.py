@@ -1,8 +1,10 @@
-"""users_schema
+"""001 - Initial users schema
 
-Revision ID: b3d627dbec93
+Revision ID: 001_initial_users
 Revises: 
 Create Date: 2025-10-10 14:10:15.457866
+
+Creates the initial persons table with user authentication and profile fields.
 
 """
 from typing import Sequence, Union
@@ -12,7 +14,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b3d627dbec93'
+revision: str = '001_initial_users'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

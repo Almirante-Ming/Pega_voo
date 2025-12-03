@@ -1,8 +1,12 @@
-"""der_update
+"""003 - Refactor flights and tickets schema
 
-Revision ID: 8ec4ed8b1a58
-Revises: 677b271bf48e
+Revision ID: 003_refactor_flights_tickets
+Revises: 002_add_flights_booking
 Create Date: 2025-10-26 16:29:46.850078
+
+Major refactor: Adds seats table, updates flights with aircraft/cities/times,
+simplifies tickets with passenger_id and seat_class, renames date columns to be
+more descriptive, and inserts sysadmin user.
 
 """
 from typing import Sequence, Union
@@ -12,8 +16,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '8ec4ed8b1a58'
-down_revision: Union[str, None] = '677b271bf48e'
+revision: str = '003_refactor_flights_tickets'
+down_revision: Union[str, None] = '002_add_flights_booking'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -165,8 +169,8 @@ def downgrade() -> None:
     op.add_column('tickets', sa.Column('horario_desembarque', postgresql.TIMESTAMP(timezone=True), autoincrement=False, nullable=False))
     op.add_column('tickets', sa.Column('passengers', sa.TEXT(), autoincrement=False, nullable=False))
     op.add_column('tickets', sa.Column('dt_create', postgresql.TIMESTAMP(timezone=True), autoincrement=False, nullable=True))
-    op.drop_constraint(None, 'tickets', type_='foreignkey')
-    op.drop_constraint(None, 'tickets', type_='foreignkey')
+    op.drop_constraint('tickets_purchase_id_fkey', 'tickets', type_='foreignkey')
+    op.drop_constraint('tickets_passenger_id_fkey', 'tickets', type_='foreignkey')
     op.create_foreign_key('tickets_purchase_history_id_fkey', 'tickets', 'purchase_history', ['purchase_history_id'], ['id'])
     op.drop_column('tickets', 'updated_at')
     op.drop_column('tickets', 'created_at')
@@ -182,7 +186,7 @@ def downgrade() -> None:
     op.add_column('purchase_history', sa.Column('origin', sa.VARCHAR(), autoincrement=False, nullable=False))
     op.add_column('purchase_history', sa.Column('dt_create', postgresql.TIMESTAMP(timezone=True), autoincrement=False, nullable=True))
     op.add_column('purchase_history', sa.Column('user_id', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.drop_constraint(None, 'purchase_history', type_='foreignkey')
+    op.drop_constraint('purchase_history_person_id_fkey', 'purchase_history', type_='foreignkey')
     op.create_foreign_key('purchase_history_user_id_fkey', 'purchase_history', 'persons', ['user_id'], ['id'])
     op.alter_column('purchase_history', 'status',
                existing_type=sa.Enum('active', 'planned', 'past', name='purchase_status', native_enum=False),

@@ -1,8 +1,11 @@
-"""add_flight_booking_models
+"""002 - Add flight booking models
 
-Revision ID: 677b271bf48e
-Revises: b3d627dbec93
+Revision ID: 002_add_flights_booking
+Revises: 001_initial_users
 Create Date: 2025-10-10 19:46:24.201738
+
+Creates airlines, flights, purchase_history, tickets, and ticket_passengers tables
+with initial schema structure.
 
 """
 from typing import Sequence, Union
@@ -12,8 +15,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '677b271bf48e'
-down_revision: Union[str, None] = 'b3d627dbec93'
+revision: str = '002_add_flights_booking'
+down_revision: Union[str, None] = '001_initial_users'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
