@@ -9,7 +9,15 @@ Base = declarative_base()
 metadata = Base.metadata
 
 load_dotenv('.env')
-db_uri = os.getenv('DATABASE_URL')
+
+USER = os.getenv("user")
+PASSWORD = os.getenv("password")
+HOST = os.getenv("host")
+PORT = os.getenv("port")
+DBNAME = os.getenv("dbname")
+
+
+db_uri = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
 
 if not db_uri:
     raise ValueError("DATABASE_URL environment variable is not set")

@@ -3,4 +3,3 @@ __pycache__
 *.db
 .env
 logs/*
-.pytest_cache*
