@@ -20,7 +20,6 @@ class Flight(Base):
     estimated_arrival = Column(DateTime(timezone=True), nullable=False)
     stops_count = Column(Integer, nullable=False, default=0)
     avaliable_seats = Column(Integer, nullable=False)
-    economy_seats = Column(Integer, nullable=False)
     premium_seats = Column(Integer, nullable=False)
     status = Column(SqlEnum(Flight_Status, name="flight_status", native_enum=False, values_callable=lambda obj: [e.value for e in obj]), default=Flight_Status.SCHEDULED)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))

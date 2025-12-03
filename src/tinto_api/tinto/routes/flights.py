@@ -1,15 +1,41 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
-from sqlalchemy import and_, or_
-from typing import Annotated, List, Optional, cast
-from http import HTTPStatus as HTTPStatus
+from sqlalchemy import func
+from typing import Annotated, List, Optional, cast, Dict
+from http import HTTPStatus
 from datetime import datetime
 
 from tinto import schemas, models
-from tinto.utils import DBSession, Flight_Status, require_c_admin_or_sysadmin, require_authenticated_user
+from tinto.utils import DBSession, Flight_Status, Seat_Class, require_c_admin_or_sysadmin, require_authenticated_user
 
 router = APIRouter(prefix="/flights", tags=["Flights"])
 
 admin_router = APIRouter(dependencies=[Depends(require_c_admin_or_sysadmin)])
+
+def build_flight_with_tickets(flight: models.Flight) -> Dict:
+    """Build flight response with tickets grouped by seat_class (one per class)"""
+    tickets_dict = {}
+    
+    if flight.tickets:
+        # Group tickets by seat_class and get one per class
+        seats_by_class = {}
+        for ticket in flight.tickets:
+            class_name = ticket.seat_class.value if hasattr(ticket.seat_class, 'value') else str(ticket.seat_class)
+            if class_name not in seats_by_class:
+                seats_by_class[class_name] = ticket
+        
+        # Convert to TicketPreview format
+        for class_name, ticket in seats_by_class.items():
+            tickets_dict[class_name] = {
+                "seat_class": class_name,
+                "price": float(ticket.price),
+                "status": "disponível"
+            }
+    
+    # Build flight data
+    flight_dict = flight.__dict__.copy()
+    flight_dict['tickets'] = tickets_dict
+    return flight_dict
+
 
 @admin_router.post("/", response_model=schemas.Flight)
 def create_flight(flight: schemas.FlightCreate, db: DBSession):
@@ -28,23 +54,28 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
     db.commit()
     db.refresh(new_flight)
     
-    # Create seats for the flight (A-I columns)
+    # Create seats for the flight (A-I columns, multiple rows)
     seat_columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
     total_seats = cast(int, new_flight.avaliable_seats)
-    economy_seats = cast(int, new_flight.economy_seats)
     premium_seats = cast(int, new_flight.premium_seats)
-    seats_per_column = total_seats // len(seat_columns)
+    
+    # Calculate number of rows needed (9 seats per row: A-I)
+    seats_per_row = len(seat_columns)
+    num_rows = (total_seats + seats_per_row - 1) // seats_per_row 
     
     seat_count = 1
-    for col in seat_columns:
-        for row in range(1, seats_per_column + 1):
+    for row in range(1, num_rows + 1):
+        for col in seat_columns:
+            if seat_count > total_seats:
+                break
+                
             seat_number = f"{row}{col}"
-            if seat_count <= economy_seats:
-                seat_class = "economy"
-            elif seat_count <= economy_seats + premium_seats:
-                seat_class = "business"
+            
+            # Determine seat class: first premium_seats are "premium", rest are "economy"
+            if seat_count <= premium_seats:
+                seat_class = "premium"
             else:
-                seat_class = "first"
+                seat_class = "economy"
             
             new_seat = models.Seat(
                 flight_id=new_flight.id,
@@ -54,6 +85,9 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
             )
             db.add(new_seat)
             seat_count += 1
+        
+        if seat_count > total_seats:
+            break
     
     db.commit()
     return new_flight
@@ -107,7 +141,7 @@ def delete_flight(
     return {"message": "Flight cancelled"}
 
 # Public routes (require authentication but accessible to customers)
-@router.get("/", response_model=List[schemas.Flight], dependencies=[Depends(require_authenticated_user)])
+@router.get("/", response_model=List[schemas.FlightWithTickets], dependencies=[Depends(require_authenticated_user)])
 def get_flights(
     db: DBSession,
     origin_city: Optional[str] = Query(None, description="Filter by origin city"),
@@ -117,22 +151,40 @@ def get_flights(
 ):
     query = db.query(models.Flight).filter(models.Flight.status == Flight_Status.SCHEDULED)
     
-    if origin_city:
-        query = query.filter(models.Flight.origin_city.ilike(f"%{origin_city}%"))
-    if destination_city:
-        query = query.filter(models.Flight.destination_city.ilike(f"%{destination_city}%"))
-    if departure_date:
+    # Filter by origin city (case-insensitive, accent-insensitive partial match)
+    if origin_city and origin_city.strip():
+        search_term = origin_city.strip().lower()
+        query = query.filter(
+            func.unaccent(func.lower(models.Flight.origin_city)).contains(
+                func.unaccent(search_term)
+            )
+        )
+    
+    # Filter by destination city (case-insensitive, accent-insensitive partial match)
+    if destination_city and destination_city.strip():
+        search_term = destination_city.strip().lower()
+        query = query.filter(
+            func.unaccent(func.lower(models.Flight.destination_city)).contains(
+                func.unaccent(search_term)
+            )
+        )
+    
+    # Filter by departure date
+    if departure_date and departure_date.strip():
         try:
-            date_obj = datetime.strptime(departure_date, "%Y-%m-%d").date()
-            query = query.filter(models.Flight.departure_time.date() == date_obj)
+            date_obj = datetime.strptime(departure_date.strip(), "%Y-%m-%d").date()
+            query = query.filter(func.date(models.Flight.departure_time) == date_obj)
         except ValueError:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid date format. Use YYYY-MM-DD")
+    
+    # Filter by number of stops
     if stops_count is not None:
         query = query.filter(models.Flight.stops_count == stops_count)
     
-    return query.all()
+    flights = query.all()
+    return [build_flight_with_tickets(flight) for flight in flights]
 
-@router.get("/{flight_id}", response_model=schemas.Flight, dependencies=[Depends(require_authenticated_user)])
+@router.get("/{flight_id}", response_model=schemas.FlightWithTickets, dependencies=[Depends(require_authenticated_user)])
 def get_flight(
     flight_id: Annotated[int, Path(title="The ID of the flight to retrieve")],
     db: DBSession
@@ -143,7 +195,7 @@ def get_flight(
     ).first()
     if not flight:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
-    return flight
+    return build_flight_with_tickets(flight)
 
 @router.get("/seats/{flight_id}", response_model=List[schemas.Seat], dependencies=[Depends(require_authenticated_user)])
 def get_flight_seats_by_id(

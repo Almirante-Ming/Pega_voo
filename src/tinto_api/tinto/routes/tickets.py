@@ -4,7 +4,7 @@ from typing import Annotated, List, Optional
 from http import HTTPStatus as HTTPStatus
 
 from tinto import schemas, models
-from tinto.utils import DBSession, Booking_Status, Seat_Class, require_authenticated_user, require_c_admin_or_sysadmin, get_current_active_user
+from tinto.utils import DBSession, Seat_Class, require_authenticated_user, require_c_admin_or_sysadmin, get_current_active_user
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
@@ -18,38 +18,47 @@ def create_ticket(
     if not flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight not found")
     
-    # Check seat availability based on seat class
+    # Determine available seats based on seat class
     if ticket.seat_class == Seat_Class.ECONOMY:
-        available = flight.economy_seats
-    elif ticket.seat_class == Seat_Class.BUSINESS:
-        available = flight.business_seats
-    elif ticket.seat_class == Seat_Class.FIRST:
-        available = flight.first_seats
+        available = flight.avaliable_seats - flight.premium_seats
     else:
-        available = 0
+        # All non-economy seats are considered "premium"
+        available = flight.premium_seats
     
     # Count already booked seats for this class
     booked_count = db.query(models.Ticket).filter(
         models.Ticket.flight_id == ticket.flight_id,
-        models.Ticket.seat_class == ticket.seat_class,
-        models.Ticket.status.in_([Booking_Status.MARKED, Booking_Status.RESERVED])
+        models.Ticket.seat_class == ticket.seat_class
     ).count()
     
     if booked_count >= available:  #type: ignore
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"No available {ticket.seat_class.value} seats on this flight")
     
-    # Create ticket with current user as passenger
+    # Create ticket with current user as passenger and status as "reserved"
     new_ticket = models.Ticket(
         flight_id=ticket.flight_id,
         passenger_id=current_user.id,
         seat_class=ticket.seat_class,
-        seat_number=ticket.seat_number,
         price=ticket.price,
-        boarding_time=ticket.boarding_time,
-        arrival_time=ticket.arrival_time,
-        status=ticket.status
+        status="reserved"
     )
     db.add(new_ticket)
+    db.flush()  # Flush to get the ticket ID without committing
+    
+    # Find an available seat of the same class without a ticket_id
+    available_seat = db.query(models.Seat).filter(
+        models.Seat.flight_id == ticket.flight_id,
+        models.Seat.seat_class == ticket.seat_class.value,
+        models.Seat.ticket_id == None  # Only unassigned seats
+    ).first()
+    
+    if not available_seat:
+        db.rollback()
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"No available {ticket.seat_class.value} seats on this flight")
+    
+    # Update the seat with the ticket ID and mark as unavailable
+    available_seat.ticket_id = new_ticket.id
+    available_seat.is_available = False
     
     db.commit()
     db.refresh(new_ticket)
@@ -69,11 +78,7 @@ def get_all_tickets(
     if passenger_id:
         query = query.filter(models.Ticket.passenger_id == passenger_id)
     if status:
-        try:
-            status_enum = Booking_Status(status.lower())
-            query = query.filter(models.Ticket.status == status_enum)
-        except ValueError:
-            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid status")
+        query = query.filter(models.Ticket.status == status)
     
     return query.all()
 
@@ -88,11 +93,7 @@ def get_my_tickets(
     )
     
     if status:
-        try:
-            status_enum = Booking_Status(status.lower())
-            query = query.filter(models.Ticket.status == status_enum)
-        except ValueError:
-            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid status")
+        query = query.filter(models.Ticket.status == status)
     
     return query.all()
 
@@ -157,7 +158,7 @@ def cancel_ticket(
     if str(current_user.person_type.value) == "customer" and int(current_user.id) != int(ticket.passenger_id):  #type:ignore
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You can only cancel your own tickets")
     
-    setattr(ticket, 'status', Booking_Status.CANCELLED)
+    setattr(ticket, 'status', 'indisponível')
     
     db.commit()
     return {"message": "Ticket cancelled"}

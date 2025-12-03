@@ -19,4 +19,3 @@ class Seat(Base):
     )
 
     flight = relationship("Flight", back_populates="seats")
-    ticket = relationship("Ticket", back_populates="seat")

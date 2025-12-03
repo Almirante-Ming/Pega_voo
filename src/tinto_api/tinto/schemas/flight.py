@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
-from typing import Optional, Any
-from tinto.utils import Flight_Status
+from typing import Optional, Any, Dict
+from tinto.utils import Flight_Status, Seat_Class, Booking_Status
 
 
 class FlightBase(BaseModel):
@@ -16,7 +16,6 @@ class FlightBase(BaseModel):
     estimated_arrival: datetime = Field(..., description="Scheduled arrival time")
     stops_count: int = Field(..., description="Total connection flights, 0 for direct")
     avaliable_seats: int = Field(...,description="Total of avaliable seats")
-    economy_seats: int = Field(..., description="Total economy seats")
     premium_seats: int = Field(..., description="especial seats like as first, executive...")
     status: Flight_Status = Field(default=Flight_Status.SCHEDULED)
 
@@ -46,7 +45,6 @@ class FlightUpdate(BaseModel):
     departure_time: Optional[datetime] = None
     estimated_arrival: Optional[datetime] = None
     stops_count: Optional[int] = None
-    economy_seats: Optional[int] = None
     premium_seats: Optional[int] = None
     status: Optional[Flight_Status] = None
 
@@ -67,4 +65,23 @@ class Flight(FlightBase):
     created_at: datetime
     updated_at: datetime
 
+    model_config = {"from_attributes": True}
+
+
+class TicketPreview(BaseModel):
+    """Lightweight ticket representation for flight responses"""
+    seat_class: str
+    price: float
+    status: str  # "disponível" or "indisponível"
+    
+    model_config = {"from_attributes": True}
+
+
+class FlightWithTickets(FlightBase):
+    """Flight response with tickets grouped by seat_class (one per class)"""
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    tickets: Dict[str, TicketPreview]  # key is seat_class, value is TicketPreview
+    
     model_config = {"from_attributes": True}
