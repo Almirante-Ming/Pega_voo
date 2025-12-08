@@ -1,7 +1,7 @@
 from redis import Redis
 import os
 
-celery_host = str(os.getenv('CELERY_HOST'))
+celery_host = str(os.getenv('CELERY_HOST' ,'localhost'))
 celery_pass = str(os.getenv('CELERY_PASS'))
 
 # if not celery_host or celery_pass:
