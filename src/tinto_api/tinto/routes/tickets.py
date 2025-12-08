@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
-from sqlalchemy import and_
 from typing import Annotated, List, Optional
 from http import HTTPStatus as HTTPStatus
 
