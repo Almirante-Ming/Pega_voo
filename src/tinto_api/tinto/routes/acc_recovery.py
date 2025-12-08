@@ -2,14 +2,13 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import or_
 from datetime import datetime, UTC
 from tinto.models import Person
-from tinto.utils import send_mail, DBSession, kcode, get_password_hash, verify_password, minerva
+from tinto.utils import DBSession, kcode, get_password_hash, verify_password, minerva
+from tinto.tasks import send_recovery_code
 from tinto.schemas import RecoveryRequest, PasswordResetRequest, CodeCheckRequest
 import json
 
 
 router = APIRouter(tags=['Access Recovery'])
-
-
 
 @router.post('/recovery', status_code=status.HTTP_200_OK)
 def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
@@ -43,12 +42,13 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     
     try:
-        send_mail(user.email, kcode)
+        # Send recovery code email asynchronously using Celery
+        send_recovery_code.delay(user.email, kcode)
         
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to send email: {str(e)}"
+            detail=f"Failed to queue email task: {str(e)}"
         )
     def format_cpf(cpf: str) -> str:
         cpf_digits = ''.join(filter(str.isdigit, cpf))
@@ -57,8 +57,7 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
 
     
     return {
-        "message": "Recovery code sent successfully",
-        "redirect": "/auth2r",
+        "message": "Recovery code will be send soon, please wait",
         "user_info": {
             "fullname": user.full_name,
             "cpf": format_cpf(str(user.cpf))
