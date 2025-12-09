@@ -1,5 +1,6 @@
 <template>
   <div class="max-w-md mx-auto space-y-4">
+    <BackButton />
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
 
         <div class="flex gap-1.5 justify-between mb-3">
@@ -9,7 +10,6 @@
             </div>
 
             <div class="flex flex-col text-xs text-grayScale-700 items-end">
-                <div class="flex gap-1.5 items-center"><icon nameIcon="PaperAirplaneIcon"/>{{ voo.aircraft_model }}</div>
                 <p>Número do voo: {{ voo.flight_number }}</p>
             </div>
         </div>
@@ -89,6 +89,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { useApi } from '@/composables/useApi'
+import BackButton from "@/components/BackButton/index.vue";
 
 const route = useRoute()
 const router = useRouter()

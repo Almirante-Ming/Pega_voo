@@ -1,8 +1,4 @@
 <template>
-    <button @click="voltar" class="flex items-center w-fit pr-4 py-1 text-grayScale-700 text-sm underline gap-2 ">
-        <Icon nameIcon="ChevronLeftIcon"></Icon>
-        Voltar
-    </button>
     <div class="text-grayScale-800 flex flex-col gap-4 mt-2">
         <Stepper 
             :steps="stepperSteps"
@@ -10,7 +6,10 @@
         />
 
         <div class="flex flex-col gap-1.5">
-            <h1 class="text-2xl font-bold">{{stepInfo.titulo}}</h1>
+            <div class="flex items-center gap-2">
+                <BackButton :action="voltar" />
+                <h1 class="text-2xl font-bold">{{stepInfo.titulo}}</h1>
+            </div>
             <p class="text-grayScale-600">{{stepInfo.subtitulo}}</p>
         </div>
 
@@ -63,7 +62,7 @@
         <div class="w-full">
             <button 
             class="bg-primary hover:opacity-80 duration-200 disabled:bg-grayScale-500 w-full rounded-md h-12 shadow flex justify-center items-center" 
-            @click="enviarCodigo"
+            @click="() => enviarCodigo()"
             :disabled="loading">
                 <span v-if="!loading" class="text-primary-light font-semibold">{{stepInfo.textoBotao}}</span>
                 <Icon v-else nameIcon="ArrowPathIcon" class="text-white animate-spin"></Icon>
@@ -76,6 +75,7 @@
 import { useForm } from "@/composables/useForm";
 import { atualizarFormulario } from "@/functions/atualizarFormulario";
 import type { Campo } from "~/types/formulario";
+import BackButton from "@/components/BackButton/index.vue";
 
 const router = useRouter();
 

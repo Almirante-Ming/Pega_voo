@@ -18,6 +18,7 @@
           <div class="text-center">
             <p class="text-2xl font-bold text-grayScale-900">{{ departureHour }}</p>
             <p class="text-sm text-grayScale-700">{{ originAirport }}</p>
+            <p class="text-xs text-grayScale-600">{{ originCity }}</p>
             <p class="text-xs text-grayScale-600">{{ departureDateShort }}</p>
           </div>
           <div class="flex-1 px-4">
@@ -35,23 +36,24 @@
           <div class="text-center">
             <p class="text-2xl font-bold text-grayScale-900">{{ arrivalHour }}</p>
             <p class="text-sm text-grayScale-700">{{ destinationAirport }}</p>
+            <p class="text-xs text-grayScale-600">{{ destinationCity }}</p>
             <p class="text-xs text-grayScale-600">{{ arrivalDateShort }}</p>
           </div>
         </div>
 
       </div>
+      <hr></hr>
         <!-- Preço e botão -->
-        <div class="w-full flex justify-between items-center">
+        <div class="w-full flex justify-between items-end">
 
             <div class="flex flex-col gap-1 text-xs text-grayScale-600">
                 <div class="flex items-center gap-1 ">
                     <Icon nameIcon="UserIcon" class="w-4 h-4" />
                     {{ economySeats }} assentos disponíveis
                 </div>
-
-                <div class="flex items-center gap-1.5">
-                    <Icon nameIcon="TicketIcon" class="w-4 h-4" />
-                    Item pessoal incluído
+                <div class="flex items-center gap-1 ">
+                    <Icon nameIcon="StarIcon" class="w-4 h-4" />
+                    {{ premiumSeats }} assentos premium
                 </div>
             </div>
 
@@ -61,7 +63,7 @@
                 </p>
                 <button 
                 @click="$emit('selecionar', voo)"
-                class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                class="bg-primary hover:bg-primary-dark text-white text-sm px-6 py-2 rounded-lg font-semibold transition-colors"
                 >
                 Selecionar
                 </button>
@@ -82,14 +84,18 @@ const props = defineProps<{
   flightNumber: string,
   departureHour: string,
   originAirport: string,
+  originCity: string,
   departureDateShort: string,
   duration: string,
   arrivalHour: string,
   destinationAirport: string,
+  destinationCity: string,
   arrivalDateShort: string,
   totalSeats: number,
   businessSeats: number,
   price: string,
-  economySeats: number
+  economySeats: number,
+  premiumSeats: number,
+  aircraftModel: string
 }>();
 </script>

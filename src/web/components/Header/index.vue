@@ -1,26 +1,33 @@
 <template>
-  <header class="header w-full">
-    <div class="w-full h-[60px] bg-primary flex items-center justify-between px-5 font-bold text-white">
-
-      <div class="flex gap-2">
-        <Icon name-icon="PaperAirplaneIcon" class="text-white"></Icon>
-        Pega voo
-      </div>
+  <header class="header w-full relative">
+    <div class="w-full h-[64px] bg-primary flex items-center justify-between px-5 font-bold text-white relative">
       
-      <button 
-        @click="toggleTheme"
-        class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-grayScale-100 hover:bg-grayScale-200 transition-colors duration-200"
-        :title="isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
-      >
-        <span class="text-lg">{{ isDark ? '☀️' : '🌙' }}</span>
-        <span class="text-sm font-medium text-grayScale-800">{{ isDark ? 'Claro' : 'Escuro' }}</span>
+      <!-- Menu Button -->
+      <button v-if="showMenu" @click="$emit('toggleSidebar')" class="p-1 hover:bg-white/10 rounded">
+        <Icon name-icon="Bars3Icon" class="size-6 text-white" />
       </button>
+
+      <!-- Centered Logo -->
+      <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <img src="@/assets/images/logo.png" alt="Logo" class="h-14 w-auto object-contain" />
+      </div>
+
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-const { isDark, toggleTheme } = useTheme();
+import Icon from "../Icon/index.vue";
+
+defineEmits<{
+  (e: "toggleSidebar"): void;
+}>();
+
+const route = useRoute();
+const showMenu = computed(() => {
+  const hiddenRoutes = ['/login', '/cadastro', '/recuperarSenha'];
+  return !hiddenRoutes.includes(route.path);
+});
 </script>
 
 <style scoped>

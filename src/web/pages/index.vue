@@ -17,8 +17,6 @@
       </button>
     </div>
 
-    <span v-if="tipoViagem == 'multitrecho'" class="text-red-500"> Ainda não temmm </span>
-
     <!-- Formulário -->
     <div class="grid grid-cols-2 gap-2">
       <Input 
@@ -74,8 +72,7 @@ const loading = ref(false);
 
 const tiposViagem = [
   { valor: 'ida-volta', label: 'Ida e volta' },
-  { valor: 'somente-ida', label: 'Somente ida' },
-  { valor: 'multitrecho', label: 'Multitrecho' }
+  { valor: 'somente-ida', label: 'Somente ida' }
 ];
 
 const formulario: Campo[] = [
