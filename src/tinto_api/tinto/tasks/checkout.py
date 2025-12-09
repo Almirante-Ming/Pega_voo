@@ -15,7 +15,7 @@ stripe.api_key = STRIPE_SECRET_KEY
 @app.task(name='checkout')
 def create_checkout_session(ticket_id: int, passenger_email: str):
     """
-    Create a Stripe checkout session for a ticket reservation
+    Create a Stripe checkout session for a ticket reservation.
     
     Args:
         ticket_id: The ID of the reserved ticket
@@ -48,11 +48,12 @@ def create_checkout_session(ticket_id: int, passenger_email: str):
                     'price_data': {
                         'currency': 'brl',
                         'product_data': {
-                            'name': f'Flight Ticket - {flight.departure_city} to {flight.arrival_city}',
-                            'description': f'Seat Class: {ticket.seat_class.value} | Flight: {flight.id} | Ticket ID: {ticket_id}',
+                            'name': f'Flight Ticket - {flight.origin_city} to {flight.destination_city}',
+                            'description': f'Seat: {ticket.seat_number} | Seat Class: {ticket.seat_class.value} | Flight: {flight.flight_number}',
                             'metadata': {
                                 'ticket_id': str(ticket_id),
                                 'flight_id': str(flight.id),
+                                'seat_number': str(ticket.seat_number),
                             }
                         },
                         'unit_amount': price_cents,
@@ -67,17 +68,26 @@ def create_checkout_session(ticket_id: int, passenger_email: str):
             metadata={
                 'ticket_id': str(ticket_id),
                 'passenger_id': str(ticket.passenger_id),
+                'seat_number': str(ticket.seat_number),
             }
         )
         
+        session_id = checkout_session.id
         db.close()
         
-        return {
+        # Return checkout URL immediately (frontend will redirect)
+        result = {
             'status': 'success',
             'checkout_url': checkout_session.url,
-            'session_id': checkout_session.id,
+            'session_id': session_id,
             'ticket_id': ticket_id
         }
+        
+        # Start polling for payment confirmation in background
+        from tinto.tasks.check_payment import check_payment_confirmation
+        check_payment_confirmation.delay(session_id, ticket_id, passenger_email)
+        
+        return result
     
     except Exception as e:
         db.close()

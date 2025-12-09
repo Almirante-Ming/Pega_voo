@@ -19,56 +19,55 @@ def create_ticket(
     Create a ticket reservation and initiate Stripe checkout process.
     
     1. Validates flight exists
-    2. Checks available seats for the requested class
+    2. Validates seat exists and is available
     3. Reserves a seat and creates ticket with status "reserved"
-    4. Sends checkout task to Celery to generate Stripe payment link
+    4. Marks seat as unavailable
+    5. Sends checkout task to Celery to generate Stripe payment link
     
     Returns:
         dict: Contains ticket info and checkout URL for payment
     """
+    # Validate flight exists
     flight = db.query(models.Flight).filter(models.Flight.id == ticket.flight_id).first()
     if not flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight not found")
     
-    # Determine available seats based on seat class
-    if ticket.seat_class == Seat_Class.ECONOMY:
-        available = flight.avaliable_seats - flight.premium_seats
-    else:
-        # All non-economy seats are considered "premium"
-        available = flight.premium_seats
-    
-    # Count already booked seats for this class
-    booked_count = db.query(models.Ticket).filter(
-        models.Ticket.flight_id == ticket.flight_id,
-        models.Ticket.seat_class == ticket.seat_class
-    ).count()
-    
-    if booked_count >= available:  #type: ignore
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"No available {ticket.seat_class.value} seats on this flight")
-    
-    # Find an available seat of the same class without a ticket_id
-    available_seat = db.query(models.Seat).filter(
+    # Validate and fetch seat
+    seat = db.query(models.Seat).filter(
         models.Seat.flight_id == ticket.flight_id,
-        models.Seat.seat_class == ticket.seat_class.value,
-        models.Seat.ticket_id == None  # Only unassigned seats
+        models.Seat.seat_number == ticket.seat_number
     ).first()
     
-    if not available_seat:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"No available {ticket.seat_class.value} seats on this flight")
+    if not seat:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Seat {ticket.seat_number} not found on this flight")
+    
+    # Check if seat is available
+    if seat.is_available != True:  #type: ignore
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Seat {ticket.seat_number} is not available")
+    
+    # Get seat_class from the seat (convert string to Seat_Class enum)
+    try:
+        seat_class_enum = Seat_Class(seat.seat_class)
+    except ValueError:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Invalid seat class: {seat.seat_class}")
     
     # Create ticket with current user as passenger and status as "reserved"
     new_ticket = models.Ticket(
         flight_id=ticket.flight_id,
         passenger_id=current_user.id,
-        seat_class=ticket.seat_class,
+        seat_class=seat_class_enum,
+        seat_number=ticket.seat_number,
         price=ticket.price,
+        boarding_time=flight.departure_time,
+        arrival_time=flight.estimated_arrival,
         status="reserved"
     )
     db.add(new_ticket)
     db.flush()  # Flush to get the ticket ID without committing
     
-    # Update the seat with the ticket ID
-    available_seat.ticket_id = new_ticket.id
+    # Don't mark seat as unavailable yet - will do this after payment confirmation
+    # Just link the ticket to the seat
+    setattr(seat, 'ticket_id', new_ticket.id)
     
     db.commit()
     db.refresh(new_ticket)
@@ -80,6 +79,7 @@ def create_ticket(
     return {
         "ticket_id": new_ticket.id,
         "flight_id": new_ticket.flight_id,
+        "seat_number": new_ticket.seat_number,
         "seat_class": new_ticket.seat_class.value,
         "price": str(new_ticket.price),
         "status": new_ticket.status,
