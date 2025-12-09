@@ -65,3 +65,15 @@ class Ticket(TicketBase):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class TicketCheckoutResponse(BaseModel):
+    """Response returned after successful ticket reservation and checkout session creation"""
+    ticket_id: int = Field(..., description="ID of the reserved ticket")
+    flight_id: int = Field(..., description="ID of the flight")
+    seat_class: str = Field(..., description="Seat class")
+    price: str = Field(..., description="Ticket price")
+    status: str = Field(..., description="Ticket status (should be 'reserved')")
+    created_at: str = Field(..., description="Ticket creation timestamp")
+    task_id: str = Field(..., description="Celery task ID for checkout session creation")
+    message: str = Field(..., description="Informational message about the process")
