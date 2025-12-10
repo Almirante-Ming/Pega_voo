@@ -1,6 +1,5 @@
 from .send_recovery_code import send_recovery_code
 from .send_mail import send_email
-from .checkout import create_checkout_session
 from .check_payment import check_payment_confirmation
 from .send_confirmation_email import send_confirmation_email
 from .send_payment_error_email import send_payment_error_email

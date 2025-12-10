@@ -1,11 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from typing import Annotated, List, Optional
 from http import HTTPStatus as HTTPStatus
+import stripe
+import os
 
 from tinto import schemas, models
 from tinto.utils import DBSession, Seat_Class, require_authenticated_user, require_c_admin_or_sysadmin, get_current_active_user
-from tinto.tasks import create_checkout_session
+from tinto.tasks.check_payment import check_payment_confirmation
 from tinto.celery_app import app as celery_app
+
+STRIPE_SECRET_KEY = str(os.getenv('STRIPE_SECRET_KEY'))
+FRONT_REDIRECT_URL = str(os.getenv('FRONT_REDIRECT_URL', 'http://localhost:3000'))
+
+stripe.api_key = STRIPE_SECRET_KEY
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
@@ -72,21 +79,63 @@ def create_ticket(
     db.commit()
     db.refresh(new_ticket)
     
-    # Send to Celery task to create Stripe checkout session
-    # This will generate payment link and return it to the client
-    checkout_task = create_checkout_session.delay(new_ticket.id, current_user.email)
+    # Create Stripe checkout session synchronously
+    try:
+        # Convert price to cents (Stripe expects cents)
+        price_cents = int(float(str(new_ticket.price)) * 100)
+        
+        # Create Stripe checkout session
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'brl',
+                        'product_data': {
+                            'name': f'Flight Ticket - {flight.origin_city} to {flight.destination_city}',
+                            'description': f'Seat: {new_ticket.seat_number} | Seat Class: {new_ticket.seat_class.value} | Flight: {flight.flight_number}',
+                            'metadata': {
+                                'ticket_id': str(new_ticket.id),
+                                'flight_id': str(flight.id),
+                                'seat_number': str(new_ticket.seat_number),
+                            }
+                        },
+                        'unit_amount': price_cents,
+                    },
+                    'quantity': 1,
+                }
+            ],
+            customer_email=str(current_user.email),
+            mode='payment',
+            success_url=f'{FRONT_REDIRECT_URL}/payment/success?ticket_id={new_ticket.id}',
+            cancel_url=f'{FRONT_REDIRECT_URL}/payment/cancel?ticket_id={new_ticket.id}',
+            metadata={
+                'ticket_id': str(new_ticket.id),
+                'passenger_id': str(new_ticket.passenger_id),
+                'seat_number': str(new_ticket.seat_number),
+            }
+        )
+        
+        check_payment_confirmation.delay(checkout_session.id, new_ticket.id, str(current_user.email))
+        
+        return {
+            "ticket_id": new_ticket.id,
+            "flight_id": new_ticket.flight_id,
+            "seat_number": new_ticket.seat_number,
+            "seat_class": new_ticket.seat_class.value,
+            "price": str(new_ticket.price),
+            "status": new_ticket.status,
+            "created_at": new_ticket.created_at.isoformat(),
+            "checkout_url": checkout_session.url,
+            "session_id": checkout_session.id,
+            "message": "Ticket reserved. Redirect to checkout_url for payment"
+        }
     
-    return {
-        "ticket_id": new_ticket.id,
-        "flight_id": new_ticket.flight_id,
-        "seat_number": new_ticket.seat_number,
-        "seat_class": new_ticket.seat_class.value,
-        "price": str(new_ticket.price),
-        "status": new_ticket.status,
-        "created_at": new_ticket.created_at.isoformat(),
-        "task_id": checkout_task.id,
-        "message": "Ticket reserved. Redirect to checkout URL on frontend after receiving checkout task result"
-    }
+    except Exception as e:
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            detail=f"Error creating checkout session: {str(e)}"
+        )
 
 @router.get("/", response_model=List[schemas.Ticket], dependencies=[Depends(require_c_admin_or_sysadmin)])
 def get_all_tickets(
