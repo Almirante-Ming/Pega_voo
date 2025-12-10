@@ -25,7 +25,8 @@ def build_flight_with_seats_and_prices(flight: models.Flight, db: DBSession) -> 
         
         # Get prices from seats
         for class_name, seat in seats_by_class.items():
-            if seat.price:
+            # Handle seats with prices (including 0)
+            if seat.price is not None:
                 tickets_dict[class_name] = float(str(seat.price))
     
     # Build flight data with airline name
