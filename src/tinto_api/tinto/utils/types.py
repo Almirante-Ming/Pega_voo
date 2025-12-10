@@ -34,9 +34,7 @@ class Flight_Status(Enum):
 
 class Seat_Class(Enum):
     ECONOMY = "economy"
-    BUSINESS = "business"
-    EXECUTIVE = "executive"
-    FIRST = "first"
+    PREMIUM = "premium"
 
 class Gender(Enum):
     MALE = "male"

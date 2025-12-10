@@ -5,7 +5,7 @@ from tinto.utils import Flight_Status, Seat_Class, Booking_Status
 
 
 class FlightBase(BaseModel):
-    airline_id: int = Field(..., description="Reference to airline")
+    airline_name: str = Field(..., description="Airline name")
     aircraft_model: str = Field(..., description="Aircraft model")
     flight_number: str = Field(..., description="Flight identifier")
     origin_city: str = Field(..., description="Origin city")
@@ -31,7 +31,7 @@ class FlightBase(BaseModel):
 
 
 class FlightCreate(FlightBase):
-    pass
+    airline_id: int = Field(..., description="Reference to airline")
 
 
 class FlightUpdate(BaseModel):
@@ -68,20 +68,12 @@ class Flight(FlightBase):
     model_config = {"from_attributes": True}
 
 
-class TicketPreview(BaseModel):
-    """Lightweight ticket representation for flight responses"""
-    seat_class: str
-    price: float
-    status: str  # "disponível" or "indisponível"
-    
-    model_config = {"from_attributes": True}
-
-
-class FlightWithTickets(FlightBase):
-    """Flight response with tickets grouped by seat_class (one per class)"""
+class FlightWithSeatsAndPrices(FlightBase):
+    """Flight response with seats status and prices by class"""
     id: int
     created_at: datetime
     updated_at: datetime
-    tickets: Dict[str, TicketPreview]  # key is seat_class, value is TicketPreview
+    seats: Dict[str, str]  # key is seat_number (e.g., "1A"), value is status ("available" or "owned")
+    tickets: Dict[str, float]  # key is seat_class (e.g., "economy", "premium"), value is price
     
     model_config = {"from_attributes": True}
