@@ -32,6 +32,8 @@ class FlightBase(BaseModel):
 
 class FlightCreate(FlightBase):
     airline_id: int = Field(..., description="Reference to airline")
+    economy_price: float = Field(..., description="Price for economy seats")
+    premium_price: Optional[float] = Field(None, description="Price for premium seats (required if premium_seats > 0)")
 
 
 class FlightUpdate(BaseModel):
@@ -69,11 +71,10 @@ class Flight(FlightBase):
 
 
 class FlightWithSeatsAndPrices(FlightBase):
-    """Flight response with seats status and prices by class"""
+    """Flight response with prices by class"""
     id: int
     created_at: datetime
     updated_at: datetime
-    seats: Dict[str, str]  # key is seat_number (e.g., "1A"), value is status ("available" or "owned")
     tickets: Dict[str, float]  # key is seat_class (e.g., "economy", "premium"), value is price
     
     model_config = {"from_attributes": True}

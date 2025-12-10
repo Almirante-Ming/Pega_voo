@@ -12,14 +12,7 @@ router = APIRouter(prefix="/flights", tags=["Flights"])
 admin_router = APIRouter(dependencies=[Depends(require_c_admin_or_sysadmin)])
 
 def build_flight_with_seats_and_prices(flight: models.Flight, db: DBSession) -> Dict:
-    """Build flight response with seats status and prices by class"""
-    # Build seats dictionary: {"1A": "available", "1B": "owned", ...}
-    seats_dict = {}
-    if flight.seats:
-        for seat in flight.seats:
-            status = "available" if seat.is_available else "owned"
-            seats_dict[seat.seat_number] = status
-    
+    """Build flight response with prices by class"""
     # Build tickets dictionary: {"economy": 100.50, "premium": 250.00}
     tickets_dict = {}
     if flight.seats:
@@ -30,28 +23,16 @@ def build_flight_with_seats_and_prices(flight: models.Flight, db: DBSession) -> 
             if class_name not in seats_by_class:
                 seats_by_class[class_name] = seat
         
-        # Get prices from tickets or seats
+        # Get prices from seats
         for class_name, seat in seats_by_class.items():
-            # Try to get price from associated ticket
-            if seat.ticket_id:
-                ticket = db.query(models.Ticket).filter(models.Ticket.id == seat.ticket_id).first()
-                if ticket:
-                    tickets_dict[class_name] = float(str(ticket.price))
-            else:
-                # Fallback: try to find any ticket with this seat class
-                ticket = db.query(models.Ticket).filter(
-                    models.Ticket.flight_id == flight.id,
-                    models.Ticket.seat_class == class_name
-                ).first()
-                if ticket:
-                    tickets_dict[class_name] = float(str(ticket.price))
+            if seat.price:
+                tickets_dict[class_name] = float(str(seat.price))
     
     # Build flight data with airline name
     flight_dict = flight.__dict__.copy()
     # Get airline name
     airline_name = flight.airline.name if flight.airline else "Unknown"
     flight_dict['airline_name'] = airline_name
-    flight_dict['seats'] = seats_dict
     flight_dict['tickets'] = tickets_dict
     
     return flight_dict
@@ -69,7 +50,14 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
     if existing_flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight number already exists")
     
-    new_flight = models.Flight(**flight.model_dump())
+    # Validate premium price if premium seats exist
+    premium_seats = cast(int, flight.premium_seats)
+    if premium_seats > 0 and flight.premium_price is None:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="premium_price is required when premium_seats > 0")
+    
+    # Create flight without economy_price and premium_price (they're not part of Flight model)
+    flight_data = flight.model_dump(exclude={'economy_price', 'premium_price'})
+    new_flight = models.Flight(**flight_data)
     db.add(new_flight)
     db.commit()
     db.refresh(new_flight)
@@ -77,7 +65,6 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
     # Create seats for the flight (A-I columns, multiple rows)
     seat_columns = ['A', 'B', 'C', 'D', 'E', 'F']
     total_seats = cast(int, new_flight.avaliable_seats)
-    premium_seats = cast(int, new_flight.premium_seats)
     
     # Calculate number of rows needed (9 seats per row: A-I)
     seats_per_row = len(seat_columns)
@@ -91,16 +78,19 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
                 
             seat_number = f"{row}{col}"
             
-            # Determine seat class: first premium_seats are "premium", rest are "economy"
+            # Determine seat class and price: first premium_seats are "premium", rest are "economy"
             if seat_count <= premium_seats:
                 seat_class = Seat_Class.PREMIUM.value
+                seat_price = flight.premium_price
             else:
                 seat_class = Seat_Class.ECONOMY.value
+                seat_price = flight.economy_price
             
             new_seat = models.Seat(
                 flight_id=new_flight.id,
                 seat_number=seat_number,
                 seat_class=seat_class,
+                price=seat_price,
                 is_available=True
             )
             db.add(new_seat)
@@ -217,11 +207,12 @@ def get_flight(
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
     return build_flight_with_seats_and_prices(flight, db)
 
-@router.get("/seats/{flight_id}", response_model=List[schemas.Seat], dependencies=[Depends(require_authenticated_user)])
+@router.get("/{flight_id}/seats", response_model=List[schemas.Seat], dependencies=[Depends(require_authenticated_user)])
 def get_flight_seats_by_id(
     flight_id: Annotated[int, Path(title="The ID of the flight")],
     db: DBSession
 ):
+    """Get all seats for a flight by flight ID"""
     flight = db.query(models.Flight).filter(models.Flight.id == flight_id).first()
     if not flight:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
