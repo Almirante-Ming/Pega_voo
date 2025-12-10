@@ -1,16 +1,17 @@
 <template>
   <div class="max-w-md mx-auto space-y-4">
-    <BackButton />
+    <div class="flex items-center gap-2">
+        <BackButton />
+        <h1 class="text-lg font-bold text-grayScale-900">Detalhes do voo</h1>
+    </div>
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
 
         <div class="flex gap-1.5 justify-between mb-3">
             <div class="flex gap-2 items-center">
-                <icon nameIcon="UserCircleIcon" class="size-9"></icon>
-                <span class="bg-primary text-grayScale-50 px-3 py-0.5 rounded-full font-semibold">{{ getAirlineName(voo.airline_id) }}</span>
-            </div>
-
-            <div class="flex flex-col text-xs text-grayScale-700 items-end">
-                <p>Número do voo: {{ voo.flight_number }}</p>
+                 <div class="bg-primary rounded-full flex items-center justify-center p-2">
+                    <Icon nameIcon="GlobeAltIcon" class="w-6 h-6 text-white rotate-45" />
+                 </div>
+                <span class="font-semibold text-grayScale-900">{{ voo.airline_name }}</span>
             </div>
         </div>
 
@@ -26,6 +27,9 @@
         <div class="text-center flex-1">
             <hr class="border-grayScale-400"></hr>
             <p class="text-xs text-grayScale-600">{{ calcularDuracao(voo.departure_time, voo.estimated_arrival) }}</p>
+            <p class="text-xs text-grayScale-600 mt-1">
+              {{ voo.stops_count === 0 ? 'Direto' : `${voo.stops_count} parada(s)` }}
+            </p>
         </div>
         <div class="flex flex-col items-center justify-center">
           <img src="/images/plane-landing.svg">
@@ -38,48 +42,34 @@
     </div>
 
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
-      <h3 class="font-bold mb-2">Bagagem Incluída</h3>
-      <div class="flex flex-col gap-2">
-        <div>
-          <Icon nameIcon="BriefcaseIcon" class="w-5 h-5 inline-block mr-1" />
-          <strong>Bagagem de Mão</strong>
-          <span class="ml-2">1 mala de mão (até 10kg) + 1 item pessoal</span>
-        </div>
-        <div>
-          <Icon nameIcon="BriefcaseIcon" class="w-5 h-5 inline-block mr-1" />
-          <strong>Bagagem Despachada</strong>
-          <span class="ml-2">1 mala despachada (até 23kg)</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
       <h3 class="font-bold mb-2">Detalhes da Tarifa</h3>
-      <div class="flex flex-col gap-1 text-sm">
-        <div class="flex justify-between">
-          <span>Tarifa Aérea</span>
-          <span>R$ 1.050,00</span>
+      <div class="flex flex-col gap-2.5 text-sm">
+        <div v-if="voo.tickets?.economy" class="flex justify-between items-center">
+          <span>Preço Econômica</span>
+          <div class="text-end">
+            <span class="font-semibold text-grayScale-900">R$ {{ voo.tickets.economy }}</span>
+            <p class="text-xs text-grayScale-500">{{ voo.avaliable_seats }} assentos disponíveis</p>
+          </div>
         </div>
-        <div class="flex justify-between">
-          <span>Taxas e Encargos</span>
-          <span>R$ 150,00</span>
+        <div v-if="voo.tickets?.premium" class="flex justify-between items-center">
+          <span>Preço Premium</span>
+          <div class="text-end">
+            <span class="font-semibold text-grayScale-900">R$ {{ voo.tickets.premium }}</span>
+            <p class="text-xs text-grayScale-500">{{ voo.premium_seats }} assentos disponíveis</p>
+          </div>
         </div>
-        <div class="flex justify-between">
-          <span>Seleção de Assento</span>
-          <span>R$ 50,00</span>
-        </div>
-        <div class="flex justify-between font-bold mt-2">
-          <span>Total</span>
-          <span>R$ 1.250,00</span>
+        
+        <div class="flex justify-between mt-2 pt-2 border-t border-grayScale-200 text-xs text-grayScale-500">
+            <span>Taxas e encargos inclusos</span>
         </div>
       </div>
     </div>
 
     <button
       class="w-full bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors mt-4"
-      @click="continuar"
+      @click="acaoPrincipal"
     >
-      Continuar
+      {{ labelBotao }}
     </button>
   </div>
 </template>
@@ -87,26 +77,40 @@
 <script setup lang="ts">
 // filepath: c:\Users\ext.gersonbjf\Documents\projetos\task_fly\src\web\pages\voos\[id].vue
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useApi } from '@/composables/useApi'
 import BackButton from "@/components/BackButton/index.vue";
+import { useStoreVoos } from '@/store/useStoreVoos'
 
 const route = useRoute()
 const router = useRouter()
+const storeVoos = useStoreVoos()
 const voo = ref<any>({})
 const loading = ref(true)
 
-const airlines = {
-  1: { name: 'LATAM', code: 'LA' },
-  2: { name: 'GOL', code: 'G3' },
-  3: { name: 'Azul', code: 'AD' },
-}
+const selectionMode = computed(() => route.query.selectionMode as string)
 
-function getAirlineName(airlineId: number) {
-  return airlines[airlineId as keyof typeof airlines]?.name || 'Companhia Aérea'
+const labelBotao = computed(() => {
+    if (selectionMode.value === 'outbound') return 'Selecionar este voo de Ida'
+    if (selectionMode.value === 'inbound') return 'Selecionar este voo de Volta'
+    return 'Continuar'
+})
+
+function acaoPrincipal() {
+    if (selectionMode.value === 'outbound') {
+        storeVoos.setOutboundFlight(voo.value)
+        router.push('/voos/selecao-viagem')
+    } else if (selectionMode.value === 'inbound') {
+        storeVoos.setInboundFlight(voo.value)
+        router.push('/voos/selecao-viagem')
+    } else {
+        // Fluxo normal (somente ida)
+        router.push('/passageiros')
+    }
 }
 
 function formatarHora(datetime: string) {
+    if (!datetime) return ''
   return new Date(datetime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
 

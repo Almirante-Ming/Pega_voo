@@ -1,9 +1,9 @@
 <template>
   <div class="w-full bg-grayScale-50 rounded-lg shadow-lg p-4 px-5">
-    <h1 class="text-2xl font-bold mb-6 text-grayScale-900">Passagens aéreas</h1>
+    <h1 class="text-2xl font-bold mb-3.5 text-grayScale-900">Passagens aéreas</h1>
 
     <!-- Tipo de viagem -->
-    <div class="flex gap-1.5 mb-6 bg-grayScale-200 rounded-lg p-2 py-1">
+    <div class="flex gap-1.5 mb-3.5 bg-grayScale-200 rounded-lg p-2 py-1">
       <button 
         v-for="tipo in tiposViagem" 
         :key="tipo.valor"
@@ -18,10 +18,9 @@
     </div>
 
     <!-- Formulário -->
-    <div class="grid grid-cols-2 gap-2">
+    <div class="flex flex-col gap-1">
       <Input 
         v-for="campo in formularioFiltrado"
-        :class="clsx({ 'col-span-2' : campo.propriedade != 'passageiros' && campo.propriedade != 'classe' })"
         :key="campo.propriedade"
         :tipoDeComponente="campo.tipoDeInput"
         :tipoDeInput="campo.tipoDeInput"
@@ -75,13 +74,13 @@ const tiposViagem = [
   { valor: 'somente-ida', label: 'Somente ida' }
 ];
 
-const formulario: Campo[] = [
+const formulario = computed<Campo[]>(() => [
   {
     label: "Origem",
     tipoDeDado: "string",
     propriedade: "origin_city",
     tipoDeInput: "string",
-    obrigatorio: false,
+    obrigatorio: true,
     placeholder: "Cidade ou aeroporto"
   },
   {
@@ -89,7 +88,7 @@ const formulario: Campo[] = [
     tipoDeDado: "string",
     propriedade: "destination_city",
     tipoDeInput: "string",
-    obrigatorio: false,
+    obrigatorio: true,
     placeholder: "Cidade ou aeroporto"
   },
   {
@@ -98,7 +97,7 @@ const formulario: Campo[] = [
     tipoDeInput: "timestamp",
     mostrarHora: true,
     validacao: "data",
-    obrigatorio: false,
+    obrigatorio: true,
   },
   {
     label: "Data de volta",
@@ -106,7 +105,7 @@ const formulario: Campo[] = [
     tipoDeInput: "timestamp",
     mostrarHora: true,
     validacao: "data",
-    obrigatorio: false,
+    obrigatorio: tipoViagem.value === 'ida-volta',
   },
   {
     label: "Classe",
@@ -121,13 +120,13 @@ const formulario: Campo[] = [
       { chave: "primeira", descricao: "Primeira Classe" }
     ]
   }
-];
+]);
 
 const formularioFiltrado = computed(() => {
   if (tipoViagem.value === 'somente-ida') {
-    return formulario.filter(campo => campo.propriedade !== 'return_date');
+    return formulario.value.filter(campo => campo.propriedade !== 'return_date');
   }
-  return formulario;
+  return formulario.value;
 });
 
 const camposObrigatorios = computed(() => {
@@ -146,30 +145,67 @@ const { form, erros, formValido, validarCampo, validarFormulario } = useForm(cam
 
 const atualizarForm = atualizarFormulario(form, validarCampo);
 
+// Import store
+import { useStoreVoos } from '@/store/useStoreVoos';
+const storeVoos = useStoreVoos();
+
 async function buscarVoos() {
+  // Força validação de todos os campos
   validarFormulario();
-  
-  // Valida se pelo menos origem OU destino está preenchido
-  if (!form.value.origin_city && !form.value.destination_city) {
-    toast.error({ mensagem: 'Preencha pelo menos a origem ou o destino' });
-    return;
+
+  if (!formValido.value) {
+      return; 
   }
 
-  const queryParams = {
-    origin_city: form.value.origin_city,
-    destination_city: form.value.destination_city,
-    departure_date: form.value.departure_date
-  };
+  // Valida campos obrigatórios de negócio extras (borda)
+  if (!form.value.origin_city || !form.value.destination_city || !form.value.departure_date) {
+      // Teoricamente o validarFormulario já pega, mas garantindo
+    toast.error({ mensagem: 'Preencha os campos obrigatórios' });
+    return;
+  }
+  
+  if (tipoViagem.value === 'ida-volta' && !form.value.return_date) {
+      toast.error({ mensagem: 'Preencha a data de volta' });
+      return;
+  }
 
   loading.value = true;
 
-  // Redireciona para página de voos com os parâmetros
-  await router.push({
-    path: '/voos',
-    query: queryParams
-  });
+  try {
+      if (tipoViagem.value === 'ida-volta') {
+          // Salva parametros na store e redireciona para o Hub
+          storeVoos.setSelectionParams({
+              origin_city: form.value.origin_city,
+              destination_city: form.value.destination_city,
+              departure_date: form.value.departure_date,
+              return_date: form.value.return_date,
+              selected_class: form.value.classe
+          });
+          // Limpa seleções anteriores para não misturar
+          storeVoos.setOutboundFlight(null);
+          storeVoos.setInboundFlight(null);
 
-  loading.value = false;
+          await router.push('/voos/selecao-viagem');
+
+      } else {
+          // Somente ida - fluxo normal
+          const queryParams = {
+            origin_city: form.value.origin_city,
+            destination_city: form.value.destination_city,
+            departure_date: form.value.departure_date
+          };
+          
+          await router.push({
+            path: '/voos',
+            query: queryParams
+          });
+      }
+  } catch (e) {
+      console.error(e);
+      toast.error({ mensagem: 'Erro ao processar busca' });
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 

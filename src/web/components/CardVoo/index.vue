@@ -1,6 +1,6 @@
 <template>
   <div class="bg-grayScale-50 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow">
-    <div class="flex flex-col items-center justify-between gap-4">
+    <div class="flex flex-col gap-2.5">
       <!-- Informações do voo -->
       <div class="flex-1 w-full flex flex-col gap-4">
         <div class="flex items-center gap-4 mb-3">
@@ -41,43 +41,46 @@
           </div>
         </div>
 
+        <div class="flex flex-col gap-1 text-xs text-grayScale-600">
+             <div class="flex items-center gap-1 ">
+                 <Icon nameIcon="UserIcon" class="w-4 h-4" />
+                 {{ economySeats }} assentos disponíveis
+             </div>
+             <div class="flex items-center gap-1 ">
+                 <Icon nameIcon="StarIcon" class="w-4 h-4" />
+                 {{ premiumSeats }} assentos premium
+             </div>
+        </div>
       </div>
-      <hr></hr>
-        <!-- Preço e botão -->
-        <div class="w-full flex justify-between items-end">
 
-            <div class="flex flex-col gap-1 text-xs text-grayScale-600">
-                <div class="flex items-center gap-1 ">
-                    <Icon nameIcon="UserIcon" class="w-4 h-4" />
-                    {{ economySeats }} assentos disponíveis
-                </div>
-                <div class="flex items-center gap-1 ">
-                    <Icon nameIcon="StarIcon" class="w-4 h-4" />
-                    {{ premiumSeats }} assentos premium
-                </div>
-            </div>
+      <!-- Divisor -->
+      <hr class="border-grayScale-200" />
 
+      <!-- Preço e botão -->
+      <div class="w-full flex flex-col items-end">
+        <div class="flex items-end gap-2.5 w-full justify-between">
             <div>
-                <p class="text-2xl font-bold text-primary">
-                R$ {{ price }}
+                <p class="text-xs text-grayScale-500">A partir de</p>
+                <p class="text-xl font-bold text-primary">
+                  {{ displayedPrice }}
                 </p>
-                <button 
-                @click="$emit('selecionar', voo)"
-                class="bg-primary hover:bg-primary-dark text-white text-sm px-6 py-2 rounded-lg font-semibold transition-colors"
-                >
-                Selecionar
-                </button>
             </div>
-
+            <button 
+              @click="$emit('selecionar', voo)"
+              class="bg-primary hover:bg-primary-dark text-white text-sm px-6 py-2 rounded-lg font-semibold transition-colors"
+            >
+              Selecionar
+            </button>
         </div>
 
-
-
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 const props = defineProps<{
   voo: any,
   airlineName: string,
@@ -93,9 +96,30 @@ const props = defineProps<{
   arrivalDateShort: string,
   totalSeats: number,
   businessSeats: number,
-  price: string,
+  economyPrice?: number,
+  premiumPrice?: number,
   economySeats: number,
   premiumSeats: number,
   aircraftModel: string
 }>();
+
+defineEmits<{
+  (e: 'selecionar', voo: any): void
+}>();
+
+const displayedPrice = computed(() => {
+  const eco = props.economyPrice;
+  const prem = props.premiumPrice;
+
+  if (eco && prem) {
+    return `R$ ${eco} ~ R$ ${prem}`;
+  }
+  if (eco) {
+    return `R$ ${eco}`;
+  }
+  if (prem) {
+    return `R$ ${prem}`;
+  }
+  return '...';
+});
 </script>

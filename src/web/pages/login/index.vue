@@ -31,6 +31,7 @@
                 :marginBottom="false"
                 @emitClick="senhaVisivel = !senhaVisivel"
                 @emiteValor="atualizarForm(senha.propriedade, $event, '')"
+                @keyup.enter="login"
             />
             <div class="w-full flex justify-end">
                 <button type="button" @click="router.push('/recuperarSenha')" class="text-sm text-end underline text-grayScale-600 duration-150 hover:text-grayScale-900">Esqueci minha senha</button>

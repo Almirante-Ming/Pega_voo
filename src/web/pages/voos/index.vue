@@ -20,7 +20,7 @@
       <div class="flex flex-col gap-4 text-sm text-grayScale-700">
         <h2>Resumo da pesquisa</h2>
 
-        <div class="flex gap-2 justify-around text-center">
+        <div class="flex gap-2 justify-around text-center capitalize">
           <span>
             <strong>Origem:</strong> {{ filtros.origin_city ? filtros.origin_city : 'Não informado' }}
           </span>
@@ -47,7 +47,7 @@
         v-for="voo in voos"
         :key="voo.id"
         :voo="voo"
-        :airlineName="getAirlineName(voo.airline_id)"
+        :airlineName="voo.airline_name"
         :flightNumber="voo.flight_number"
         :departureHour="formatarHora(voo.departure_time)"
         :originAirport="voo.origin_airport"
@@ -60,7 +60,8 @@
         :arrivalDateShort="formatarDataCurta(voo.estimated_arrival)"
         :totalSeats="voo.economy_seats + voo.business_seats + voo.first_seats"
         :businessSeats="voo.business_seats"
-        :price="calcularPreco(voo)"
+        :economyPrice="voo.tickets?.economy"
+        :premiumPrice="voo.tickets?.premium"
         :economySeats="voo.avaliable_seats"
         :premiumSeats="voo.premium_seats"
         :aircraftModel="voo.aircraft_model"
@@ -73,12 +74,7 @@
       <Icon nameIcon="ExclamationTriangleIcon" class="w-16 h-16 text-grayScale-400 mx-auto mb-4" />
       <h3 class="text-xl font-bold text-grayScale-900 mb-2">Nenhum voo encontrado</h3>
       <p class="text-grayScale-600 mb-6">Tente ajustar seus filtros de busca</p>
-      <button 
-        @click="router.push('/')"
-        class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-      >
-        Nova busca
-      </button>
+
     </div>
   </div>
 </template>
@@ -99,17 +95,6 @@ const filtros = ref({
   destination_city: route.query.destination_city as string || '',
   departure_date: route.query.departure_date as string || '',
 });
-
-// Mock de companhias aéreas
-const airlines = {
-  1: { name: 'LATAM', code: 'LA' },
-  2: { name: 'GOL', code: 'G3' },
-  3: { name: 'Azul', code: 'AD' },
-};
-
-function getAirlineName(airlineId: number) {
-  return airlines[airlineId as keyof typeof airlines]?.name || 'Companhia Aérea';
-}
 
 function formatarHora(datetime: string) {
   return new Date(datetime).toLocaleTimeString('pt-BR', { 
@@ -136,38 +121,48 @@ function calcularDuracao(saida: string, chegada: string) {
   return `${horas}h ${minutos}min`;
 }
 
-function calcularPreco(voo: any) {
-  // Preço mockado baseado na duração e assentos
-  const basePrice = 250;
-  const duration = (new Date(voo.estimated_arrival).getTime() - new Date(voo.departure_time).getTime()) / (1000 * 60 * 60);
-  const price = basePrice + (duration * 30);
-  return price.toFixed(2);
+async function buscarVoos() {
+  loading.value = true;
+  try {
+    const { data, execute } = useApi('get', '/flights/', {
+      params: {
+        origin_city: filtros.value.origin_city,
+        destination_city: filtros.value.destination_city,
+        departure_date: filtros.value.departure_date
+      }
+    });
+
+    await execute();
+    
+    voos.value = data.value || [];
+  } catch (error) {
+    console.error('Erro ao buscar voos:', error);
+    toast.error({ mensagem: 'Não foi possível carregar os voos.' });
+  } finally {
+    loading.value = false;
+  }
 }
 
 function selecionarVoo(voo: any) {
-  router.push(`/voos/${voo.id}`)
+  const selectionMode = route.query.selectionMode;
+
+  if (selectionMode) {
+      // Se estamos no modo de seleção (ida/volta), redireciona pro detalhes mantendo o modo
+      router.push({
+          path: `/voos/${voo.id}`,
+          query: { selectionMode }
+      });
+  } else {
+      // Fluxo padrão
+      router.push(`/voos/${voo.id}`);
+  }
 }
 
-// Buscar voos ao montar componente
-onMounted(async () => {
-  const queryParams = {
-    origin_city: filtros.value.origin_city,
-    destination_city: filtros.value.destination_city,
-    departure_date: filtros.value.departure_date
-  };
-
-  const { data, error, execute } = useApi('get', '/flights/', { params: queryParams });
-
-  await execute();
-  
-  loading.value = false;
-
-  if (data.value && !error.value) {
-    voos.value = data.value;
+onMounted(() => {
+  if (filtros.value.origin_city && filtros.value.destination_city && filtros.value.departure_date) {
+    buscarVoos();
   } else {
-      loading.value = false;
-
-    toast.error({ mensagem: 'Erro ao buscar voos' });
+    loading.value = false;
   }
 });
 </script>
