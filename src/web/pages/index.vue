@@ -109,19 +109,6 @@ const formulario: Campo[] = [
     obrigatorio: false,
   },
   {
-    label: "Passageiros",
-    propriedade: "passageiros",
-    tipoDeInput: "select",
-    modelType: "static" as const,
-    obrigatorio: false,
-    placeholder: "Selecione",
-    model: [
-      { chave: "1", descricao: "1 Passageiro" },
-      { chave: "2", descricao: "2 Passageiros" },
-      { chave: "3", descricao: "3 Passageiros" }
-    ]
-  },
-  {
     label: "Classe",
     propriedade: "classe",
     tipoDeInput: "select",
