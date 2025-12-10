@@ -40,7 +40,7 @@ def build_flight_with_seats_and_prices(flight: models.Flight, db: DBSession) -> 
 
 
 @admin_router.post("/", response_model=schemas.Flight)
-def create_flight(flight: schemas.FlightCreate, db: DBSession):
+def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
     # Check if airline exists
     airline = db.query(models.Airline).filter(models.Airline.id == flight.airline_id).first()
     if not airline:
@@ -58,6 +58,8 @@ def create_flight(flight: schemas.FlightCreate, db: DBSession):
     
     # Create flight without economy_price and premium_price (they're not part of Flight model)
     flight_data = flight.model_dump(exclude={'economy_price', 'premium_price'})
+    # Set status to SCHEDULED by default
+    flight_data['status'] = Flight_Status.SCHEDULED
     new_flight = models.Flight(**flight_data)
     db.add(new_flight)
     db.commit()

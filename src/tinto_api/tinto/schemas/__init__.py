@@ -16,6 +16,7 @@ from .airline import (
 from .flight import (
     FlightBase,
     FlightCreate,
+    FlightCreateRequest,
     FlightUpdate,
     Flight,
     FlightWithSeatsAndPrices
@@ -47,7 +48,7 @@ from .rec_token import (
 __all__ = [
     "PersonBase", "PersonCreateInternal", "PersonRegister", "PersonUpdate", "Person", "Token", "TokenData",
     "AirlineBase", "AirlineCreate", "AirlineUpdate", "Airline",
-    "FlightBase", "FlightCreate", "FlightUpdate", "Flight", "FlightWithSeatsAndPrices",
+    "FlightBase", "FlightCreate", "FlightCreateRequest", "FlightUpdate", "Flight", "FlightWithSeatsAndPrices",
     "TicketBase", "TicketCreate", "TicketUpdate", "Ticket",
     "SeatBase", "SeatCreate", "SeatUpdate", "Seat",
     "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog","RecoveryRequest", "CodeCheckRequest", "PasswordResetRequest"
