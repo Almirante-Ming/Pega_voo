@@ -64,6 +64,7 @@ def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
     db.add(new_flight)
     db.commit()
     db.refresh(new_flight)
+    db.refresh(new_flight, ['airline'])  # Ensure airline relationship is loaded
     
     # Create seats for the flight (A-I columns, multiple rows)
     seat_columns = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -103,7 +104,11 @@ def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
             break
     
     db.commit()
-    return new_flight
+    db.refresh(new_flight, ['airline'])
+    # Return with airline_name populated
+    flight_dict = new_flight.__dict__.copy()
+    flight_dict['airline_name'] = new_flight.airline.name if new_flight.airline else "Unknown"
+    return flight_dict
 
 @admin_router.put("/{flight_id}", response_model=schemas.Flight)
 def update_flight(
@@ -136,8 +141,11 @@ def update_flight(
         setattr(db_flight, key, value)
     
     db.commit()
-    db.refresh(db_flight)
-    return db_flight
+    db.refresh(db_flight, ['airline'])
+    # Return with airline_name populated
+    flight_dict = db_flight.__dict__.copy()
+    flight_dict['airline_name'] = db_flight.airline.name if db_flight.airline else "Unknown"
+    return flight_dict
 
 @admin_router.delete("/{flight_id}")
 def delete_flight(
