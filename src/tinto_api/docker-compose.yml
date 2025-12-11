@@ -9,7 +9,9 @@ services:
     working_dir: /tinto_api
     ports:
       - "8000:8000"
-      - "5432:5432"
+      - "6543:6543"
+    environment:
+      - TZ=UTC-4
     env_file:
       - .env
 
@@ -22,8 +24,8 @@ services:
     working_dir: /tinto_api
     ports:
       - "30059:30059"
-      - "80:80"
-      - "443:443"
+    environment:
+      - TZ=UTC-4
     env_file:
       - .env
     depends_on:
