@@ -107,8 +107,8 @@ def create_ticket(
             ],
             customer_email=str(current_user.email),
             mode='payment',
-            success_url=f'{FRONT_REDIRECT_URL}/payment/success?ticket_id={new_ticket.id}',
-            cancel_url=f'{FRONT_REDIRECT_URL}/payment/cancel?ticket_id={new_ticket.id}',
+            success_url=f'{FRONT_REDIRECT_URL}/checkout/success',
+            cancel_url=f'{FRONT_REDIRECT_URL}l/checkout/cancel',
             metadata={
                 'ticket_id': str(new_ticket.id),
                 'passenger_id': str(new_ticket.passenger_id),
