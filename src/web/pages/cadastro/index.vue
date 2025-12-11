@@ -4,9 +4,7 @@
     <div v-if="step === 1">
       <div class="flex flex-col gap-1.5 mb-4">
         <div class="flex gap-1.5 items-center">
-          <button @click="router.go(-1)" underline gap-2 bg-gray class="flex w-7 h-7 text-grayScale-100 bg-grayScale-500 rounded-md items-center justify-center">
-                <Icon nameIcon="ChevronLeftIcon"></Icon>
-          </button>
+          <BackButton />
           <p class="text-2xl font-semibold">Criar sua conta</p>
         </div>
         <p class="text-grayScale-600">Informe seus dados para prosseguirmos!</p>
@@ -73,6 +71,7 @@
 import { useForm } from "@/composables/useForm";
 import { atualizarFormulario } from "@/functions/atualizarFormulario";
     import { useToast } from "@/composables/useToast";
+import BackButton from "@/components/BackButton/index.vue";
 
 const formularios = [
 

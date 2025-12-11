@@ -1,7 +1,8 @@
 <template>
   <div class="bg-background min-h-screen flex items-center flex-col">
-    <Header />
-    <div class="px-5 pt-3.5 pb-10 w-full min-h-full max-w-[1100px]">
+    <Header @toggleSidebar="isSidebarOpen = true" />
+    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    <div class="px-2.5 md:px-5 pt-3.5 pb-10 w-full min-h-full max-w-[1100px]">
       <slot />
     </div>
     <!-- Toast Container -->
@@ -10,7 +11,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import ToastContainer from '@/components/Toast/ToastContainer.vue'
+import Sidebar from '@/components/Sidebar/index.vue'
+
+const isSidebarOpen = ref(false);
 </script>
 
 <style>
@@ -24,7 +29,7 @@ import ToastContainer from '@/components/Toast/ToastContainer.vue'
 }
 
 .dp__theme_dark .dp__input {
-  padding: 10px 36px;
+  padding: 8px 36px;
   font-size: 15px;
 }
 </style>

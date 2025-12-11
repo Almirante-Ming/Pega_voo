@@ -19,7 +19,7 @@
                 
                 <span 
                     class="text-xs transition-colors duration-300"
-                    :class="index + 1 <= currentStep ? 'text-primary font-medium' : 'text-grayScale-500'"
+                    :class="index + 1 <= currentStep ? 'text-green-700 dark:text-green-500 font-medium' : 'text-grayScale-500'"
                 >
                     {{ step.label }}
                 </span>
