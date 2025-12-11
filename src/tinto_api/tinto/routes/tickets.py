@@ -10,7 +10,7 @@ from tinto.tasks.check_payment import check_payment_confirmation
 from tinto.celery_app import app as celery_app
 
 STRIPE_SECRET_KEY = str(os.getenv('STRIPE_SECRET_KEY'))
-FRONT_REDIRECT_URL = str(os.getenv('FRONT_REDIRECT_URL', 'http://localhost:3000'))
+FRONT_REDIRECT_URL = str(os.getenv('FRONT_REDIRECT_URL', 'http://localhost:3000')).rstrip('/')
 
 stripe.api_key = STRIPE_SECRET_KEY
 
@@ -39,7 +39,6 @@ def create_ticket(
     if not flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight not found")
     
-    # Validate and fetch seat
     seat = db.query(models.Seat).filter(
         models.Seat.flight_id == ticket.flight_id,
         models.Seat.seat_number == ticket.seat_number
@@ -64,7 +63,7 @@ def create_ticket(
         passenger_id=current_user.id,
         seat_class=seat_class_enum,
         seat_number=ticket.seat_number,
-        price=ticket.price,
+        price=seat.price,
         boarding_time=flight.departure_time,
         arrival_time=flight.estimated_arrival,
         status="reserved"
@@ -108,7 +107,7 @@ def create_ticket(
             customer_email=str(current_user.email),
             mode='payment',
             success_url=f'{FRONT_REDIRECT_URL}/checkout/success',
-            cancel_url=f'{FRONT_REDIRECT_URL}l/checkout/cancel',
+            cancel_url=f'{FRONT_REDIRECT_URL}/checkout/cancel',
             metadata={
                 'ticket_id': str(new_ticket.id),
                 'passenger_id': str(new_ticket.passenger_id),

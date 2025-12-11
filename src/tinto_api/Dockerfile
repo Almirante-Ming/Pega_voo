@@ -1,5 +1,7 @@
 FROM python:3.12.10-slim
 
+ENV TZ=America/Manaus
+
 RUN apt-get update && apt-get install -y curl build-essential && rm -rf /var/lib/apt/lists/*
 
 # Instalar Poetry

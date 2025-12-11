@@ -11,7 +11,7 @@ services:
       - "8000:8000"
       - "6543:6543"
     environment:
-      - TZ=UTC-4
+      - TZ=America/Manaus
     env_file:
       - .env
 
@@ -25,7 +25,7 @@ services:
     ports:
       - "30059:30059"
     environment:
-      - TZ=UTC-4
+      - TZ=America/Manaus
     env_file:
       - .env
     depends_on:

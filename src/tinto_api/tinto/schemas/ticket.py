@@ -28,7 +28,6 @@ class TicketBase(BaseModel):
 class TicketCreate(BaseModel):
     flight_id: int = Field(..., description="Reference to flight")
     seat_number: str = Field(..., description="Seat number")
-    price: Decimal = Field(..., description="Ticket price")
 
 
 class TicketUpdate(BaseModel):
