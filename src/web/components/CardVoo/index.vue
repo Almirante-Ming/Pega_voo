@@ -6,7 +6,7 @@
         <div class="flex items-center gap-4 mb-3">
           <div class="flex items-center gap-2">
             <div class="bg-primary rounded-full flex items-center justify-center p-1.5">
-              <Icon nameIcon="GlobeAltIcon" class="w-5 h-5 text-white rotate-45" />
+              <Icon nameIcon="GlobeAltIcon" class="w-5 h-5 text-grayScale-50 rotate-45" />
             </div>
             <div>
               <p class="font-semibold text-grayScale-900">{{ airlineName }}</p>
@@ -67,7 +67,7 @@
             </div>
             <button 
               @click="$emit('selecionar', voo)"
-              class="bg-primary hover:bg-primary-dark text-white text-sm px-6 py-2 rounded-lg font-semibold transition-colors"
+              class="bg-primary hover:bg-primary-dark text-grayScale-50 text-sm px-6 py-2 rounded-lg font-semibold transition-colors"
             >
               Selecionar
             </button>

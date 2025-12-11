@@ -30,7 +30,7 @@
               </div>
 
               <!-- Voo Selecionado -->
-              <div v-if="storeVoos.outboundFlight" class="bg-white border rounded-lg p-4">
+              <div v-if="storeVoos.outboundFlight" class="bg-grayScale-50 border rounded-lg p-4">
                 <div class="flex justify-between items-center">
                     <div class="flex gap-4 items-center">
                         <div>
@@ -73,7 +73,7 @@
               </div>
 
               <!-- Voo Selecionado -->
-              <div v-if="storeVoos.inboundFlight" class="bg-white border rounded-lg p-4">
+              <div v-if="storeVoos.inboundFlight" class="bg-grayScale-50 border rounded-lg p-4">
                  <div class="flex justify-between items-center">
                     <div class="flex gap-4 items-center">
                         <div>
@@ -95,7 +95,7 @@
 
         <!-- Right Column: Summary (Desktop) -->
         <div class="hidden lg:block w-80">
-            <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-6 sticky top-24">
+            <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-6 sticky top-24">
                 <h3 class="font-bold text-lg mb-4">Resumo da Viagem</h3>
                 
                 <div class="flex flex-col gap-3 text-sm text-grayScale-600 border-b border-grayScale-300 pb-4 mb-4">
@@ -122,7 +122,7 @@
                 <button 
                   @click="continuar"
                   :disabled="!podeContinuar"
-                  class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-bold transition-colors"
+                  class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-grayScale-50 py-3 rounded-lg font-bold transition-colors"
                 >
                   Continuar
                 </button>
@@ -131,7 +131,7 @@
     </div>
 
     <!-- Mobile Sticky Footer -->
-    <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
+    <div class="lg:hidden fixed bottom-0 left-0 w-full bg-grayScale-50 border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
         <div class="p-4">
              <!-- Toggle Details -->
              <div 
@@ -161,7 +161,7 @@
                  <button 
                    @click="continuar"
                    :disabled="!podeContinuar"
-                   class="bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                   class="bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-grayScale-50 px-6 py-3 rounded-lg font-bold transition-colors"
                  >
                    Continuar
                  </button>

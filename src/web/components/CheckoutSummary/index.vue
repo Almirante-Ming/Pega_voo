@@ -2,7 +2,7 @@
   <div>
     <!-- Desktop Summary (Side) -->
     <div class="hidden lg:block w-80">
-        <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6">
+        <div class="bg-grayScale-50 rounded-lg shadow-lg p-6 sticky top-6">
             <h3 class="font-bold text-lg mb-4">Resumo da Compra</h3>
             <div class="flex flex-col gap-3 text-sm text-grayScale-600 border-b border-grayScale-300 pb-4 mb-4">
                 <div class="flex justify-between">
@@ -36,7 +36,7 @@
             <button 
                 @click="$emit('submit')"
                 :disabled="disabled"
-                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-white py-3 rounded-lg font-bold transition-colors"
+                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-grayScale-50 py-3 rounded-lg font-bold transition-colors"
                 :class="{'opacity-75 cursor-not-allowed': disabled}"
             >
                 {{ buttonText }}
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Mobile Summary (Fixed Bottom) -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 z-50">
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-grayScale-50 border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 z-50">
         <div class="flex flex-col gap-4">
              <div 
                @click="mobileDetailsOpen = !mobileDetailsOpen"
@@ -79,7 +79,7 @@
              <button 
                 @click="$emit('submit')"
                 :disabled="disabled"
-                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-white py-3 rounded-lg font-bold transition-colors"
+                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-grayScale-50 py-3 rounded-lg font-bold transition-colors"
                 :class="{'opacity-75 cursor-not-allowed': disabled}"
             >
                 {{ buttonText }}

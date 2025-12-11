@@ -1,7 +1,7 @@
 <template>
   <div class="mb-6">
       <div class="flex flex-col gap-2 mb-2">
-        <div class="bg-primary text-white w-fit px-2 py-0.5 rounded text-xs font-bold uppercase">{{ type }}</div>
+        <div class="bg-primary text-grayScale-50 w-fit px-2 py-0.5 rounded text-xs font-bold uppercase">{{ type }}</div>
         <div class="flex items-center gap-2 font-bold">
             <span>{{ origin }}</span>
             <Icon nameIcon="ArrowRightIcon" class="w-4 text-grayScale-500" /> 

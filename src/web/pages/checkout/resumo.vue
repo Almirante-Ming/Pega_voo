@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-grayScale-900">Resumo da Reserva</h1>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
+      <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
         <!-- Passenger Info -->
         <div class="p-4 border-b border-grayScale-100">
             <h2 class="font-bold text-lg mb-4 text-grayScale-900">Dados do Passageiro</h2>
@@ -70,7 +70,7 @@
             <button 
                 @click="processPayment"
                 :disabled="loading"
-                class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+                class="w-full bg-primary hover:bg-primary-dark text-grayScale-50 font-semibold py-3 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
             >
                 <Icon v-if="!loading" nameIcon="CreditCardIcon" class="w-6 h-6" />
                 <span v-if="!loading">Ir para Pagamento</span>

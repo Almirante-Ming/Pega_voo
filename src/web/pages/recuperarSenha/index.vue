@@ -65,7 +65,7 @@
             @click="() => enviarCodigo()"
             :disabled="loading">
                 <span v-if="!loading" class="text-primary-light font-semibold">{{stepInfo.textoBotao}}</span>
-                <Icon v-else nameIcon="ArrowPathIcon" class="text-white animate-spin"></Icon>
+                <Icon v-else nameIcon="ArrowPathIcon" class="text-grayScale-50 animate-spin"></Icon>
             </button>
         </div>
     </div>

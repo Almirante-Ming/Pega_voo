@@ -42,11 +42,11 @@
     <div class="w-full mt-6">
       <button 
         :disabled="loading" 
-        class="bg-primary hover:opacity-90 disabled:bg-grayScale-500 w-full rounded-lg text-white h-12 shadow-lg flex justify-center items-center font-semibold transition-all"
+        class="bg-primary hover:opacity-90 disabled:bg-grayScale-500 w-full rounded-lg text-grayScale-50 h-12 shadow-lg flex justify-center items-center font-semibold transition-all"
         @click="buscarVoos"
       >
-        <Icon v-if="loading" nameIcon="ArrowPathIcon" class="text-white animate-spin mr-2"></Icon>
-        <Icon v-else nameIcon="MagnifyingGlassIcon" class="text-white mr-2 w-5 h-5"></Icon>
+        <Icon v-if="loading" nameIcon="ArrowPathIcon" class="text-grayScale-50 animate-spin mr-2"></Icon>
+        <Icon v-else nameIcon="MagnifyingGlassIcon" class="text-grayScale-50 mr-2 w-5 h-5"></Icon>
         <span>{{ loading ? 'Buscando...' : 'Buscar voos' }}</span>
       </button>
     </div>

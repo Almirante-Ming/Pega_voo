@@ -5,9 +5,9 @@
 
       
       <!-- Green Success Banner -->
-      <div class="bg-green-500 p-6 text-center text-white flex flex-col items-center gap-4">
-          <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
-              <Icon nameIcon="CheckIcon" class="w-10 h-10 text-white" />
+      <div class="bg-green-500 p-6 text-center text-grayScale-50 flex flex-col items-center gap-4">
+          <div class="w-20 h-20 rounded-full border-4 border-grayScale-50 flex items-center justify-center">
+              <Icon nameIcon="CheckIcon" class="w-10 h-10 text-grayScale-50" />
           </div>
           <div>
               <h1 class="text-2xl font-bold mb-2">Reserva confirmada!</h1>
@@ -16,7 +16,7 @@
       </div>
 
       <!-- Ticket Details -->
-      <div class="p-6 flex flex-col gap-6 bg-white">
+      <div class="p-6 flex flex-col gap-6 bg-grayScale-50">
           <div v-if="localFlight" class="flex flex-col gap-4">
               <!-- Route -->
               <div class="flex items-start gap-4">
@@ -54,10 +54,10 @@
 
           <!-- Actions -->
           <div class="flex flex-col gap-3 mt-4">
-              <button @click="router.push('/voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-grayScale-50 py-3 rounded-lg font-bold transition-colors">
                   Ver reserva
               </button>
-              <button @click="router.push('/')" class="w-full bg-white border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/')" class="w-full bg-grayScale-50 border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-bold transition-colors">
                   Voltar à tela inicial
               </button>
           </div>

@@ -30,14 +30,14 @@
           <Icon nameIcon="ArrowPathIcon" class="w-8 h-8 text-primary animate-spin" />
       </div>
 
-      <div v-else-if="currentList.length === 0" class="text-center py-12 bg-white rounded-lg shadow-sm border border-grayScale-200">
+      <div v-else-if="currentList.length === 0" class="text-center py-12 bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-200">
           <Icon nameIcon="TicketIcon" class="w-12 h-12 text-grayScale-300 mx-auto mb-3" />
           <h3 class="text-lg font-bold text-grayScale-900 mb-1">Nenhum voo encontrado</h3>
           <p class="text-grayScale-500">Você não tem voos nesta categoria.</p>
       </div>
 
       <div v-else class="flex flex-col gap-4">
-          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-white rounded-lg p-5 shadow-sm border border-grayScale-200 relative overflow-hidden">
+          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-grayScale-50 rounded-lg p-5 shadow-sm border border-grayScale-200 relative overflow-hidden">
               <!-- Status Badge -->
               <div class="absolute top-0 right-0 px-3 py-1 text-xs font-bold uppercase rounded-bl-lg"
                  :class="{
@@ -65,7 +65,7 @@
                   <!-- Details Card -->
                   <div class="bg-grayScale-50 p-4 rounded-lg border border-grayScale-100 flex flex-col md:flex-row gap-4 md:items-center justify-between">
                       <div class="flex items-center gap-3">
-                           <div class="bg-white p-2 rounded-full border border-grayScale-200">
+                           <div class="bg-grayScale-50 p-2 rounded-full border border-grayScale-200">
                                <Icon nameIcon="PaperAirplaneIcon" class="w-5 h-5 -rotate-45 text-primary" />
                            </div>
                            <div>

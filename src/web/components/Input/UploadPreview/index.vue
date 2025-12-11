@@ -4,7 +4,7 @@
             <span v-if="props.label" for="default-input" class="font-medium text-grayScale-800">{{ props.label }}</span>
             <button
                 @click="emit('removeimage')" 
-                class="hover:ring-red-500 text-white text-sm ring-1 ring-grayScale-400 rounded-lg duration-150">
+                class="hover:ring-red-500 text-grayScale-50 text-sm ring-1 ring-grayScale-400 rounded-lg duration-150">
 				<Icon
 				:name-icon="'TrashIcon'"
 				:class="'text-grayScale-500 duration-150 hover:text-red-500 w-7 h-7 px-1 py-1'"
@@ -58,7 +58,7 @@
 
                 <button 
                     @click="emit('removeimage')" 
-                    class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all duration-300 ease-in-out">
+                    class="absolute top-2 right-2 bg-red-500 text-grayScale-50 p-2 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all duration-300 ease-in-out">
                     Remover
                 </button>
             </div>
@@ -73,7 +73,7 @@
                 <!-- Botão de remover imagem que aparece ao passar o mouse -->
                 <button 
                     @click="emit('removeimage')" 
-                    class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-opacity duration-300 ease-in-out">
+                    class="absolute top-2 right-2 bg-red-500 text-grayScale-50 p-2 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-opacity duration-300 ease-in-out">
                     Remover
                 </button>
             </div>

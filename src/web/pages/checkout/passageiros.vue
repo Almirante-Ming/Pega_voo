@@ -4,7 +4,7 @@
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Main Form Column -->
         <div class="flex-1 flex flex-col gap-3">
-          <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
+          <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
             <div class="p-4 border-b border-grayScale-300 flex justify-between items-center">
               <div class="flex items-center gap-2">
                 <BackButton />
@@ -68,7 +68,7 @@
           </div>
 
           <!-- Ticket Class Selection -->
-          <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-4">
+          <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-4">
             <h3 class="text-lg font-bold text-grayScale-900 mb-4">Escolha seu tipo de assento</h3>
             
             <!-- Tabs for Round Trip -->
@@ -76,14 +76,14 @@
                 <button 
                   @click="activeTab = 'ida'"
                   class="flex-1 py-2 text-sm font-bold rounded-md transition-colors"
-                  :class="activeTab === 'ida' ? 'bg-white shadow text-primary' : 'text-grayScale-500 hover:text-grayScale-700'"
+                  :class="activeTab === 'ida' ? 'bg-grayScale-50 shadow text-primary' : 'text-grayScale-500 hover:text-grayScale-700'"
                 >
                     Voo de Ida
                 </button>
                 <button 
                   @click="activeTab = 'volta'"
                   class="flex-1 py-2 text-sm font-bold rounded-md transition-colors"
-                  :class="activeTab === 'volta' ? 'bg-white shadow text-primary' : 'text-grayScale-500 hover:text-grayScale-700'"
+                  :class="activeTab === 'volta' ? 'bg-grayScale-50 shadow text-primary' : 'text-grayScale-500 hover:text-grayScale-700'"
                 >
                     Voo de Volta
                 </button>
@@ -99,7 +99,7 @@
                  <div class="flex justify-between items-center">
                     <span class="font-bold text-grayScale-900">Econômica</span>
                     <div v-if="currentClass === 'economy'" class="bg-primary rounded-full p-1">
-                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-white" />
+                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-grayScale-50" />
                     </div>
                  </div>
                  <p class="text-xs text-grayScale-600">Bagagem de mão incluída. Seleção de assentos padrão.</p>
@@ -120,7 +120,7 @@
                         Premium
                     </span>
                     <div v-if="currentClass === 'premium'" class="bg-purple-600 rounded-full p-1">
-                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-white" />
+                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-grayScale-50" />
                     </div>
                  </div>
                  <p class="text-xs text-grayScale-600">Mais espaço, embarque prioritário e bagagem despachada.</p>

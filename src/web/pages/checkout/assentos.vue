@@ -11,14 +11,14 @@
             <!-- Flight Toggle (if Round Trip) -->
             <div v-if="store.inboundFlight" class="flex gap-4">
                 <div class="flex-1">
-                    <div class="bg-primary w-fit text-white px-2 rounded-lg pb-0.5 mb-1">
+                    <div class="bg-primary w-fit text-grayScale-50 px-2 rounded-lg pb-0.5 mb-1">
                         <span class="text-sm font-medium">Ida</span>
                     </div>
 
                     <button 
                     @click="currentFlight = 'outbound'"
                     class="w-full py-3 px-4 rounded-lg font-bold border-2 relative transition-colors flex justify-center items-center"
-                    :class="currentFlight === 'outbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-white text-grayScale-600'"
+                    :class="currentFlight === 'outbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-grayScale-50 text-grayScale-600'"
                     >
                     <div class="flex flex-col gap-1 text-center">
                         <div class="flex flex-col items-center leading-none gap-0.5">
@@ -28,20 +28,20 @@
                         </div>
                     </div>
                     <div v-if="store.selectedSeats[store.outboundFlight?.id]" 
-                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-bold shadow-sm border-2 border-white">
+                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-grayScale-50 flex items-center justify-center text-xs font-bold shadow-sm border-2 border-grayScale-50">
                         {{ store.selectedSeats[store.outboundFlight?.id] }}
                     </div>
                     </button>
                 </div>
 
                 <div class="flex-1">
-                    <div class="bg-primary w-fit text-white px-2 rounded-lg pb-0.5 mb-1">
+                    <div class="bg-primary w-fit text-grayScale-50 px-2 rounded-lg pb-0.5 mb-1">
                         <span class="text-sm font-medium">Volta</span>
                     </div>
                     <button 
                     @click="currentFlight = 'inbound'"
                     class="w-full py-3 px-4 rounded-lg font-bold border-2 relative transition-colors flex justify-center items-center"
-                    :class="currentFlight === 'inbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-white text-grayScale-600'"
+                    :class="currentFlight === 'inbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-grayScale-50 text-grayScale-600'"
                     >
                     <div class="flex flex-col gap-1 text-center">
                         <div class="flex flex-col items-center leading-none gap-0.5">
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div v-if="store.selectedSeats[store.inboundFlight?.id]" 
-                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-bold shadow-sm border-2 border-white">
+                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-grayScale-50 flex items-center justify-center text-xs font-bold shadow-sm border-2 border-grayScale-50">
                         {{ store.selectedSeats[store.inboundFlight?.id] }}
                     </div>
                     </button>
@@ -59,7 +59,7 @@
             </div>
             
              <!-- Seat Map Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-3.5 pb-0 flex flex-col items-center">
+            <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-3.5 pb-0 flex flex-col items-center">
                 <div class="w-full flex justify-between items-center">
                     <div class="gap-4 text-xs text-grayScale-600 w-full grid grid-cols-2 border p-4 rounded-md">
                         <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-100 border border-grayScale-300 rounded"></div> Disponível</div>
@@ -96,7 +96,7 @@
                                   :class="getSeatClass(row.number, seat)"
                                 >
                                     {{ seat }}
-                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-white rounded-full" />
+                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-grayScale-50 rounded-full" />
                                 </button>
                             </div>
                             
@@ -114,7 +114,7 @@
                                   :class="getSeatClass(row.number, seat)"
                                 >
                                     {{ seat }}
-                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-white rounded-full" />
+                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-grayScale-50 rounded-full" />
                                 </button>
                             </div>
                         </div>
@@ -260,7 +260,7 @@ function getSeatClass(row: number, seat: string) {
     if (!s) return 'invisible'; // Hide non-existent seats
 
     if (isSeatSelected(row, seat)) {
-        return 'bg-primary text-white border-primary';
+        return 'bg-primary text-grayScale-50 border-primary';
     }
     
     const isPremium = s.seat_class === 'premium';
@@ -270,9 +270,9 @@ function getSeatClass(row: number, seat: string) {
     }
     
     if (isPremium) {
-        return 'bg-white border-2 border-purple-500 text-purple-700 hover:bg-purple-50';
+        return 'bg-grayScale-50 border-2 border-purple-500 text-purple-700 hover:bg-purple-50';
     }
-    return 'bg-white border border-grayScale-300 text-grayScale-600 hover:border-primary hover:text-primary';
+    return 'bg-grayScale-50 border border-grayScale-300 text-grayScale-600 hover:border-primary hover:text-primary';
 }
 
 function selectSeat(row: number, seat: string) {

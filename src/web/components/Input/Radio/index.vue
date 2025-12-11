@@ -3,7 +3,7 @@
     <label
       v-if="props.label"
       for="default-input"
-      class="mb-3 block font-medium text-white "
+      class="mb-3 block font-medium text-grayScale-50 "
     >
       {{ props.label }}
     </label>

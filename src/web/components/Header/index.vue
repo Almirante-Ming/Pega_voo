@@ -1,10 +1,10 @@
 <template>
   <header class="header w-full relative">
-    <div class="w-full h-[64px] bg-primary flex items-center justify-between px-5 font-bold text-white relative">
+    <div class="w-full h-[64px] bg-primary flex items-center justify-between px-5 font-bold text-grayScale-50 relative">
       
       <!-- Menu Button -->
-      <button v-if="showMenu" @click="$emit('toggleSidebar')" class="p-1 hover:bg-white/10 rounded">
-        <Icon name-icon="Bars3Icon" class="size-6 text-white" />
+      <button v-if="showMenu" @click="$emit('toggleSidebar')" class="p-1 hover:bg-grayScale-200 rounded">
+        <Icon name-icon="Bars3Icon" class="size-6 text-grayScale-50" />
       </button>
 
       <!-- Centered Logo -->
