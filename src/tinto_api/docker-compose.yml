@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    image: tinto_api:latest
     container_name: Tinto
     command: task run
     volumes:
@@ -11,3 +12,19 @@ services:
       - "5432:5432"
     env_file:
       - .env
+
+  worker:
+    image: tinto_api:latest
+    container_name: Celery_tasks
+    command: task worker
+    volumes:
+      - .:/tinto_api
+    working_dir: /tinto_api
+    ports:
+      - "30059:30059"
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    depends_on:
+      - app
