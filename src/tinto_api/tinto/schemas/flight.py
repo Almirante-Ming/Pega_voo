@@ -5,6 +5,20 @@ from tinto.utils import Flight_Status, Seat_Class, Booking_Status
 
 
 class FlightBase(BaseModel):
+    aircraft_model: str = Field(..., description="Aircraft model")
+    flight_number: str = Field(..., description="Flight identifier")
+    origin_city: str = Field(..., description="Origin city")
+    origin_airport: str = Field(..., description="Origin airport IATA code")
+    destination_city: str = Field(..., description="Destination city")
+    destination_airport: str = Field(..., description="Destination airport IATA code")
+    departure_time: datetime = Field(..., description="Scheduled departure time")
+    estimated_arrival: datetime = Field(..., description="Scheduled arrival time")
+    stops_count: int = Field(..., description="Total connection flights, 0 for direct")
+    avaliable_seats: int = Field(...,description="Total of avaliable seats")
+    premium_seats: int = Field(..., description="especial seats like as first, executive...")
+
+
+class FlightCreateRequest(BaseModel):
     airline_id: int = Field(..., description="Reference to airline")
     aircraft_model: str = Field(..., description="Aircraft model")
     flight_number: str = Field(..., description="Flight identifier")
@@ -17,21 +31,15 @@ class FlightBase(BaseModel):
     stops_count: int = Field(..., description="Total connection flights, 0 for direct")
     avaliable_seats: int = Field(...,description="Total of avaliable seats")
     premium_seats: int = Field(..., description="especial seats like as first, executive...")
-    status: Flight_Status = Field(default=Flight_Status.SCHEDULED)
-
-    @field_validator('status', mode='before')
-    @classmethod
-    def validate_status(cls, v: Any) -> Flight_Status:
-        if isinstance(v, str):
-            try:
-                return Flight_Status(v.lower())
-            except ValueError:
-                raise ValueError(f"Invalid value: '{v}'. Must be one of {', '.join([e.value for e in Flight_Status])}")
-        return v
+    economy_price: float = Field(..., description="Price for economy seats")
+    premium_price: Optional[float] = Field(None, description="Price for premium seats (required if premium_seats > 0)")
 
 
 class FlightCreate(FlightBase):
-    pass
+    airline_id: int = Field(..., description="Reference to airline")
+    economy_price: float = Field(..., description="Price for economy seats")
+    premium_price: Optional[float] = Field(None, description="Price for premium seats (required if premium_seats > 0)")
+    status: Flight_Status = Field(default=Flight_Status.SCHEDULED)
 
 
 class FlightUpdate(BaseModel):
@@ -62,26 +70,21 @@ class FlightUpdate(BaseModel):
 
 class Flight(FlightBase):
     id: int
+    airline_name: str = Field(..., description="Airline name")
+    status: Flight_Status = Field(default=Flight_Status.SCHEDULED)
     created_at: datetime
     updated_at: datetime
 
     model_config = {"from_attributes": True}
 
 
-class TicketPreview(BaseModel):
-    """Lightweight ticket representation for flight responses"""
-    seat_class: str
-    price: float
-    status: str  # "disponível" or "indisponível"
-    
-    model_config = {"from_attributes": True}
-
-
-class FlightWithTickets(FlightBase):
-    """Flight response with tickets grouped by seat_class (one per class)"""
+class FlightWithSeatsAndPrices(FlightBase):
+    """Flight response with prices by class"""
     id: int
+    airline_name: str = Field(..., description="Airline name")
+    status: Flight_Status = Field(default=Flight_Status.SCHEDULED)
     created_at: datetime
     updated_at: datetime
-    tickets: Dict[str, TicketPreview]  # key is seat_class, value is TicketPreview
+    tickets: Dict[str, float]  # key is seat_class (e.g., "economy", "premium"), value is price
     
     model_config = {"from_attributes": True}

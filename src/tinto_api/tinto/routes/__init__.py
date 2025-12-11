@@ -5,6 +5,7 @@ from .flights import router as flights_router
 from .tickets import router as tickets_router
 from .acc_recovery import router as recovery_route
 
+
 __all__ = [
     'auth_router', 
     'persons_router', 
