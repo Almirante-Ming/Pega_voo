@@ -3,13 +3,13 @@
     <!-- Backdrop with blur -->
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+      class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[90] transition-opacity duration-300"
       @click="$emit('close')"
     ></div>
 
     <!-- Sidebar -->
     <aside
-      class="fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col"
+      class="fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white shadow-2xl z-[100] transform transition-transform duration-300 ease-out flex flex-col"
       :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <!-- Header with Logo -->

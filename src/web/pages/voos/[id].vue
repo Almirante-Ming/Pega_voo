@@ -59,7 +59,7 @@
           </div>
         </div>
         
-        <div class="flex justify-between mt-2 pt-2 border-t border-grayScale-200 text-xs text-grayScale-500">
+        <div class="flex justify-between mt-2 pt-2 border-t border-grayScale-300 text-xs text-grayScale-500">
             <span>Taxas e encargos inclusos</span>
         </div>
       </div>
@@ -105,7 +105,9 @@ function acaoPrincipal() {
         router.push('/voos/selecao-viagem')
     } else {
         // Fluxo normal (somente ida)
-        router.push('/passageiros')
+        storeVoos.setOutboundFlight(voo.value)
+        storeVoos.setInboundFlight(null)
+        router.push('/checkout/passageiros')
     }
 }
 
@@ -123,7 +125,7 @@ function calcularDuracao(saida: string, chegada: string) {
 
 function continuar() {
   // Navegar para página de passageiros ou checkout
-  router.push('/passageiros')
+  router.push('/checkout/passageiros')
 }
 
 onMounted(async () => {

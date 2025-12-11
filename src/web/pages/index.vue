@@ -153,13 +153,23 @@ async function buscarVoos() {
   // Força validação de todos os campos
   validarFormulario();
 
-  if (!formValido.value) {
-      return; 
+  // Custom validation logic because useForm is not reactive to mode changes
+  if (tipoViagem.value === 'ida-volta') {
+      if (!formValido.value) return;
+  } else {
+      // Somente ida: check required fields manually and ignore return_date error
+      const required = ['origin_city', 'destination_city', 'departure_date'];
+      const hasEmpty = required.some(field => !form.value[field]);
+      const hasError = required.some(field => erros.value[field]);
+      
+      if (hasEmpty || hasError) {
+          toast.error({ mensagem: 'Preencha os campos obrigatórios' });
+          return;
+      }
   }
 
-  // Valida campos obrigatórios de negócio extras (borda)
+  // Valida campos obrigatórios de negócio extras (borda) - redundant but safe
   if (!form.value.origin_city || !form.value.destination_city || !form.value.departure_date) {
-      // Teoricamente o validarFormulario já pega, mas garantindo
     toast.error({ mensagem: 'Preencha os campos obrigatórios' });
     return;
   }

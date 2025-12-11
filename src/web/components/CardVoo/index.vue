@@ -54,7 +54,7 @@
       </div>
 
       <!-- Divisor -->
-      <hr class="border-grayScale-200" />
+      <hr class="border-grayScale-300" />
 
       <!-- Preço e botão -->
       <div class="w-full flex flex-col items-end">

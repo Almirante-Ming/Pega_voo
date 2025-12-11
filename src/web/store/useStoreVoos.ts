@@ -12,7 +12,9 @@ export const useStoreVoos = defineStore('voos', () => {
         selected_class: ''
     })
 
-    const ticketClass = ref<'economy' | 'premium'>('economy')
+    const outboundTicketClass = ref<'economy' | 'premium'>('economy')
+    const inboundTicketClass = ref<'economy' | 'premium'>('economy')
+
     const passenger = ref({
         firstName: '',
         lastName: '',
@@ -24,10 +26,10 @@ export const useStoreVoos = defineStore('voos', () => {
     const totalPrice = computed(() => {
         let total = 0
         if (outboundFlight.value) {
-            total += outboundFlight.value.tickets?.[ticketClass.value] || 0
+            total += outboundFlight.value.tickets?.[outboundTicketClass.value] || 0
         }
         if (inboundFlight.value) {
-            total += inboundFlight.value.tickets?.[ticketClass.value] || 0
+            total += inboundFlight.value.tickets?.[inboundTicketClass.value] || 0
         }
         return total
     })
@@ -44,8 +46,12 @@ export const useStoreVoos = defineStore('voos', () => {
         selectionParams.value = { ...params }
     }
 
-    function setTicketClass(cls: 'economy' | 'premium') {
-        ticketClass.value = cls
+    function setOutboundTicketClass(cls: 'economy' | 'premium') {
+        outboundTicketClass.value = cls
+    }
+
+    function setInboundTicketClass(cls: 'economy' | 'premium') {
+        inboundTicketClass.value = cls
     }
 
     function updatePassenger(data: any) {
@@ -66,7 +72,8 @@ export const useStoreVoos = defineStore('voos', () => {
             return_date: '',
             selected_class: ''
         }
-        ticketClass.value = 'economy'
+        outboundTicketClass.value = 'economy'
+        inboundTicketClass.value = 'economy'
         selectedSeats.value = {}
         passenger.value = { firstName: '', lastName: '', document: '', birthDate: '' }
     }
@@ -75,7 +82,8 @@ export const useStoreVoos = defineStore('voos', () => {
         outboundFlight,
         inboundFlight,
         selectionParams,
-        ticketClass,
+        outboundTicketClass,
+        inboundTicketClass,
         passenger,
         selectedSeats,
         totalPrice,
@@ -83,7 +91,8 @@ export const useStoreVoos = defineStore('voos', () => {
         setOutboundFlight,
         setInboundFlight,
         setSelectionParams,
-        setTicketClass,
+        setOutboundTicketClass,
+        setInboundTicketClass,
         updatePassenger,
         selectSeat,
         clearSelection
