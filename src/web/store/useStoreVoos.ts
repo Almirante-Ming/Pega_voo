@@ -12,6 +12,26 @@ export const useStoreVoos = defineStore('voos', () => {
         selected_class: ''
     })
 
+    const ticketClass = ref<'economy' | 'premium'>('economy')
+    const passenger = ref({
+        firstName: '',
+        lastName: '',
+        document: '',
+        birthDate: ''
+    })
+    const selectedSeats = ref<Record<string, string>>({}) // flightId -> seatCode
+
+    const totalPrice = computed(() => {
+        let total = 0
+        if (outboundFlight.value) {
+            total += outboundFlight.value.tickets?.[ticketClass.value] || 0
+        }
+        if (inboundFlight.value) {
+            total += inboundFlight.value.tickets?.[ticketClass.value] || 0
+        }
+        return total
+    })
+
     function setOutboundFlight(flight: any) {
         outboundFlight.value = flight
     }
@@ -24,6 +44,18 @@ export const useStoreVoos = defineStore('voos', () => {
         selectionParams.value = { ...params }
     }
 
+    function setTicketClass(cls: 'economy' | 'premium') {
+        ticketClass.value = cls
+    }
+
+    function updatePassenger(data: any) {
+        passenger.value = { ...passenger.value, ...data }
+    }
+
+    function selectSeat(flightId: string, seatCode: string) {
+        selectedSeats.value[flightId] = seatCode
+    }
+
     function clearSelection() {
         outboundFlight.value = null
         inboundFlight.value = null
@@ -34,15 +66,26 @@ export const useStoreVoos = defineStore('voos', () => {
             return_date: '',
             selected_class: ''
         }
+        ticketClass.value = 'economy'
+        selectedSeats.value = {}
+        passenger.value = { firstName: '', lastName: '', document: '', birthDate: '' }
     }
 
     return {
         outboundFlight,
         inboundFlight,
         selectionParams,
+        ticketClass,
+        passenger,
+        selectedSeats,
+        totalPrice,
+        ticketsTotal: totalPrice, // Alias for now
         setOutboundFlight,
         setInboundFlight,
         setSelectionParams,
+        setTicketClass,
+        updatePassenger,
+        selectSeat,
         clearSelection
     }
 })

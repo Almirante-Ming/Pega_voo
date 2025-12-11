@@ -164,7 +164,8 @@ function selecionarVolta() {
 }
 
 function continuar() {
-    // TODO: Implement checkout flow
-    alert('Fluxo completo! Ida e Volta selecionados.');
+    if (podeContinuar.value) {
+        router.push('/checkout/passageiros');
+    }
 }
 </script>
