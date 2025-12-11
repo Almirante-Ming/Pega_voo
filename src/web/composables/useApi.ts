@@ -16,9 +16,22 @@ export function useApi(
   async function execute(body?: object) {
     try {
       loading.value = true;
+      
+      // Pega o token do localStorage
+      const token = localStorage.getItem('access_token');
+      
+      // Adiciona o token no header se existir
+      const config = {
+        ...options,
+        headers: {
+          ...options?.headers,
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
+      };
+      
       /* Quando vier body, é algum método diferente do get. Do contrário, é get. */
-      if (body) response.value = await $axios[method](route, body, options);
-      else response.value = await $axios[method](route, options);
+      if (body) response.value = await $axios[method](route, body, config);
+      else response.value = await $axios[method](route, config);
 
       data.value = response.value.data;
     } catch (e: any) {

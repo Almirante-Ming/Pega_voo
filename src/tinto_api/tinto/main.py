@@ -10,7 +10,6 @@ from tinto.routes import (
     persons_router, 
     airlines_router, 
     flights_router, 
-    purchase_history_router, 
     tickets_router,
     recovery_route
 )
@@ -32,7 +31,6 @@ tinto.include_router(recovery_route)
 tinto.include_router(persons_router)
 tinto.include_router(airlines_router)
 tinto.include_router(flights_router)
-tinto.include_router(purchase_history_router)
 tinto.include_router(tickets_router)
 
 @tinto.get('/', tags=['Health check'])

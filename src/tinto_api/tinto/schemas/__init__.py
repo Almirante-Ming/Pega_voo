@@ -16,14 +16,10 @@ from .airline import (
 from .flight import (
     FlightBase,
     FlightCreate,
+    FlightCreateRequest,
     FlightUpdate,
-    Flight
-)
-from .purchase_history import (
-    PurchaseHistoryBase,
-    PurchaseHistoryCreate,
-    PurchaseHistoryUpdate,
-    PurchaseHistory
+    Flight,
+    FlightWithSeatsAndPrices
 )
 from .ticket import (
     TicketBase,
@@ -43,14 +39,17 @@ from .ticket_status_log import (
     TicketStatusLog
 )
 
-from .rec_token import RecToken
+from .rec_token import (
+    RecoveryRequest,
+    PasswordResetRequest,
+    CodeCheckRequest
+)
 
 __all__ = [
     "PersonBase", "PersonCreateInternal", "PersonRegister", "PersonUpdate", "Person", "Token", "TokenData",
     "AirlineBase", "AirlineCreate", "AirlineUpdate", "Airline",
-    "FlightBase", "FlightCreate", "FlightUpdate", "Flight",
-    "PurchaseHistoryBase", "PurchaseHistoryCreate", "PurchaseHistoryUpdate", "PurchaseHistory",
+    "FlightBase", "FlightCreate", "FlightCreateRequest", "FlightUpdate", "Flight", "FlightWithSeatsAndPrices",
     "TicketBase", "TicketCreate", "TicketUpdate", "Ticket",
     "SeatBase", "SeatCreate", "SeatUpdate", "Seat",
-    "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog","RecToken"
+    "TicketStatusLogBase", "TicketStatusLogCreate", "TicketStatusLog","RecoveryRequest", "CodeCheckRequest", "PasswordResetRequest"
 ]

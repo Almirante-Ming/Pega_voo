@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[85dvh] w-full flex flex-col items-center justify-center text-grayScale-800">
+    <div class="h-[80dvh] w-full flex flex-col items-center justify-center text-grayScale-800">
         <div class="w-full flex flex-col items-center gap-1.5">
            <p class="text-2xl font-semibold">Malas Prontas?</p>
            <p class="text-lg">Faça login para continuar</p>
@@ -31,6 +31,7 @@
                 :marginBottom="false"
                 @emitClick="senhaVisivel = !senhaVisivel"
                 @emiteValor="atualizarForm(senha.propriedade, $event, '')"
+                @keyup.enter="login"
             />
             <div class="w-full flex justify-end">
                 <button type="button" @click="router.push('/recuperarSenha')" class="text-sm text-end underline text-grayScale-600 duration-150 hover:text-grayScale-900">Esqueci minha senha</button>
@@ -44,10 +45,10 @@
                 <Icon v-else name-icon="ArrowPathIcon" class="animate-spin text-grayScale-100"></Icon>
             </button>
 
-            <button class="bg-gray-100 w-full h-12 flex justify-center items-center gap-3 shadow-md rounded-md hover:bg-white text-gray-700">
+            <!-- <button class="bg-gray-100 w-full h-12 flex justify-center items-center gap-3 shadow-md rounded-md hover:bg-white text-gray-700">
                 <img src="@/assets/images/google-icon.webp" class="w-5 h-5"></img>
                 <span class="font-semibold">Entre com o Google</span>
-            </button>
+            </button> -->
 
             <button @click="router.push('/cadastro')" class="text-center text-lg mt-2 text-grayScale-700 duration-150 hover:text-grayScale-900">
                 ou <span class="underline font-semibold">Cadastre-se</span>
@@ -60,7 +61,7 @@
     import { useForm } from "@/composables/useForm";
     import { atualizarFormulario } from "@/functions/atualizarFormulario";
     import { useToast } from "@/composables/useToast";
-import { useStoreDeUsuario } from "~/store/useStoreUsuario";
+    import { useStoreDeUsuario } from "~/store/useStoreUsuario";
 
     const router = useRouter();
     const toast = useToast();

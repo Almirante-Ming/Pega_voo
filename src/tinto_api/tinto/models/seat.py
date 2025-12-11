@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, UniqueConstraint, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Enum as SqlEnum
 from tinto.utils import Seat_Class, Base
@@ -11,6 +11,7 @@ class Seat(Base):
     flight_id = Column(Integer, ForeignKey("flights.id"), nullable=False)
     seat_number = Column(String, nullable=False)
     seat_class = Column(SqlEnum(Seat_Class, name="seat_class_enum", native_enum=False, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
+    price = Column(Numeric(10, 2), nullable=True)
     is_available = Column(Boolean, default=True, nullable=False)
     ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=True)
 
@@ -19,4 +20,3 @@ class Seat(Base):
     )
 
     flight = relationship("Flight", back_populates="seats")
-    ticket = relationship("Ticket", back_populates="seat")

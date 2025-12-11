@@ -1,44 +1,14 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import or_
-from pydantic import BaseModel, EmailStr, field_validator, ValidationError, Field
-from datetime import datetime, timedelta, UTC
-from typing import Dict
-
+from datetime import datetime, UTC
 from tinto.models import Person
-from tinto.utils import send_mail, DBSession, kcode, get_password_hash, verify_password
+from tinto.utils import DBSession, kcode, get_password_hash, verify_password, minerva
+from tinto.tasks import send_recovery_code
+from tinto.schemas import RecoveryRequest, PasswordResetRequest, CodeCheckRequest
+import json
 
-router = APIRouter(tags=['access recovery'])
 
-# use redis after implement celery jobs
-recovery_codes_store: Dict[str, dict] = {}
-
-class RecoveryRequest(BaseModel):
-    identifier: str
-    
-    @field_validator('identifier')
-    @classmethod
-    def validate_identifier(cls, v: str) -> str:
-        v = v.strip()
-
-        try:
-            class EmailValidator(BaseModel):
-                email: EmailStr
-            
-            EmailValidator(email=v)
-            return v
-        
-        except ValidationError:
-            pass 
-        
-        if len(v) == 11 and v.isdigit():
-            try:
-                int(v)
-                return v
-            
-            except ValueError:
-                pass
-        
-        raise ValueError("Invalid identifier")
+router = APIRouter(tags=['Access Recovery'])
 
 @router.post('/recovery', status_code=status.HTTP_200_OK)
 def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
@@ -51,70 +21,91 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
         )
     ).first()
     
-    if not user:
+    # Using getattr to avoid type checker issues with SQLAlchemy models
+    user_id = getattr(user, 'id', None)
+    
+    if not user or user_id == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found with provided identifier"
         )
+
     
-    # Using getattr to avoid type checker issues with SQLAlchemy models
-    user_id = getattr(user, 'id', None)
-    if user_id == 0:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account recovery not available for this user"
-        )
-    
-    expire_time = datetime.now(UTC) + timedelta(minutes=5)
-    
-    # will be send on redis after jobs 
-    recovery_codes_store[kcode] = {
-        "code": kcode,
-        "user": user.email,
-        "expire_time": expire_time.timestamp()
-    }
+    recovery_key = f"recovery:{kcode}"
+    payload = {"code": kcode, "user": user.email}
+    try:
+        # ex == expiration
+        result = minerva.set(recovery_key, json.dumps(payload), ex=600)
+        if not result:
+            raise RuntimeError("Failed to set key")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     
     try:
-        send_mail(user.email, kcode)
+        # Send recovery code email asynchronously using Celery
+        send_recovery_code.delay(user.email, kcode)
         
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to send email: {str(e)}"
+            detail=f"Failed to queue email task: {str(e)}"
         )
+    def format_cpf(cpf: str) -> str:
+        cpf_digits = ''.join(filter(str.isdigit, cpf))
+        return f"{cpf_digits[:2]}*.***.**{cpf_digits[8]}-{cpf_digits[9:]}"
+        
+
     
     return {
-        "message": "Recovery code sent successfully",
-        "redirect": "/auth2r"
+        "message": "Recovery code will be send soon, please wait",
+        "user_info": {
+            "fullname": user.full_name,
+            "cpf": format_cpf(str(user.cpf))
+        }
     }
 
 
-class PasswordResetRequest(BaseModel):
-    code: str = Field(..., description="Recovery code received by email")
-    new_password: str = Field(..., min_length=8, description="New password (minimum 8 characters)")
 
+@router.post('/chkCode', status_code=status.HTTP_200_OK)
+def check_code(request: CodeCheckRequest):
+    code = request.code.strip()
+    recovery_key = f"recovery:{code}"
+
+    try:
+        raw = minerva.get(recovery_key)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    if not raw:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or expired recovery code")
+
+    return {}
 
 @router.post('/auth2r', status_code=status.HTTP_200_OK)
 def verify_recovery_code(reset_request: PasswordResetRequest, db: DBSession):
     code = reset_request.code.strip()
     new_password = reset_request.new_password
     
-    if code not in recovery_codes_store:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid recovery code"
-        )
-    
-    code_data = recovery_codes_store[code]
-    
-    current_time = datetime.now(UTC).timestamp()
-    if current_time > code_data["expire_time"]:
-        del recovery_codes_store[code]
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Expired token"
-        )
-    
+    recovery_key = f"recovery:{code}"
+
+    try:
+        raw = minerva.get(recovery_key)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    if not raw:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired recovery code")
+
+    # Redis may return bytes or other types; coerce to str then load JSON
+    if isinstance(raw, (bytes, bytearray)):
+        decoded = raw.decode('utf-8')
+    else:
+        decoded = str(raw)
+    try:
+        code_data = json.loads(decoded)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
     user_email = code_data["user"]
     
     user = db.query(Person).filter(Person.email == user_email).first()
@@ -141,6 +132,9 @@ def verify_recovery_code(reset_request: PasswordResetRequest, db: DBSession):
     db.commit()
     db.refresh(user)
     
-    del recovery_codes_store[code]
-    
+    try:
+        minerva.delete(recovery_key)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
     return {"message": "Password reset successfully","status_code":status.HTTP_200_OK}

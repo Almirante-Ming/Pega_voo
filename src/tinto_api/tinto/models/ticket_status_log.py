@@ -15,5 +15,4 @@ class TicketStatusLog(Base):
     changed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
     changed_by = Column(Integer, ForeignKey("persons.id"), nullable=False)
 
-    ticket = relationship("Ticket", back_populates="status_logs")
     changer = relationship("Person", back_populates="ticket_status_changes")

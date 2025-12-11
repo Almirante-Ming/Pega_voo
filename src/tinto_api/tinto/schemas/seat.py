@@ -7,6 +7,7 @@ class SeatBase(BaseModel):
     flight_id: int = Field(..., description="Reference to flight")
     seat_number: str = Field(..., description="Seat number (e.g., 12A)")
     seat_class: Seat_Class = Field(..., description="Seat class")
+    price: Optional[float] = Field(None, description="Seat price")
     is_available: bool = Field(default=True, description="Seat availability")
     ticket_id: Optional[int] = Field(None, description="Reference to ticket if occupied")
 
@@ -29,6 +30,7 @@ class SeatUpdate(BaseModel):
     flight_id: Optional[int] = None
     seat_number: Optional[str] = None
     seat_class: Optional[Seat_Class] = None
+    price: Optional[float] = None
     is_available: Optional[bool] = None
     ticket_id: Optional[int] = None
 

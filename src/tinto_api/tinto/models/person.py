@@ -21,6 +21,5 @@ class Person(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
-    purchase_history = relationship("PurchaseHistory", back_populates="person")
     tickets = relationship("Ticket", back_populates="passenger", foreign_keys="Ticket.passenger_id")
     ticket_status_changes = relationship("TicketStatusLog", back_populates="changer")
