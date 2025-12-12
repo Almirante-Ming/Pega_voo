@@ -7,7 +7,7 @@
       </div>
 
       <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
-        <!-- Passenger Info -->
+        <!-- Informações do Passageiro -->
         <div class="p-4 border-b border-grayScale-100">
             <h2 class="font-bold text-lg mb-4 text-grayScale-900">Dados do Passageiro</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-grayScale-700">
@@ -22,11 +22,11 @@
             </div>
         </div>
 
-        <!-- Flights -->
+        <!-- Voos -->
         <div class="p-4 border-b border-grayScale-100">
              <h2 class="font-bold text-lg mb-4 text-grayScale-900">Itinerário</h2>
              
-             <!-- Outbound -->
+             <!-- Ida -->
              <FlightResumoSection 
                 v-if="store.outboundFlight"
                 type="Ida"
@@ -37,7 +37,7 @@
                 :ticketClass="store.outboundTicketClass"
              />
 
-             <!-- Inbound -->
+             <!-- Volta -->
              <FlightResumoSection
                 v-if="store.inboundFlight"
                 type="Volta"
@@ -49,7 +49,7 @@
              />
         </div>
 
-        <!-- Payment Total -->
+        <!-- Total do Pagamento -->
         <div class="p-4 bg-grayScale-50">
             <div class="flex flex-col gap-2 mb-4 border-b border-grayScale-300 pb-4">
                 <div v-if="store.outboundFlight" class="flex justify-between items-center text-sm">
@@ -133,7 +133,7 @@ async function processPayment() {
     }
 
     if (paymentLink) {
-        // Persist flight details for success page (since store is lost on redirect/reload)
+        // Persistir detalhes do voo para página de sucesso (já que a store é perdida no redirecionamento/reload)
         if (store.outboundFlight) {
             localStorage.setItem('last_payment_flight', JSON.stringify(store.outboundFlight));
         }

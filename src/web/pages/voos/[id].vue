@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-// filepath: c:\Users\ext.gersonbjf\Documents\projetos\task_fly\src\web\pages\voos\[id].vue
+
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, computed } from 'vue'
 import { useApi } from '@/composables/useApi'

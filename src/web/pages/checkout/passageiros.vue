@@ -2,7 +2,7 @@
   <div class="min-h-screen pb-32 md:pb-10 relative">
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Main Form Column -->
+        <!-- Coluna Principal do Formulário -->
         <div class="flex-1 flex flex-col gap-3">
           <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
             <div class="p-4 border-b border-grayScale-300 flex justify-between items-center">
@@ -67,11 +67,11 @@
             </div>
           </div>
 
-          <!-- Ticket Class Selection -->
+          <!-- Seleção de Classe do Bilhete -->
           <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-4">
             <h3 class="text-lg font-bold text-grayScale-900 mb-4">Escolha seu tipo de assento</h3>
             
-            <!-- Tabs for Round Trip -->
+            <!-- Abas para Ida e Volta -->
             <div v-if="store.inboundFlight" class="flex gap-2 mb-4 bg-grayScale-100 p-1 rounded-lg">
                 <button 
                   @click="activeTab = 'ida'"
@@ -90,7 +90,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <!-- Economy Card -->
+               <!-- Cartão Econômica -->
                <div 
                  @click="setCls('economy')"
                  class="border-2 rounded-lg p-4 cursor-pointer transition-all flex flex-col gap-2 relative"
@@ -108,7 +108,7 @@
                  </p>
                </div>
 
-               <!-- Premium Card -->
+               <!-- Cartão Premium -->
                <div 
                  @click="setCls('premium')"
                  class="border-2 rounded-lg p-4 cursor-pointer transition-all flex flex-col gap-2 relative"
@@ -132,7 +132,7 @@
           </div>
         </div>
 
-        <!-- Summary Component -->
+        <!-- Componente de Resumo -->
         <CheckoutSummary 
             buttonText="Avançar para assentos" 
             @submit="avancar" 
@@ -207,10 +207,10 @@ const camposOpcionais = computed(() => {
 const { form, erros, formValido, validarCampo, validarFormulario } = useForm(camposObrigatorios.value, camposOpcionais.value);
 const atualizarForm = atualizarFormulario(form, validarCampo);
 
-// State for Tab Selection
+// Estado para Seleção de Aba
 const activeTab = ref<'ida' | 'volta'>('ida');
 
-// Computed Class for the active tab
+// Classe Computada para a aba ativa
 const currentClass = computed(() => {
     if (activeTab.value === 'ida') return store.outboundTicketClass;
     return store.inboundTicketClass;
@@ -248,7 +248,7 @@ function avancar() {
 }
 
 onMounted(() => {
-    // Sync store data to form
+    // Sincronizar dados da store para o formulário
     const currentPassenger = store.passenger;
     if (currentPassenger) {
         if(currentPassenger.firstName) form.value.firstName = currentPassenger.firstName;

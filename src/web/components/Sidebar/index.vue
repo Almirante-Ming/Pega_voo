@@ -71,16 +71,15 @@ const router = useRouter();
 const menuItems = [
     { label: 'Início', icon: 'HomeIcon', route: '/' },
     { label: 'Meus Voos', icon: 'TicketIcon', route: '/meus-voos' },
-    { label: 'Minha Conta', icon: 'UserCircleIcon', route: '/minha-conta' },
 ];
 
 function logout() {
-  // Clear auth token
+  // Limpar token de autenticação
   const token = useCookie("token");
   token.value = null;
 
   emit("close");
-  router.push("/login"); // Assuming /login exists
+  router.push("/login");
 }
 </script>
 

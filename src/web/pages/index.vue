@@ -133,7 +133,7 @@ const { form, erros, formValido, validarCampo, validarFormulario } = useForm(cam
 
 const atualizarForm = atualizarFormulario(form, validarCampo);
 
-// Import store
+// Importar store
 import { useStoreVoos } from '@/store/useStoreVoos';
 const storeVoos = useStoreVoos();
 
@@ -141,11 +141,11 @@ async function buscarVoos() {
   // Força validação de todos os campos
   validarFormulario();
 
-  // Custom validation logic because useForm is not reactive to mode changes
+  // Lógica de validação personalizada porque useForm não é reativo a mudanças de modo
   if (tipoViagem.value === 'ida-volta') {
       if (!formValido.value) return;
   } else {
-      // Somente ida: check required fields manually and ignore return_date error
+      // Somente ida: verificar campos obrigatórios manualmente e ignorar erro de data de volta
       const required = ['origin_city', 'destination_city', 'departure_date'];
       const hasEmpty = required.some(field => !form.value[field]);
       const hasError = required.some(field => erros.value[field]);
@@ -156,7 +156,7 @@ async function buscarVoos() {
       }
   }
 
-  // Valida campos obrigatórios de negócio extras (borda) - redundant but safe
+  // Valida campos obrigatórios de negócio extras - redundante mas seguro
   if (!form.value.origin_city || !form.value.destination_city || !form.value.departure_date) {
     toast.error({ mensagem: 'Preencha os campos obrigatórios' });
     return;

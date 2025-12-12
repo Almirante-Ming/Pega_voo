@@ -132,34 +132,34 @@ definePageMeta({
 const activeTab = ref<'upcoming' | 'history'>('upcoming');
 const tickets = ref<any[]>([]);
 
-// Assuming endpoint returns array of tickets
+// Assumindo que o endpoint retorna um array de passagens
 const { execute, loading, data, error } = useApi('get', '/tickets/my-tickets', {});
 
 const { $axios } = useNuxtApp();
 onMounted(async () => {
     await execute();
     if (data.value) {
-        // Handle if data is wrapped or direct array
+        // Trata se os dados estão embrulhados ou em array direto
         const rawTickets = Array.isArray(data.value) ? data.value : (data.value.items || []);
         
-        // Fetch details specifically!
+        // Busca detalhes especificamente!
         const flightIds = [...new Set(rawTickets.map((t: any) => t.flight_id))];
         const flightDetails = new Map();
 
-        // Warning: This could iterate many times. Ideally backend does this. 
-        // But per constraints, doing it here.
-        // Optimization: Run in parallel
+        // Aviso: Isso pode iterar muitas vezes. Idealmente o backend faz isso.
+        // Mas por restrições, fazendo aqui.
+        // Otimização: Executar em paralelo
         await Promise.all(flightIds.map(async (fid) => {
             try {
-                // Manually fetching flight details
+                // Buscando detalhes do voo manualmente
                 const res = await $axios.get(`/flights/${fid}`);
                 if(res.data) flightDetails.set(fid, res.data);
             } catch (e) {
-                console.error(`Failed to fetch flight ${fid}`, e);
+                console.error(`Falha ao buscar voo ${fid}`, e);
             }
         }));
 
-        // Merge flight data into tickets
+        // Mescla dados do voo nas passagens
         tickets.value = rawTickets.map((t: any) => {
              return {
                  ...t,
@@ -208,7 +208,8 @@ function formatStatus(status: string) {
         'reserved': 'Confirmado',
         'confirmed': 'Confirmado',
         'cancelled': 'Cancelado',
-        'pending': 'Pendente'
+        'pending': 'Pendente',
+        'marked': 'Marcado'
     };
     return map[status] || status;
 }
