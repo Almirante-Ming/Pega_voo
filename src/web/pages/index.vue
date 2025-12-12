@@ -63,7 +63,7 @@ import type { Campo } from "~/types/formulario";
 import clsx from 'clsx'
 
 definePageMeta({
-  middleware: ["rota-autenticada"],
+
 });
 
 const router = useRouter();

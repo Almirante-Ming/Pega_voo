@@ -150,7 +150,7 @@ import type { GrupoFormulario } from "~/types/formulario";
 import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
 
 definePageMeta({
-  middleware: ["rota-autenticada"],
+
 });
 
 const store = useStoreVoos();
