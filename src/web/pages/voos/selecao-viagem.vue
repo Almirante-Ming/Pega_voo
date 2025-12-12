@@ -1,7 +1,10 @@
 
 <template>
   <div class="max-w-7xl mx-auto pb-32 lg:pb-10">
-    <h1 class="text-2xl font-bold text-grayScale-900 mb-6">Seleção de Voos</h1>
+    <div class="flex items-center gap-2 mb-6">
+        <BackButton />
+        <h1 class="text-2xl font-bold text-grayScale-900">Seleção de Voos</h1>
+    </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Left Column: Flight Cards -->
@@ -15,7 +18,7 @@
                     Voo de Ida
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
-                    {{ storeVoos.selectionParams.origin_city }} para {{ storeVoos.selectionParams.destination_city }}
+                    {{ storeVoos.outboundFlight ? storeVoos.outboundFlight.origin_city : storeVoos.selectionParams.origin_city }} para {{ storeVoos.outboundFlight ? storeVoos.outboundFlight.destination_city : storeVoos.selectionParams.destination_city }}
                   </p>
                   <p class="text-sm text-grayScale-600">
                     {{ formatarData(storeVoos.selectionParams.departure_date) }}
@@ -58,7 +61,7 @@
                     Voo de Volta
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
-                    {{ storeVoos.selectionParams.destination_city }} para {{ storeVoos.selectionParams.origin_city }}
+                    {{ storeVoos.inboundFlight ? storeVoos.inboundFlight.origin_city : storeVoos.selectionParams.destination_city }} para {{ storeVoos.inboundFlight ? storeVoos.inboundFlight.destination_city : storeVoos.selectionParams.origin_city }}
                   </p>
                   <p class="text-sm text-grayScale-600">
                     {{ formatarData(storeVoos.selectionParams.return_date) }}
@@ -179,6 +182,7 @@ import { computed, ref } from 'vue';
 definePageMeta({
   middleware: ["rota-autenticada"],
 });
+import BackButton from '@/components/BackButton/index.vue';
 
 const router = useRouter();
 const storeVoos = useStoreVoos();
