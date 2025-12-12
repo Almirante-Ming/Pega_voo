@@ -8,7 +8,7 @@
       
       <div class="flex flex-col lg:flex-row gap-8">
         <div class="flex-1 flex flex-col gap-4">
-            <!-- Flight Toggle (if Round Trip) -->
+            <!-- Alternar voo (se for Ida e Volta) -->
             <div v-if="store.inboundFlight" class="flex gap-4">
                 <div class="flex-1">
                     <div class="bg-primary w-fit text-white px-2 rounded-lg pb-0.5 mb-1">
@@ -58,7 +58,7 @@
                 </div>
             </div>
             
-             <!-- Seat Map Card -->
+             <!-- Cartão do Mapa de Assentos -->
             <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-3.5 pb-0 flex flex-col items-center">
                 <div class="w-full flex justify-between items-center">
                     <div class="gap-4 text-xs text-grayScale-600 w-full grid grid-cols-2 border p-4 rounded-md">
@@ -69,9 +69,9 @@
                     </div>
                 </div>
 
-                <!-- Aircraft Body -->
+                <!-- Corpo da Aeronave -->
                 <div class="bg-grayScale-50 rounded-full rounded-t-[100px] pb-2 relative min-w-[300px]">
-                    <!-- Cockpit area visual decoration -->
+                    <!-- Decoração visual da área da cabine -->
                     <div class="absolute top-8 left-1/2 transform -translate-x-1/2 text-grayScale-300">
                         <img src="@/assets/images/plane-icon.png" class="w-8 h-8 opacity-50" />
                     </div>
@@ -83,9 +83,9 @@
                             <span>D</span><span>E</span><span>F</span>
                         </div>
 
-                        <!-- Rows -->
+                        <!-- Fileiras -->
                         <div v-for="row in rows" :key="row.number" class="flex items-center gap-4">
-                            <!-- Left Side -->
+                            <!-- Lado Esquerdo -->
                             <div class="flex gap-2">
                                 <button 
                                   v-for="seat in ['A', 'B', 'C']"
@@ -100,10 +100,10 @@
                                 </button>
                             </div>
                             
-                            <!-- Aisle -->
+                            <!-- Corredor -->
                             <div class="w-8 text-center text-xs text-grayScale-500">{{ row.number }}</div>
 
-                            <!-- Right Side -->
+                            <!-- Lado Direito -->
                             <div class="flex gap-2">
                                 <button 
                                   v-for="seat in ['D', 'E', 'F']"
@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <!-- Summary Component -->
+        <!-- Componente de Resumo -->
         <CheckoutSummary 
             buttonText="Finalizar Compra" 
             :showSeats="true"
@@ -150,7 +150,7 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
  const currentFlight = ref<'outbound' | 'inbound'>('outbound');
  const { execute, data, error, loading } = useApi('get', '', {});
  
- // flightNumber -> Seat[]
+ // NumVoo -> Assento[]
  const seatsData = ref<Record<string, any[]>>({}); 
  
  const requiredClass = computed(() => {
@@ -160,9 +160,9 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
  async function fetchSeats(flight: any) {
      if (!flight) return;
      try {
-         // Create a separate instance/call for each flight to avoid race conditions with specific `execute`
-         // Actually useApi is designed for one endpoint. I should probably re-use execute but update URL.
-         // Or cleaner: make a small helper or just fetch sequentially.
+         // Cria uma instância/chamada separada para cada voo para evitar condições de corrida com `execute` específico
+         // Na verdade useApi é projetado para um endpoint. Eu provavelmente deveria reutilizar execute mas atualizar URL.
+         // Ou mais limpo: fazer um pequeno ajudante ou apenas buscar sequencialmente.
          const { execute: fetchExec, data: fetchData } = useApi('get', `/flights/${flight.id}/seats`, {});
          await fetchExec();
          if (fetchData.value) {
@@ -182,7 +182,7 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
      }
  });
  
- // Move to next flight automatically if Outbound is done
+ // Mover para o próximo voo automaticamente se a Ida estiver pronta
  watch(() => store.selectedSeats[store.outboundFlight?.id], (newVal) => {
      if (newVal && store.inboundFlight && !store.selectedSeats[store.inboundFlight.id]) {
          setTimeout(() => {
@@ -205,7 +205,7 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
      const seats = currentSeats.value;
      if (seats.length === 0) return [];
      
-     // Find max row
+     // Encontrar maior fileira
      let maxRow = 0;
      seats.forEach(s => {
          const match = s.seat_number.match(/(\d+)([A-Z])/);
@@ -215,15 +215,15 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
          }
      });
  
-     // Determine premium based on current data (assuming premium seats have class 'premium' or similar)
-     // Or we can just build the rows and let the seat object dictate the class.
+     // Determinar premium com base nos dados atuais (assumindo que assentos premium têm classe 'premium' ou similar)
+     // Ou podemos apenas construir as fileiras e deixar o objeto de assento ditar a classe.
      
-     // Generate valid rows 1..maxRow
+     // Gerar fileiras válidas 1..maxRow
      const result = [];
      for (let i = 1; i <= maxRow; i++) {
-         // Check if any seat in this row is premium to mark the row layout? 
-         // Not strictly necessary for layout, but visual help.
-         // We'll pass the whole row number and find seats in template.
+         // Verificar se algum assento nesta fileira é premium para marcar o layout da fileira?
+         // Não estritamente necessário para o layout, mas ajuda visual.
+         // Vamos passar o número da fileira inteiro e encontrar assentos no template.
          result.push({ number: i });
      }
      return result;
@@ -244,12 +244,12 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
      const s = getSeatData(row, seat);
      if (!s) return true; // Seat doesn't exist (e.g. gap in map)
      
-     // 1. Availability
+     // 1. Disponibilidade
      if (!s.is_available) return true;
  
-     // 2. Class Constraint
-     // store.ticketClass is 'economy' or 'premium'
-     // seat.seat_class is 'economy' or 'premium' (API)
+     // 2. Restrição de Classe
+     // store.ticketClass é 'economy' ou 'premium'
+     // seat.seat_class é 'economy' ou 'premium' (API)
      if (requiredClass.value !== s.seat_class) return true;
      
      return false;
@@ -257,7 +257,7 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
 
 function getSeatClass(row: number, seat: string) {
     const s = getSeatData(row, seat);
-    if (!s) return 'invisible'; // Hide non-existent seats
+    if (!s) return 'invisible'; // Esconder assentos inexistentes
 
     if (isSeatSelected(row, seat)) {
         return 'bg-primary text-white border-primary';

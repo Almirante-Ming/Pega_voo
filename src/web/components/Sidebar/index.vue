@@ -75,12 +75,12 @@ const menuItems = [
 ];
 
 function logout() {
-  // Clear auth token
+  // Limpar token de autenticação
   const token = useCookie("token");
   token.value = null;
 
   emit("close");
-  router.push("/login"); // Assuming /login exists
+  router.push("/login"); // Assumindo que /login existe
 }
 </script>
 
