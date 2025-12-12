@@ -126,14 +126,16 @@ function toggleTheme() {
     }
 }
 
-function logout() {
-  // Limpar token de autenticação
-  const token = useCookie("token");
-  token.value = null;
 
+import { useStoreDeUsuario } from "@/store/useStoreUsuario";
+
+function logout() {
+  const store = useStoreDeUsuario();
+  store.clearToken();
   emit("close");
-  router.push("/login"); // Assumindo que /login existe
+  router.push("/login"); 
 }
+
 </script>
 
 <style scoped></style>
