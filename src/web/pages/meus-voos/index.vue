@@ -37,7 +37,7 @@
       </div>
 
       <div v-else class="flex flex-col gap-4">
-          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-white rounded-xl shadow-md border-l-4 overflow-hidden hover:shadow-lg transition-shadow duration-300"
+          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-grayScale-50 rounded-xl shadow-md border-l-4 overflow-hidden hover:shadow-lg transition-shadow duration-300"
             :class="{
                 'border-green-500': ticket.status === 'confirmed' || ticket.status === 'reserved',
                 'border-red-500': ticket.status === 'cancelled',

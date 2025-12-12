@@ -1,6 +1,9 @@
 <template>
   <div class="w-full bg-grayScale-50 rounded-lg shadow-lg p-4 px-5">
-    <h1 class="text-2xl font-bold mb-3.5 text-grayScale-900">Passagens aéreas</h1>
+    <div class="flex items-center gap-2 mb-5">
+      <img src="/images/plane-takeoff.svg" class="w-8 h-8 dark:bg-grayScale-900 rounded-full p-1"/>
+      <h1 class="text-2xl font-bold text-grayScale-900">Passagens aéreas</h1>
+    </div>
 
     <!-- Tipo de viagem -->
     <div class="flex gap-1.5 mb-3.5 bg-grayScale-200 rounded-lg p-2 py-1">

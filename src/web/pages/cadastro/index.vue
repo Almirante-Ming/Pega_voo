@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-1.5 mb-4">
         <div class="flex gap-1.5 items-center">
           <BackButton />
-          <p class="text-2xl font-semibold">Criar sua conta</p>
+          <p class="text-2xl font-semibold text-grayScale-900">Criar sua conta</p>
         </div>
         <p class="text-grayScale-600">Informe seus dados para prosseguirmos!</p>
       </div>
@@ -37,7 +37,7 @@
 
     <div v-if="step === 2" class="space-y-4">
       <div>
-        <h2 class="text-xl font-semibold">Definir senha</h2>
+        <h2 class="text-2xl text-grayScale-900 font-semibold">Definir senha</h2>
         <p class="text-sm text-gray-600">Agora escolha sua senha para completar o cadastro</p>
       </div>
 

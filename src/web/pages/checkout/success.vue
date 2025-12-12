@@ -3,7 +3,9 @@
     <div class="w-full max-w-md rounded-lg overflow-hidden">
 
 
-      <div class="bg-green-500 p-6 text-center text-white flex flex-col items-center gap-4">
+      
+
+      <div class="bg-green-700 p-6 text-center text-white flex flex-col items-center gap-4">
           <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
               <Icon nameIcon="CheckIcon" class="w-10 h-10 text-white" />
           </div>

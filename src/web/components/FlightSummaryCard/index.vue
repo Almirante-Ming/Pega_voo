@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-grayScale-50 p-4 rounded-lg border border-grayScale-300">
+  <div class="bg-grayScale-50 p-4 rounded-lg border border-grayScale-300 text-grayScale-900">
       <p class="font-bold text-grayScale-900 flex items-center gap-2">
       <Icon nameIcon="GlobeAltIcon" class="w-4 h-4 -rotate-45 text-grayScale-700" />
       {{ airline }} 

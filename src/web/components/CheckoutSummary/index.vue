@@ -3,7 +3,7 @@
     <!-- Desktop Summary (Side) -->
     <div class="hidden lg:block w-80">
         <div class="bg-grayScale-50 rounded-lg shadow-lg p-6 sticky top-6">
-            <h3 class="font-bold text-lg mb-4">Resumo da Compra</h3>
+            <h3 class="font-bold text-lg text-grayScale-900 mb-4">Resumo da Compra</h3>
             <div class="flex flex-col gap-3 text-sm text-grayScale-600 border-b border-grayScale-300 pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Voos ({{ store.selectionParams.origin_city }} - {{ store.selectionParams.destination_city }})</span>

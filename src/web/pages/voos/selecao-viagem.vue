@@ -13,8 +13,8 @@
             <div class="bg-grayScale-50 rounded-lg shadow-lg p-6">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <h2 class="text-lg font-bold flex items-center gap-2">
-                    <img src="/images/plane-takeoff.svg" class="w-6 h-6" />
+                  <h2 class="text-lg font-bold flex items-center gap-2 text-grayScale-900">
+                    <img src="/images/plane-takeoff.svg" class="w-6 h-6 dark:bg-grayScale-800 dark:p-1 rounded-full" />
                     Voo de Ida
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
@@ -56,8 +56,8 @@
             <div class="bg-grayScale-50 rounded-lg shadow-lg p-6">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <h2 class="text-lg font-bold flex items-center gap-2">
-                    <img src="/images/plane-takeoff.svg" class="w-6 h-6 transform scale-x-[-1]" />
+                  <h2 class="text-lg font-bold flex items-center gap-2 text-grayScale-900">
+                    <img src="/images/plane-takeoff.svg" class="w-6 h-6 transform scale-x-[-1] dark:bg-grayScale-800 dark:p-1 rounded-full" />
                     Voo de Volta
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">

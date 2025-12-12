@@ -61,10 +61,10 @@
              <!-- Cartão do Mapa de Assentos -->
             <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-3.5 pb-0 flex flex-col items-center">
                 <div class="w-full flex justify-between items-center">
-                    <div class="gap-4 text-xs text-grayScale-600 w-full grid grid-cols-2 border p-4 rounded-md">
+                    <div class="gap-4 text-xs text-grayScale-600 w-full grid grid-cols-2 border border-grayScale-400 p-4 rounded-md">
                         <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-100 border border-grayScale-300 rounded"></div> Disponível</div>
                         <div class="flex items-center gap-1"><div class="w-4 h-4 bg-primary rounded"></div> Selecionado</div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-200 rounded opacity-50"></div> Ocupado</div>
+                        <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-200 rounded opacity-50"></div> Indisponível</div>
                         <div class="flex items-center gap-1"><div class="w-4 h-4 border-2 border-primary rounded flex items-center justify-center"><Icon nameIcon="StarIcon" class="w-3 h-3 text-primary" /></div> Premium</div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="bg-grayScale-50 rounded-full rounded-t-[100px] pb-2 relative min-w-[300px]">
                     <!-- Decoração visual da área da cabine -->
                     <div class="absolute top-8 left-1/2 transform -translate-x-1/2 text-grayScale-300">
-                        <img src="@/assets/images/plane-icon.png" class="w-8 h-8 opacity-50" />
+                        <img src="@/assets/images/plane-icon.png" class="w-8 h-8 opacity-50 dark:invert" />
                     </div>
 
                     <div class="mt-12 flex flex-col gap-3">
