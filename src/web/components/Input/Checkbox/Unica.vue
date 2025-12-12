@@ -7,7 +7,7 @@
         :disabled="!props.habilitado"
         @change="toggleCheckbox"
         :checked="checkboxStates.checked"
-        class="w-[18px] h-[18px] text-primary rounded focus:ring-primary bg-white border-grayScale-400 focus:outline-none"
+        class="w-[18px] h-[18px] text-primary rounded focus:ring-primary bg-grayScale-50 border-grayScale-400 focus:outline-none"
       />
       <label
         :for="'checkbox-' + props.propriedade"

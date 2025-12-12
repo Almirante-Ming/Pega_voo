@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-grayScale-100 flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
+  <div class="min-h-screen bg-grayScale-100 flex flex-col items-center  p-4">
+    <div class="w-full max-w-md bg-grayScale-50 rounded-lg shadow-xl overflow-hidden">
       <!-- Header -->
       <div class="bg-blue-900 p-4 flex justify-between items-center text-white">
           <span class="font-bold text-lg">Cancelamento</span>
@@ -30,7 +30,7 @@
               <button @click="router.push('/meus-voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-bold transition-colors">
                   Tentar novamente
               </button>
-              <button @click="router.push('/')" class="w-full bg-white border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/')" class="w-full bg-grayScale-50 border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-bold transition-colors">
                   Voltar à tela inicial
               </button>
           </div>

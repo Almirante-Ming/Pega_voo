@@ -30,14 +30,14 @@
           <Icon nameIcon="ArrowPathIcon" class="w-8 h-8 text-primary animate-spin" />
       </div>
 
-      <div v-else-if="currentList.length === 0" class="text-center py-12 bg-white rounded-lg shadow-sm border border-grayScale-200">
+      <div v-else-if="currentList.length === 0" class="text-center py-12 bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-200">
           <Icon nameIcon="TicketIcon" class="w-12 h-12 text-grayScale-300 mx-auto mb-3" />
           <h3 class="text-lg font-bold text-grayScale-900 mb-1">Nenhum voo encontrado</h3>
           <p class="text-grayScale-500">Você não tem voos nesta categoria.</p>
       </div>
 
       <div v-else class="flex flex-col gap-4">
-          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-white rounded-xl shadow-md border-l-4 overflow-hidden hover:shadow-lg transition-shadow duration-300"
+          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-grayScale-50 rounded-xl shadow-md border-l-4 overflow-hidden hover:shadow-lg transition-shadow duration-300"
             :class="{
                 'border-green-500': ticket.status === 'confirmed' || ticket.status === 'reserved',
                 'border-red-500': ticket.status === 'cancelled',
