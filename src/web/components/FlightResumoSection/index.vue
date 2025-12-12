@@ -2,7 +2,7 @@
   <div class="mb-6">
       <div class="flex flex-col gap-2 mb-2">
         <div class="bg-primary text-white w-fit px-2 py-0.5 rounded text-xs font-bold uppercase">{{ type }}</div>
-        <div class="flex items-center gap-2 font-bold">
+        <div class="flex items-center gap-2 font-bold text-grayScale-900">
             <span>{{ origin }}</span>
             <Icon nameIcon="ArrowRightIcon" class="w-4 text-grayScale-500" /> 
             <span> {{ destination }}</span>
