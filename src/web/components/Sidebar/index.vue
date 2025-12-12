@@ -9,7 +9,7 @@
 
     <!-- Sidebar -->
     <aside
-      class="fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white shadow-2xl z-[100] transform transition-transform duration-300 ease-out flex flex-col"
+      class="fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-grayScale-50 shadow-2xl z-[100] transform transition-transform duration-300 ease-out flex flex-col"
       :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <!-- Header with Logo -->
@@ -75,12 +75,12 @@ const menuItems = [
 ];
 
 function logout() {
-  // Clear auth token
+  // Limpar token de autenticação
   const token = useCookie("token");
   token.value = null;
 
   emit("close");
-  router.push("/login"); // Assuming /login exists
+  router.push("/login"); // Assumindo que /login existe
 }
 </script>
 

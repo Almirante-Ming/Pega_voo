@@ -28,7 +28,7 @@
                 <Icon nameIcon="ClockIcon" class="w-4 h-4 text-grayScale-600" />
               </div>
             </div>
-            <p class="text-xs text-center text-grayScale-600 mt-1">
+            <p class="text-xs text-center text-grayScale-600 mt-2">
               {{ duration }}
             </p>
             <p class="text-xs text-center text-grayScale-600">Direto</p>

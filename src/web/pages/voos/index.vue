@@ -3,17 +3,12 @@
     <!-- Header com filtros -->
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
       <div class="flex items-center justify-between mb-2">
-        <h2 class="text-xl font-bold text-grayScale-900">
-          {{ voos.length ? voos.length : '' }} {{ voos.length == 0 ? 'Nenhum voo encontrado' : voos.length == 1 ? 'Voo encontrado' : 'Voos encontrados' }} 
-        </h2>
-        <button 
-          v-if="voos.length"
-          @click="router.push('/')"
-          class="text-primary hover:text-primary-dark font-medium text-sm bg-grayScale-200 shadow rounded-md p-2 flex items-center gap-1"
-        >
-          <Icon nameIcon="MagnifyingGlassIcon" class="w-5 h-5" />
-          Nova busca
-        </button>
+        <div class="flex items-center gap-2">
+           <BackButton />
+           <h2 class="text-xl font-bold text-grayScale-900">
+             {{ voos.length ? voos.length : '' }} {{ voos.length == 0 ? 'Nenhum voo encontrado' : voos.length == 1 ? 'Voo encontrado' : 'Voos encontrados' }} 
+            </h2>
+        </div>
       </div>
 
       <!-- Info da busca -->
@@ -36,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Loading -->
+    <!-- Carregando -->
     <div v-if="loading" class="flex justify-center items-center py-20">
       <Icon nameIcon="ArrowPathIcon" class="w-8 h-8 text-primary animate-spin" />
     </div>
@@ -83,6 +78,7 @@
 definePageMeta({
   middleware: ["rota-autenticada"],
 });
+import BackButton from '@/components/BackButton/index.vue';
 
 const router = useRouter();
 const route = useRoute();

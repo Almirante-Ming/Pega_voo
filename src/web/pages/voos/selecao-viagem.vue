@@ -1,10 +1,13 @@
 
 <template>
   <div class="max-w-7xl mx-auto pb-32 lg:pb-10">
-    <h1 class="text-2xl font-bold text-grayScale-900 mb-6">Seleção de Voos</h1>
+    <div class="flex items-center gap-2 mb-6">
+        <BackButton />
+        <h1 class="text-2xl font-bold text-grayScale-900">Seleção de Voos</h1>
+    </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Left Column: Flight Cards -->
+        <!-- Coluna Esquerda: Cartões de Voo -->
         <div class="flex-1 space-y-6">
             <!-- Card Ida -->
             <div class="bg-grayScale-50 rounded-lg shadow-lg p-6">
@@ -15,7 +18,7 @@
                     Voo de Ida
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
-                    {{ storeVoos.selectionParams.origin_city }} para {{ storeVoos.selectionParams.destination_city }}
+                    {{ storeVoos.outboundFlight ? storeVoos.outboundFlight.origin_city : storeVoos.selectionParams.origin_city }} para {{ storeVoos.outboundFlight ? storeVoos.outboundFlight.destination_city : storeVoos.selectionParams.destination_city }}
                   </p>
                   <p class="text-sm text-grayScale-600">
                     {{ formatarData(storeVoos.selectionParams.departure_date) }}
@@ -58,7 +61,7 @@
                     Voo de Volta
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
-                    {{ storeVoos.selectionParams.destination_city }} para {{ storeVoos.selectionParams.origin_city }}
+                    {{ storeVoos.inboundFlight ? storeVoos.inboundFlight.origin_city : storeVoos.selectionParams.destination_city }} para {{ storeVoos.inboundFlight ? storeVoos.inboundFlight.destination_city : storeVoos.selectionParams.origin_city }}
                   </p>
                   <p class="text-sm text-grayScale-600">
                     {{ formatarData(storeVoos.selectionParams.return_date) }}
@@ -93,7 +96,7 @@
             </div>
         </div>
 
-        <!-- Right Column: Summary (Desktop) -->
+        <!-- Coluna Direita: Resumo (Desktop) -->
         <div class="hidden lg:block w-80">
             <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-6 sticky top-24">
                 <h3 class="font-bold text-lg mb-4">Resumo da Viagem</h3>
@@ -130,10 +133,10 @@
         </div>
     </div>
 
-    <!-- Mobile Sticky Footer -->
+    <!-- Rodapé Fixo Mobile -->
     <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
         <div class="p-4">
-             <!-- Toggle Details -->
+             <!-- Alternar Detalhes -->
              <div 
                @click="mobileDetailsOpen = !mobileDetailsOpen"
                class="flex justify-center mb-2 cursor-pointer"
@@ -141,7 +144,7 @@
                  <Icon :nameIcon="mobileDetailsOpen ? 'ChevronDownIcon' : 'ChevronUpIcon'" class="w-5 h-5 text-grayScale-400" />
              </div>
              
-             <!-- Collapsible Details -->
+             <!-- Detalhes Colapsáveis -->
              <div v-if="mobileDetailsOpen" class="text-sm text-grayScale-600 py-2 border-b border-grayScale-100 mb-2">
                  <div class="flex justify-between" v-if="storeVoos.outboundFlight">
                      <span>Voo de Ida</span>
@@ -179,12 +182,13 @@ import { computed, ref } from 'vue';
 definePageMeta({
   middleware: ["rota-autenticada"],
 });
+import BackButton from '@/components/BackButton/index.vue';
 
 const router = useRouter();
 const storeVoos = useStoreVoos();
 const mobileDetailsOpen = ref(false);
 
-// Redirect to home if no params (page refresh without state)
+// Redireciona para home se sem parâmetros (atualização de página sem estado)
 if (!storeVoos.selectionParams.origin_city) {
     router.push('/');
 }

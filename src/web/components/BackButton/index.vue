@@ -1,7 +1,7 @@
 <template>
   <button 
     @click="handleClick" 
-    class="flex items-center justify-center p-1 rounded-lg bg-grayScale-200 hover:bg-grayScale-300 text-grayScale-700 transition-colors shadow-sm"
+    class="flex items-center justify-center p-1 rounded-lg bg-grayScale-100 hover:bg-grayScale-300 text-grayScale-700 transition-colors shadow-sm"
     title="Voltar"
   >
     <Icon nameIcon="ChevronLeftIcon" class="size-5" />

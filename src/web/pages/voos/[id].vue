@@ -8,7 +8,7 @@
 
         <div class="flex gap-1.5 justify-between mb-3">
             <div class="flex gap-2 items-center">
-                 <div class="bg-primary rounded-full flex items-center justify-center p-2">
+                 <div class="bg-primary rounded-full flex items-center justify-center p-0.5">
                     <Icon nameIcon="GlobeAltIcon" class="w-6 h-6 text-white rotate-45" />
                  </div>
                 <span class="font-semibold text-grayScale-900">{{ voo.airline_name }}</span>
@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-// filepath: c:\Users\ext.gersonbjf\Documents\projetos\task_fly\src\web\pages\voos\[id].vue
+
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, computed } from 'vue'
 import { useApi } from '@/composables/useApi'

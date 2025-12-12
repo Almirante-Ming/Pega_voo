@@ -107,19 +107,7 @@ const formulario = computed<Campo[]>(() => [
     validacao: "data",
     obrigatorio: tipoViagem.value === 'ida-volta',
   },
-  {
-    label: "Classe",
-    propriedade: "classe",
-    tipoDeInput: "select",
-    modelType: "static" as const,
-    obrigatorio: false,
-    placeholder: "Selecione",
-    model: [
-      { chave: "economica", descricao: "Econômica" },
-      { chave: "executiva", descricao: "Executiva" },
-      { chave: "primeira", descricao: "Primeira Classe" }
-    ]
-  }
+
 ]);
 
 const formularioFiltrado = computed(() => {
@@ -145,7 +133,7 @@ const { form, erros, formValido, validarCampo, validarFormulario } = useForm(cam
 
 const atualizarForm = atualizarFormulario(form, validarCampo);
 
-// Import store
+// Importar store
 import { useStoreVoos } from '@/store/useStoreVoos';
 const storeVoos = useStoreVoos();
 
@@ -153,11 +141,11 @@ async function buscarVoos() {
   // Força validação de todos os campos
   validarFormulario();
 
-  // Custom validation logic because useForm is not reactive to mode changes
+  // Lógica de validação personalizada porque useForm não é reativo a mudanças de modo
   if (tipoViagem.value === 'ida-volta') {
       if (!formValido.value) return;
   } else {
-      // Somente ida: check required fields manually and ignore return_date error
+      // Somente ida: verificar campos obrigatórios manualmente e ignorar erro de data de volta
       const required = ['origin_city', 'destination_city', 'departure_date'];
       const hasEmpty = required.some(field => !form.value[field]);
       const hasError = required.some(field => erros.value[field]);
@@ -168,7 +156,7 @@ async function buscarVoos() {
       }
   }
 
-  // Valida campos obrigatórios de negócio extras (borda) - redundant but safe
+  // Valida campos obrigatórios de negócio extras - redundante mas seguro
   if (!form.value.origin_city || !form.value.destination_city || !form.value.departure_date) {
     toast.error({ mensagem: 'Preencha os campos obrigatórios' });
     return;
@@ -188,8 +176,7 @@ async function buscarVoos() {
               origin_city: form.value.origin_city,
               destination_city: form.value.destination_city,
               departure_date: form.value.departure_date,
-              return_date: form.value.return_date,
-              selected_class: form.value.classe
+              return_date: form.value.return_date
           });
           // Limpa seleções anteriores para não misturar
           storeVoos.setOutboundFlight(null);
