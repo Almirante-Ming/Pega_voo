@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Loading -->
+    <!-- Carregando -->
     <div v-if="loading" class="flex justify-center items-center py-20">
       <Icon nameIcon="ArrowPathIcon" class="w-8 h-8 text-primary animate-spin" />
     </div>
