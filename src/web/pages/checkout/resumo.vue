@@ -90,7 +90,7 @@ import FlightResumoSection from '@/components/FlightResumoSection/index.vue';
 import { useToast } from '@/composables/useToast';
 
 definePageMeta({
-  middleware: ["rota-autenticada"],
+
 });
 
 const store = useStoreVoos();

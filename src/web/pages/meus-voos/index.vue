@@ -126,7 +126,7 @@ import BackButton from '@/components/BackButton/index.vue';
 import Icon from '@/components/Icon/index.vue';
 
 definePageMeta({
-  middleware: ["rota-autenticada"],
+
 });
 
 const activeTab = ref<'upcoming' | 'history'>('upcoming');

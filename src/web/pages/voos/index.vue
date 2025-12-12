@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  middleware: ["rota-autenticada"],
+
 });
 import BackButton from '@/components/BackButton/index.vue';
 
