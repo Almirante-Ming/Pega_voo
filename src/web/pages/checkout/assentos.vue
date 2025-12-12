@@ -150,7 +150,7 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
  const currentFlight = ref<'outbound' | 'inbound'>('outbound');
  const { execute, data, error, loading } = useApi('get', '', {});
  
- // NumVoo -> Assento[]
+
  const seatsData = ref<Record<string, any[]>>({}); 
  
  const requiredClass = computed(() => {
@@ -160,9 +160,7 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
  async function fetchSeats(flight: any) {
      if (!flight) return;
      try {
-         // Cria uma instância/chamada separada para cada voo para evitar condições de corrida com `execute` específico
-         // Na verdade useApi é projetado para um endpoint. Eu provavelmente deveria reutilizar execute mas atualizar URL.
-         // Ou mais limpo: fazer um pequeno ajudante ou apenas buscar sequencialmente.
+         // Busca assentos do voo
          const { execute: fetchExec, data: fetchData } = useApi('get', `/flights/${flight.id}/seats`, {});
          await fetchExec();
          if (fetchData.value) {
@@ -215,15 +213,10 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
          }
      });
  
-     // Determinar premium com base nos dados atuais (assumindo que assentos premium têm classe 'premium' ou similar)
-     // Ou podemos apenas construir as fileiras e deixar o objeto de assento ditar a classe.
-     
+
      // Gerar fileiras válidas 1..maxRow
      const result = [];
      for (let i = 1; i <= maxRow; i++) {
-         // Verificar se algum assento nesta fileira é premium para marcar o layout da fileira?
-         // Não estritamente necessário para o layout, mas ajuda visual.
-         // Vamos passar o número da fileira inteiro e encontrar assentos no template.
          result.push({ number: i });
      }
      return result;
