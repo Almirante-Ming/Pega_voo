@@ -8,9 +8,9 @@ LOCK = str(os.getenv('LOCK'))
 
 @app.task(name='send_recovery_code')
 def send_recovery_code(receiver: str, kcode: str):
-    corpo = f"Seu código de verificação é: {kcode}"
+    corpo = f"Seu código de recuperação é: {kcode}\n\nEste código é válido por 10 minutos."
     msg = MIMEText(corpo)
-    msg['Subject'] = 'Código de Verificação'
+    msg['Subject'] = 'Código de Recuperação de Conta'
     msg['From'] = SENDER
     msg['To'] = receiver
 

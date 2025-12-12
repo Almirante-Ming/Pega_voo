@@ -25,7 +25,6 @@ def release_seat(ticket_id: int):
         if not ticket:
             return
         
-        # Find and release the seat
         seat = db.query(models.Seat).filter(
             models.Seat.flight_id == ticket.flight_id,
             models.Seat.seat_number == ticket.seat_number
@@ -35,7 +34,6 @@ def release_seat(ticket_id: int):
             setattr(seat, 'is_available', True)
             setattr(seat, 'ticket_id', None)
         
-        # Update ticket status to indicate payment failure
         setattr(ticket, 'status', 'cancelled')
         db.commit()
     finally:
@@ -58,10 +56,8 @@ def await_payment_confirmation(session_id: str, ticket_id: int, max_tries: int =
     
     for attempt in range(1, max_tries + 1):
         try:
-            # Fetch session from Stripe
             session = stripe.checkout.Session.retrieve(session_id)
             
-            # Check if payment was successful
             if session.payment_status == "paid":
                 return {
                     'status': 'confirmed',
@@ -69,7 +65,6 @@ def await_payment_confirmation(session_id: str, ticket_id: int, max_tries: int =
                     'attempts': attempt
                 }
             
-            # If payment status is unpaid, wait and retry
             if attempt < max_tries:
                 time.sleep(PAYMENT_CHECK_DELAY)
         
@@ -83,7 +78,6 @@ def await_payment_confirmation(session_id: str, ticket_id: int, max_tries: int =
                     'message': str(e)
                 }
     
-    # Max retries reached, payment not confirmed
     return {
         'status': 'failed',
         'attempts': max_tries,
@@ -104,16 +98,13 @@ def check_payment_confirmation(session_id: str, ticket_id: int, passenger_email:
     db = SessionLocal()
     
     try:
-        # Wait for payment confirmation
         payment_result = await_payment_confirmation(session_id, ticket_id)
         
         if payment_result['status'] == 'confirmed':
-            # Payment confirmed, update ticket status to "marked"
             ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
             if ticket:
                 setattr(ticket, 'status', 'marked')
                 
-                # Mark seat as unavailable now that payment is confirmed
                 seat = db.query(models.Seat).filter(
                     models.Seat.flight_id == ticket.flight_id,
                     models.Seat.seat_number == ticket.seat_number
@@ -126,7 +117,6 @@ def check_payment_confirmation(session_id: str, ticket_id: int, passenger_email:
             
             db.close()
             
-            # Trigger confirmation email
             from tinto.tasks.send_confirmation_email import send_confirmation_email
             send_confirmation_email.delay(ticket_id)
             
@@ -138,7 +128,6 @@ def check_payment_confirmation(session_id: str, ticket_id: int, passenger_email:
         else:
             db.close()
             
-            # Payment not confirmed, release seat and send error email
             release_seat(ticket_id)
             from tinto.tasks.send_payment_error_email import send_payment_error_email
             send_payment_error_email.delay(ticket_id)

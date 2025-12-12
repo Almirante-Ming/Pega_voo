@@ -27,20 +27,16 @@ def create_checkout_session(ticket_id: int, passenger_email: str):
     db = SessionLocal()
     
     try:
-        # Fetch the ticket from database
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
         if not ticket:
             raise Exception(f"Ticket with ID {ticket_id} not found")
         
-        # Fetch flight details for product information
         flight = db.query(models.Flight).filter(models.Flight.id == ticket.flight_id).first()
         if not flight:
             raise Exception(f"Flight with ID {ticket.flight_id} not found")
         
-        # Convert price to cents (Stripe expects cents)
         price_cents = int(float(ticket.price) * 100)  #type: ignore
         
-        # Create Stripe checkout session
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
@@ -75,7 +71,6 @@ def create_checkout_session(ticket_id: int, passenger_email: str):
         session_id = checkout_session.id
         db.close()
         
-        # Return checkout URL immediately (frontend will redirect)
         result = {
             'status': 'success',
             'checkout_url': checkout_session.url,
@@ -83,7 +78,6 @@ def create_checkout_session(ticket_id: int, passenger_email: str):
             'ticket_id': ticket_id
         }
         
-        # Start polling for payment confirmation in background
         from tinto.tasks.check_payment import check_payment_confirmation
         check_payment_confirmation.delay(session_id, ticket_id, passenger_email)
         

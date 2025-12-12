@@ -21,7 +21,6 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
         )
     ).first()
     
-    # Using getattr to avoid type checker issues with SQLAlchemy models
     user_id = getattr(user, 'id', None)
     
     if not user or user_id == 0:
@@ -34,7 +33,6 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
     recovery_key = f"recovery:{kcode}"
     payload = {"code": kcode, "user": user.email}
     try:
-        # ex == expiration
         result = minerva.set(recovery_key, json.dumps(payload), ex=600)
         if not result:
             raise RuntimeError("Failed to set key")
@@ -42,7 +40,6 @@ def get_recovery_code(form_data: RecoveryRequest, db: DBSession):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     
     try:
-        # Send recovery code email asynchronously using Celery
         send_recovery_code.delay(user.email, kcode)
         
     except Exception as e:
