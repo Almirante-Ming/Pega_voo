@@ -133,7 +133,7 @@ async function processPayment() {
     }
 
     if (paymentLink) {
-        // Persistir detalhes do voo para página de sucesso (já que a store é perdida no redirecionamento/reload)
+        // Persistir detalhes do voo para página de sucesso
         if (store.outboundFlight) {
             localStorage.setItem('last_payment_flight', JSON.stringify(store.outboundFlight));
         }

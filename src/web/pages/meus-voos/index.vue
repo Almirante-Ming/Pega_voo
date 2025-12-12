@@ -132,26 +132,22 @@ definePageMeta({
 const activeTab = ref<'upcoming' | 'history'>('upcoming');
 const tickets = ref<any[]>([]);
 
-// Assumindo que o endpoint retorna um array de passagens
+// Busca as passagens do usuário
 const { execute, loading, data, error } = useApi('get', '/tickets/my-tickets', {});
 
 const { $axios } = useNuxtApp();
 onMounted(async () => {
     await execute();
     if (data.value) {
-        // Trata se os dados estão embrulhados ou em array direto
+        // Normaliza a resposta da API
         const rawTickets = Array.isArray(data.value) ? data.value : (data.value.items || []);
         
-        // Busca detalhes especificamente!
+        // Busca detalhes dos voos associados
         const flightIds = [...new Set(rawTickets.map((t: any) => t.flight_id))];
         const flightDetails = new Map();
 
-        // Aviso: Isso pode iterar muitas vezes. Idealmente o backend faz isso.
-        // Mas por restrições, fazendo aqui.
-        // Otimização: Executar em paralelo
         await Promise.all(flightIds.map(async (fid) => {
             try {
-                // Buscando detalhes do voo manualmente
                 const res = await $axios.get(`/flights/${fid}`);
                 if(res.data) flightDetails.set(fid, res.data);
             } catch (e) {
@@ -159,7 +155,7 @@ onMounted(async () => {
             }
         }));
 
-        // Mescla dados do voo nas passagens
+
         tickets.value = rawTickets.map((t: any) => {
              return {
                  ...t,
