@@ -56,8 +56,13 @@ def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
     if premium_seats > 0 and flight.premium_price is None:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="premium_price is required when premium_seats > 0")
     
+    # Calculate economy_seats
+    total_seats = cast(int, flight.avaliable_seats)
+    economy_seats = total_seats - premium_seats
+    
     # Create flight without economy_price and premium_price (they're not part of Flight model)
     flight_data = flight.model_dump(exclude={'economy_price', 'premium_price'})
+    flight_data['economy_seats'] = economy_seats
     # Set status to SCHEDULED by default
     flight_data['status'] = Flight_Status.SCHEDULED
     new_flight = models.Flight(**flight_data)

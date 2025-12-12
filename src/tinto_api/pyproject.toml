@@ -75,6 +75,9 @@ exclude = [
     'venv'
 ]
 
+[project.scripts]
+app = "tinto.main:tinto"
+
 [tool.ruff.lint]
 preview = true
 select = ['I', 'F', 'E', 'W', 'PL', 'PT']

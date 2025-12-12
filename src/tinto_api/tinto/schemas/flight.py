@@ -14,6 +14,7 @@ class FlightBase(BaseModel):
     departure_time: datetime = Field(..., description="Scheduled departure time")
     estimated_arrival: datetime = Field(..., description="Scheduled arrival time")
     stops_count: int = Field(..., description="Total connection flights, 0 for direct")
+    economy_seats: int = Field(..., description="Number of economy seats")
     avaliable_seats: int = Field(...,description="Total of avaliable seats")
     premium_seats: int = Field(..., description="especial seats like as first, executive...")
 
@@ -33,6 +34,20 @@ class FlightCreateRequest(BaseModel):
     premium_seats: int = Field(..., description="especial seats like as first, executive...")
     economy_price: float = Field(..., description="Price for economy seats")
     premium_price: Optional[float] = Field(None, description="Price for premium seats (required if premium_seats > 0)")
+
+    @field_validator('avaliable_seats', 'premium_seats')
+    @classmethod
+    def validate_seats(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("Seat counts must be non-negative")
+        return v
+    
+    @field_validator('avaliable_seats')
+    @classmethod
+    def validate_total_seats(cls, v: int, info) -> int:
+        if 'premium_seats' in info.data and v < info.data['premium_seats']:
+            raise ValueError("avaliable_seats must be >= premium_seats")
+        return v
 
 
 class FlightCreate(FlightBase):
