@@ -39,7 +39,7 @@
                         <span>Enviando...</span>
                     </div>
                     <span v-else-if="countdown > 0" class="text-grayScale-400">
-                        Tente novamente em {{ formattedCountdown }}
+                        {{ formattedCountdown }}
                     </span>
                     <button v-else @click="reenviarCodigo" class="text-primary underline px-1 hover:text-primary-dark">
                         Reenviar

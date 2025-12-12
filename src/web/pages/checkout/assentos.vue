@@ -18,7 +18,7 @@
                     <button 
                     @click="currentFlight = 'outbound'"
                     class="w-full py-3 px-4 rounded-lg font-bold border-2 relative transition-colors flex justify-center items-center"
-                    :class="currentFlight === 'outbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-white text-grayScale-600'"
+                    :class="currentFlight === 'outbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-grayScale-50 text-grayScale-600'"
                     >
                     <div class="flex flex-col gap-1 text-center">
                         <div class="flex flex-col items-center leading-none gap-0.5">
@@ -41,7 +41,7 @@
                     <button 
                     @click="currentFlight = 'inbound'"
                     class="w-full py-3 px-4 rounded-lg font-bold border-2 relative transition-colors flex justify-center items-center"
-                    :class="currentFlight === 'inbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-white text-grayScale-600'"
+                    :class="currentFlight === 'inbound' ? 'border-primary bg-primary/5 text-primary' : 'border-grayScale-300 bg-grayScale-50 text-grayScale-600'"
                     >
                     <div class="flex flex-col gap-1 text-center">
                         <div class="flex flex-col items-center leading-none gap-0.5">
@@ -59,12 +59,12 @@
             </div>
             
              <!-- Cartão do Mapa de Assentos -->
-            <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-3.5 pb-0 flex flex-col items-center">
+            <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-3.5 pb-0 flex flex-col items-center">
                 <div class="w-full flex justify-between items-center">
-                    <div class="gap-4 text-xs text-grayScale-600 w-full grid grid-cols-2 border p-4 rounded-md">
+                    <div class="gap-4 text-xs text-grayScale-600 w-full grid grid-cols-2 border border-grayScale-400 p-4 rounded-md">
                         <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-100 border border-grayScale-300 rounded"></div> Disponível</div>
                         <div class="flex items-center gap-1"><div class="w-4 h-4 bg-primary rounded"></div> Selecionado</div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-200 rounded opacity-50"></div> Ocupado</div>
+                        <div class="flex items-center gap-1"><div class="w-4 h-4 bg-grayScale-200 rounded opacity-50"></div> Indisponível</div>
                         <div class="flex items-center gap-1"><div class="w-4 h-4 border-2 border-primary rounded flex items-center justify-center"><Icon nameIcon="StarIcon" class="w-3 h-3 text-primary" /></div> Premium</div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="bg-grayScale-50 rounded-full rounded-t-[100px] pb-2 relative min-w-[300px]">
                     <!-- Decoração visual da área da cabine -->
                     <div class="absolute top-8 left-1/2 transform -translate-x-1/2 text-grayScale-300">
-                        <img src="@/assets/images/plane-icon.png" class="w-8 h-8 opacity-50" />
+                        <img src="@/assets/images/plane-icon.png" class="w-8 h-8 opacity-50 dark:invert" />
                     </div>
 
                     <div class="mt-12 flex flex-col gap-3">
@@ -96,7 +96,7 @@
                                   :class="getSeatClass(row.number, seat)"
                                 >
                                     {{ seat }}
-                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-white rounded-full" />
+                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-grayScale-50 rounded-full" />
                                 </button>
                             </div>
                             
@@ -114,7 +114,7 @@
                                   :class="getSeatClass(row.number, seat)"
                                 >
                                     {{ seat }}
-                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-white rounded-full" />
+                                    <Icon v-if="getSeatData(row.number, seat)?.seat_class === 'premium'" nameIcon="StarIcon" class="w-3 h-3 absolute -top-1 -right-1 text-yellow-500 bg-grayScale-50 rounded-full" />
                                 </button>
                             </div>
                         </div>
@@ -263,9 +263,9 @@ function getSeatClass(row: number, seat: string) {
     }
     
     if (isPremium) {
-        return 'bg-white border-2 border-purple-500 text-purple-700 hover:bg-purple-50';
+        return 'bg-grayScale-50 border-2 border-purple-500 text-purple-700 hover:bg-purple-50';
     }
-    return 'bg-white border border-grayScale-300 text-grayScale-600 hover:border-primary hover:text-primary';
+    return 'bg-grayScale-50 border border-grayScale-300 text-grayScale-600 hover:border-primary hover:text-primary';
 }
 
 function selectSeat(row: number, seat: string) {

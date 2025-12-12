@@ -20,9 +20,9 @@
 
       <div class="flex items-center justify-between mb-2 text-center">
         <div class="flex flex-col items-center justify-center">
-          <img src="/images/plane-takeoff.svg">
-          <p class="text-lg font-bold">{{ formatarHora(voo.departure_time) }}</p>
-          <p class="text-sm text-grayScale-700 max-w-[120px] md:max-w-[240px]">{{ voo.origin_city }}/{{ voo.origin_airport }}</p>
+          <img src="/images/plane-takeoff.svg" class="dark:bg-white dark: rounded-full dark:p-1">
+          <p class="text-lg font-bold text-grayScale-700">{{ formatarHora(voo.departure_time) }}</p>
+          <p class="text-sm text-grayScale-800 max-w-[120px] md:max-w-[240px]">{{ voo.origin_city }}/{{ voo.origin_airport }}</p>
         </div>
         <div class="text-center flex-1">
             <hr class="border-grayScale-400"></hr>
@@ -32,9 +32,9 @@
             </p>
         </div>
         <div class="flex flex-col items-center justify-center">
-          <img src="/images/plane-landing.svg">
-          <p class="text-lg font-bold">{{ formatarHora(voo.estimated_arrival) }}</p>
-          <p class="text-sm text-grayScale-700 max-w-[120px] md:max-w-[240px]">{{ voo.destination_city }}/{{ voo.destination_airport }}</p>
+          <img src="/images/plane-landing.svg" class="dark:bg-white dark: rounded-full dark:p-1">
+          <p class="text-lg font-bold text-grayScale-700">{{ formatarHora(voo.estimated_arrival) }}</p>
+          <p class="text-sm text-grayScale-800 max-w-[120px] md:max-w-[240px]">{{ voo.destination_city }}/{{ voo.destination_airport }}</p>
         </div>
       </div>
       <div class="flex items-center justify-between text-xs text-grayScale-600">
@@ -42,8 +42,8 @@
     </div>
 
     <div class="bg-grayScale-50 rounded-lg shadow-lg p-4">
-      <h3 class="font-bold mb-2">Detalhes da Tarifa</h3>
-      <div class="flex flex-col gap-2.5 text-sm">
+      <h3 class="font-bold mb-2 text-grayScale-900">Detalhes da Tarifa</h3>
+      <div class="flex flex-col gap-2.5 text-sm text-grayScale-700">
         <div v-if="voo.tickets?.economy" class="flex justify-between items-center">
           <span>Preço Econômica</span>
           <div class="text-end">

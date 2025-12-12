@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-grayScale-900">Resumo da Reserva</h1>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
+      <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 overflow-hidden">
         <!-- Informações do Passageiro -->
         <div class="p-4 border-b border-grayScale-100">
             <h2 class="font-bold text-lg mb-4 text-grayScale-900">Dados do Passageiro</h2>

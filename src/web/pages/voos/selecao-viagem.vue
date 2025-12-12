@@ -13,8 +13,8 @@
             <div class="bg-grayScale-50 rounded-lg shadow-lg p-6">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <h2 class="text-lg font-bold flex items-center gap-2">
-                    <img src="/images/plane-takeoff.svg" class="w-6 h-6" />
+                  <h2 class="text-lg font-bold flex items-center gap-2 text-grayScale-900">
+                    <img src="/images/plane-takeoff.svg" class="w-6 h-6 dark:bg-grayScale-800 dark:p-1 rounded-full" />
                     Voo de Ida
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
@@ -33,7 +33,7 @@
               </div>
 
               <!-- Voo Selecionado -->
-              <div v-if="storeVoos.outboundFlight" class="bg-white border rounded-lg p-4">
+              <div v-if="storeVoos.outboundFlight" class="bg-grayScale-50 border rounded-lg p-4">
                 <div class="flex justify-between items-center">
                     <div class="flex gap-4 items-center">
                         <div>
@@ -56,8 +56,8 @@
             <div class="bg-grayScale-50 rounded-lg shadow-lg p-6">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <h2 class="text-lg font-bold flex items-center gap-2">
-                    <img src="/images/plane-takeoff.svg" class="w-6 h-6 transform scale-x-[-1]" />
+                  <h2 class="text-lg font-bold flex items-center gap-2 text-grayScale-900">
+                    <img src="/images/plane-takeoff.svg" class="w-6 h-6 transform scale-x-[-1] dark:bg-grayScale-800 dark:p-1 rounded-full" />
                     Voo de Volta
                   </h2>
                   <p class="text-sm text-grayScale-600 mt-1 capitalize">
@@ -76,7 +76,7 @@
               </div>
 
               <!-- Voo Selecionado -->
-              <div v-if="storeVoos.inboundFlight" class="bg-white border rounded-lg p-4">
+              <div v-if="storeVoos.inboundFlight" class="bg-grayScale-50 border rounded-lg p-4">
                  <div class="flex justify-between items-center">
                     <div class="flex gap-4 items-center">
                         <div>
@@ -98,7 +98,7 @@
 
         <!-- Coluna Direita: Resumo (Desktop) -->
         <div class="hidden lg:block w-80">
-            <div class="bg-white rounded-lg shadow-sm border border-grayScale-300 p-6 sticky top-24">
+            <div class="bg-grayScale-50 rounded-lg shadow-sm border border-grayScale-300 p-6 sticky top-24">
                 <h3 class="font-bold text-lg mb-4">Resumo da Viagem</h3>
                 
                 <div class="flex flex-col gap-3 text-sm text-grayScale-600 border-b border-grayScale-300 pb-4 mb-4">
@@ -134,7 +134,7 @@
     </div>
 
     <!-- Rodapé Fixo Mobile -->
-    <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
+    <div class="lg:hidden fixed bottom-0 left-0 w-full bg-grayScale-50 border-t border-grayScale-300 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
         <div class="p-4">
              <!-- Alternar Detalhes -->
              <div 
