@@ -14,7 +14,9 @@
 
       <!-- Centered Logo -->
       <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <img src="@/assets/images/logo.png" alt="Logo" class="h-14 w-auto object-contain" />
+        <NuxtLink to="/">
+          <img src="@/assets/images/logo.png" alt="Logo" class="h-14 w-auto object-contain cursor-pointer" />
+        </NuxtLink>
       </div>
 
     </div>
