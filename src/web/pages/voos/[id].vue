@@ -8,8 +8,8 @@
 
         <div class="flex gap-1.5 justify-between mb-3">
             <div class="flex gap-2 items-center">
-                 <div class="bg-primary rounded-full flex items-center justify-center p-2">
-                    <Icon nameIcon="GlobeAltIcon" class="w-6 h-6 text-grayScale-50 rotate-45" />
+                 <div class="bg-primary rounded-full flex items-center justify-center p-0.5">
+                    <Icon nameIcon="GlobeAltIcon" class="w-6 h-6 text-white rotate-45" />
                  </div>
                 <span class="font-semibold text-grayScale-900">{{ voo.airline_name }}</span>
             </div>

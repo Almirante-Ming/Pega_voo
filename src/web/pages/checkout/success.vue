@@ -54,10 +54,10 @@
 
           <!-- Actions -->
           <div class="flex flex-col gap-3 mt-4">
-              <button @click="router.push('/voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-grayScale-50 py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/meus-voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-semibold transition-colors">
                   Ver reserva
               </button>
-              <button @click="router.push('/')" class="w-full bg-grayScale-50 border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/')" class="w-full bg-grayScale-200 border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-semibold transition-colors">
                   Voltar à tela inicial
               </button>
           </div>

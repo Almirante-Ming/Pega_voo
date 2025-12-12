@@ -37,54 +37,82 @@
       </div>
 
       <div v-else class="flex flex-col gap-4">
-          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-grayScale-50 rounded-lg p-5 shadow-sm border border-grayScale-200 relative overflow-hidden">
-              <!-- Status Badge -->
-              <div class="absolute top-0 right-0 px-3 py-1 text-xs font-bold uppercase rounded-bl-lg"
-                 :class="{
-                     'bg-green-100 text-green-700': ticket.status === 'confirmed' || ticket.status === 'reserved',
-                     'bg-red-100 text-red-700': ticket.status === 'cancelled',
-                     'bg-yellow-100 text-yellow-700': ticket.status === 'pending'
-                 }"
-              >
-                  {{ formatStatus(ticket.status) }}
-              </div>
+          <div v-for="ticket in currentList" :key="ticket.ticket_id" class="bg-white rounded-xl shadow-md border-l-4 overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            :class="{
+                'border-green-500': ticket.status === 'confirmed' || ticket.status === 'reserved',
+                'border-red-500': ticket.status === 'cancelled',
+                'border-yellow-500': ticket.status === 'pending' || ticket.status === 'marked'
+            }"
+          >
+              <div class="p-5">
+                <!-- Header: Airline & Status -->
+                <div class="flex justify-between items-center mb-4">
+                     <div class="flex items-center gap-3">
+                        <div class="bg-grayScale-100 p-1 rounded-lg w-10">
+                            <img src="/assets/images/plane-icon.png" />
+                        </div>
+                        <div>
+                            <p class="font-bold text-grayScale-900 leading-tight">
+                                {{ ticket.flight?.airline_name || 'Companhia Aérea' }}
+                            </p>
+                            <p class="text-xs text-grayScale-500">Voo {{ ticket.flight?.flight_number || ticket.flight_id }}</p>
+                        </div>
+                     </div>
+                     
+                     <div class="px-3 py-1 text-xs font-bold uppercase rounded-full"
+                        :class="{
+                            'bg-green-100 text-green-700': ticket.status === 'confirmed' || ticket.status === 'reserved',
+                            'bg-red-100 text-red-700': ticket.status === 'cancelled',
+                            'bg-yellow-100 text-yellow-700': ticket.status === 'pending' || ticket.status === 'marked'
+                        }"
+                     >
+                        {{ formatStatus(ticket.status) }}
+                     </div>
+                </div>
 
-              <!-- Flight Info -->
-              <div v-if="ticket.flight">
-                  <div class="flex flex-col gap-2 mb-4">
-                      <div class="flex items-center gap-2 font-bold text-lg text-grayScale-900">
-                          <span>{{ ticket.flight.origin_city }}</span>
-                          <Icon nameIcon="ArrowRightIcon" class="w-5 text-grayScale-400" />
-                          <span>{{ ticket.flight.destination_city }}</span>
-                      </div>
-                      <div class="text-sm text-grayScale-500">
-                          {{ formatDate(ticket.flight.departure_time) }}
-                      </div>
-                  </div>
+                <div class="flex items-center justify-between mb-5">
+                    <div class="text-center min-w-[80px]">
+                        <p class="text-lg font-black text-grayScale-900">{{ ticket.flight?.origin_airport || '---' }}</p>
+                        <p class="text-xs text-grayScale-500 font-medium">{{ ticket.flight?.origin_city || 'Origem' }}</p>
+                        <p class="text-sm font-semibold text-grayScale-700 mt-1">
+                            {{ ticket.flight ? formatTime(ticket.flight.departure_time) : formatTime(ticket.boarding_time) }}
+                        </p>
+                    </div>
 
-                  <!-- Details Card -->
-                  <div class="bg-grayScale-50 p-4 rounded-lg border border-grayScale-100 flex flex-col md:flex-row gap-4 md:items-center justify-between">
-                      <div class="flex items-center gap-3">
-                           <div class="bg-grayScale-50 p-2 rounded-full border border-grayScale-200">
-                               <Icon nameIcon="PaperAirplaneIcon" class="w-5 h-5 -rotate-45 text-primary" />
-                           </div>
-                           <div>
-                               <p class="font-bold text-grayScale-900">{{ ticket.flight.airline_name }} <span class="text-grayScale-400 font-normal text-xs">(Voo {{ ticket.flight.flight_number }})</span></p>
-                               <p class="text-xs text-grayScale-500">Classe {{ ticket.seat_class === 'premium' ? 'Premium' : 'Econômica' }}</p>
-                           </div>
-                      </div>
-                      
-                      <div class="flex gap-6 items-center border-t md:border-t-0 border-grayScale-200 pt-3 md:pt-0">
-                          <div>
-                              <span class="block text-xs text-grayScale-400 uppercase font-bold">Assento</span>
-                              <span class="font-bold text-grayScale-900 text-lg">{{ ticket.seat_number }}</span>
-                          </div>
-                           <div>
-                              <span class="block text-xs text-grayScale-400 uppercase font-bold">Valor</span>
-                              <span class="font-bold text-grayScale-900">R$ {{ ticket.price }}</span>
-                          </div>
-                      </div>
-                  </div>
+                    <div class="flex-1 px-4 flex flex-col items-center">
+                        <div class="w-full flex items-center justify-center gap-2">
+                             <div class="h-[2px] w-full bg-grayScale-200"></div>
+                             <Icon nameIcon="PaperAirplaneIcon" class="w-4 h-4 text-grayScale-300 rotate-90" />
+                             <div class="h-[2px] w-full bg-grayScale-200"></div>
+                        </div>
+                         <p class="text-xs text-grayScale-400 mt-1 text-center">
+                             {{ formatDate(ticket.boarding_time) }}
+                         </p>
+                    </div>
+
+                    <div class="text-center min-w-[80px]">
+                        <p class="text-lg font-black text-grayScale-900">{{ ticket.flight?.destination_airport || '---' }}</p>
+                        <p class="text-xs text-grayScale-500 font-medium">{{ ticket.flight?.destination_city || 'Destino' }}</p>
+                         <p class="text-sm font-semibold text-grayScale-700 mt-1">
+                             {{ ticket.flight ? formatTime(ticket.flight.estimated_arrival) : '--:--' }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-grayScale-100">
+                    <div class="flex gap-4">
+                         <div>
+                             <span class="block text-[10px] text-grayScale-400 uppercase font-bold tracking-wider">Classe</span>
+                             <span class="text-sm font-semibold text-grayScale-800">
+                                 {{ ticket.seat_class === 'premium' ? 'Premium' : 'Econômica' }}
+                             </span>
+                         </div>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-right text-grayScale-400 uppercase font-bold tracking-wider">Preço</span>
+                        <span class="text-lg font-bold text-primary">R$ {{ ticket.price }}</span>
+                    </div>
+                </div>
               </div>
           </div>
       </div>
@@ -107,19 +135,47 @@ const tickets = ref<any[]>([]);
 // Assuming endpoint returns array of tickets
 const { execute, loading, data, error } = useApi('get', '/tickets/my-tickets', {});
 
+const { $axios } = useNuxtApp();
 onMounted(async () => {
     await execute();
     if (data.value) {
         // Handle if data is wrapped or direct array
-        tickets.value = Array.isArray(data.value) ? data.value : (data.value.items || []);
+        const rawTickets = Array.isArray(data.value) ? data.value : (data.value.items || []);
+        
+        // Fetch details specifically!
+        const flightIds = [...new Set(rawTickets.map((t: any) => t.flight_id))];
+        const flightDetails = new Map();
+
+        // Warning: This could iterate many times. Ideally backend does this. 
+        // But per constraints, doing it here.
+        // Optimization: Run in parallel
+        await Promise.all(flightIds.map(async (fid) => {
+            try {
+                // Manually fetching flight details
+                const res = await $axios.get(`/flights/${fid}`);
+                if(res.data) flightDetails.set(fid, res.data);
+            } catch (e) {
+                console.error(`Failed to fetch flight ${fid}`, e);
+            }
+        }));
+
+        // Merge flight data into tickets
+        tickets.value = rawTickets.map((t: any) => {
+             return {
+                 ...t,
+                 flight: flightDetails.get(t.flight_id) || null
+             }
+        });
     }
 });
 
 const currentList = computed(() => {
     const now = new Date();
     return tickets.value.filter(t => {
-        if (!t.flight) return false;
-        const dep = new Date(t.flight.departure_time);
+        const dateStr = t.boarding_time;
+        if (!dateStr) return false;
+        
+        const dep = new Date(dateStr);
         
         if (activeTab.value === 'upcoming') {
             return dep >= now;
@@ -127,17 +183,23 @@ const currentList = computed(() => {
             return dep < now;
         }
     }).sort((a, b) => {
-        const da = new Date(a.flight.departure_time).getTime();
-        const db = new Date(b.flight.departure_time).getTime();
-        return activeTab.value === 'upcoming' ? da - db : db - da; // Ascending for upcoming, Descending for history
+        const da = new Date(a.boarding_time).getTime();
+        const db = new Date(b.boarding_time).getTime();
+        return activeTab.value === 'upcoming' ? da - db : db - da; 
     });
 });
 
 function formatDate(str: string) {
     if(!str) return '';
     return new Date(str).toLocaleDateString('pt-BR', { 
-        day: '2-digit', month: 'long', year: 'numeric', 
-        hour: '2-digit', minute: '2-digit' 
+        day: '2-digit', month: 'long', year: 'numeric'
+    });
+}
+
+function formatTime(str: string) {
+    if(!str) return '--:--';
+    return new Date(str).toLocaleTimeString('pt-BR', {
+        hour: '2-digit', minute: '2-digit'
     });
 }
 

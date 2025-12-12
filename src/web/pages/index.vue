@@ -107,19 +107,7 @@ const formulario = computed<Campo[]>(() => [
     validacao: "data",
     obrigatorio: tipoViagem.value === 'ida-volta',
   },
-  {
-    label: "Classe",
-    propriedade: "classe",
-    tipoDeInput: "select",
-    modelType: "static" as const,
-    obrigatorio: false,
-    placeholder: "Selecione",
-    model: [
-      { chave: "economica", descricao: "Econômica" },
-      { chave: "executiva", descricao: "Executiva" },
-      { chave: "primeira", descricao: "Primeira Classe" }
-    ]
-  }
+
 ]);
 
 const formularioFiltrado = computed(() => {
@@ -188,8 +176,7 @@ async function buscarVoos() {
               origin_city: form.value.origin_city,
               destination_city: form.value.destination_city,
               departure_date: form.value.departure_date,
-              return_date: form.value.return_date,
-              selected_class: form.value.classe
+              return_date: form.value.return_date
           });
           // Limpa seleções anteriores para não misturar
           storeVoos.setOutboundFlight(null);
