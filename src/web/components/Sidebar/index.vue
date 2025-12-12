@@ -74,7 +74,6 @@ const menuItems = [
 ];
 
 function logout() {
-  // Limpar token de autenticação
   const token = useCookie("token");
   token.value = null;
 

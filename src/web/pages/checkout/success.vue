@@ -1,13 +1,11 @@
 <template>
   <div class="flex flex-col items-center justify-center drop-shadow-md">
     <div class="w-full max-w-md rounded-lg overflow-hidden">
-      <!-- Cabeçalho -->
 
-      
-      <!-- Banner Verde de Sucesso -->
-      <div class="bg-green-500 p-6 text-center text-grayScale-50 flex flex-col items-center gap-4">
-          <div class="w-20 h-20 rounded-full border-4 border-grayScale-50 flex items-center justify-center">
-              <Icon nameIcon="CheckIcon" class="w-10 h-10 text-grayScale-50" />
+
+      <div class="bg-green-500 p-6 text-center text-white flex flex-col items-center gap-4">
+          <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
+              <Icon nameIcon="CheckIcon" class="w-10 h-10 text-white" />
           </div>
           <div>
               <h1 class="text-2xl font-bold mb-2">Reserva confirmada!</h1>
@@ -15,10 +13,10 @@
           </div>
       </div>
 
-      <!-- Detalhes do Bilhete -->
+
       <div class="p-6 flex flex-col gap-6 bg-grayScale-50">
           <div v-if="localFlight" class="flex flex-col gap-4">
-              <!-- Rota -->
+
               <div class="flex items-start gap-4">
                   <Icon nameIcon="PaperAirplaneIcon" class="w-6 h-6 text-grayScale-500 mt-1" />
                   <div>
@@ -27,7 +25,6 @@
                   </div>
               </div>
 
-               <!-- Partida -->
                <div class="flex items-start gap-4">
                   <Icon nameIcon="CalendarIcon" class="w-6 h-6 text-grayScale-500 mt-1" />
                   <div>
@@ -36,10 +33,7 @@
                   </div>
               </div>
 
-               <!-- Chegada (Mockado ou calculado se disponível, geralmente hora de chegada está no obj voo) -->
-               <!-- Usando Hora de Partida + Duração por enquanto ou apenas genérico se não estiver no obj mock -->
-               
-               <!-- Número do Voo -->
+
                <div class="flex items-start gap-4">
                   <Icon nameIcon="TicketIcon" class="w-6 h-6 text-grayScale-500 mt-1" />
                   <div>
@@ -52,7 +46,6 @@
               Detalhes da reserva não disponíveis.
           </div>
 
-          <!-- Ações -->
           <div class="flex flex-col gap-3 mt-4">
               <button @click="router.push('/meus-voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-semibold transition-colors">
                   Ver reserva
@@ -73,11 +66,10 @@ import Icon from '@/components/Icon/index.vue';
 const store = useStoreVoos();
 const router = useRouter();
 
-// Cópia local dos dados do voo antes de limpar a store
 const localFlight = ref<any>(null);
 
 onMounted(() => {
-    // Preferir dados da store se disponíveis (ex: se não limpamos ainda ou navegação SPA preservou, embora improvável com redirecionamento externo)
+    // Recupera dados do voo (Store ou LocalStorage)
     if (store.outboundFlight) {
         localFlight.value = { ...store.outboundFlight };
     } else {
@@ -89,12 +81,10 @@ onMounted(() => {
             } catch (e) {
                 console.error("Failed to parse cached flight details", e);
             }
-            // Limpar cache para não persistir para sempre
-            localStorage.removeItem('last_payment_flight');
+    localStorage.removeItem('last_payment_flight');
         }
     }
     
-    // Limpar a store para prevenir voltar ou estado obsoleto
     store.clearSelection();
 });
 

@@ -32,10 +32,18 @@
                 </div>
 
             
-                <span class="text-sm text-start">
+                <span class="text-sm text-start flex items-center gap-1">
                     Não recebeu o código? 
-                    <button v-if="true" class="text-primary underline px-1">Reenviar</button>
-                    <span v-else class="text-grayScale-400">Aguarde: 2min 38seg</span>
+                    <div v-if="resendLoading" class="flex items-center gap-1 text-grayScale-500">
+                        <Icon nameIcon="ArrowPathIcon" class="w-4 h-4 animate-spin" />
+                        <span>Enviando...</span>
+                    </div>
+                    <span v-else-if="countdown > 0" class="text-grayScale-400">
+                        Tente novamente em {{ formattedCountdown }}
+                    </span>
+                    <button v-else @click="reenviarCodigo" class="text-primary underline px-1 hover:text-primary-dark">
+                        Reenviar
+                    </button>
                 </span>
             </div>
 
@@ -76,6 +84,7 @@ import { useForm } from "@/composables/useForm";
 import { atualizarFormulario } from "@/functions/atualizarFormulario";
 import type { Campo } from "~/types/formulario";
 import BackButton from "@/components/BackButton/index.vue";
+import Icon from "@/components/Icon/index.vue"; // Ensure Icon is imported
 
 const router = useRouter();
 
@@ -84,6 +93,9 @@ const step = ref(1)
 const code = ref('')
 
 const loading = ref(false)
+const resendLoading = ref(false)
+const countdown = ref(0)
+let timer: NodeJS.Timeout | null = null
 
 const stepperSteps = [
     { label: 'Identificação' },
@@ -136,6 +148,24 @@ const { form, erros, formValido, validarCampo, validarFormulario } = useForm(['e
 
 const atualizarForm = atualizarFormulario(form, validarCampo);
 
+function startCountdown() {
+    countdown.value = 60 // 60 seconds
+    if (timer) clearInterval(timer)
+    timer = setInterval(() => {
+        if (countdown.value > 0) {
+            countdown.value--
+        } else {
+            if (timer) clearInterval(timer)
+        }
+    }, 1000)
+}
+
+const formattedCountdown = computed(() => {
+    const minutes = Math.floor(countdown.value / 60)
+    const seconds = countdown.value % 60
+    return `${minutes}min ${seconds.toString().padStart(2, '0')}seg`
+})
+
 async function enviarCodigo(codigo?: string){
     validarFormulario()
 
@@ -148,7 +178,10 @@ async function enviarCodigo(codigo?: string){
         await executeRecovery({"identifier": form.value.email})
         loading.value = false
 
-        if(!errorRecovery.value && dataRecovery.value) step.value++
+        if(!errorRecovery.value && dataRecovery.value) {
+            step.value++
+            startCountdown()
+        }
         else {
             if(responseRecovery.value.status == '404'){                
                 toast.error({mensagem: "E-mail não encontrado"} )
@@ -176,6 +209,23 @@ async function enviarCodigo(codigo?: string){
     }
 
     if(step.value == 3) confirmarNovaSenha()
+}
+
+async function reenviarCodigo() {
+    if (countdown.value > 0 || resendLoading.value) return
+
+    const { data: dataRecovery, error: errorRecovery, execute: executeRecovery } = useApi('post', '/recovery')
+    
+    resendLoading.value = true
+    await executeRecovery({"identifier": form.value.email})
+    resendLoading.value = false
+
+    if(!errorRecovery.value && dataRecovery.value) {
+        toast.success({ mensagem: "Código reenviado com sucesso!" })
+        startCountdown()
+    } else {
+        toast.error({ mensagem: "Erro ao reenviar código." })
+    }
 }
 
 async function confirmarNovaSenha(){
