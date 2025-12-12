@@ -16,7 +16,7 @@
       </div>
 
       <!-- Ticket Details -->
-      <div class="p-6 flex flex-col gap-6 bg-white">
+      <div class="p-6 flex flex-col gap-6 bg-grayScale-50">
           <div v-if="localFlight" class="flex flex-col gap-4">
               <!-- Route -->
               <div class="flex items-start gap-4">
@@ -54,10 +54,10 @@
 
           <!-- Actions -->
           <div class="flex flex-col gap-3 mt-4">
-              <button @click="router.push('/voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/meus-voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-semibold transition-colors">
                   Ver reserva
               </button>
-              <button @click="router.push('/')" class="w-full bg-white border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-bold transition-colors">
+              <button @click="router.push('/')" class="w-full bg-grayScale-200 border border-grayScale-300 hover:bg-grayScale-50 text-grayScale-900 py-3 rounded-lg font-semibold transition-colors">
                   Voltar à tela inicial
               </button>
           </div>
