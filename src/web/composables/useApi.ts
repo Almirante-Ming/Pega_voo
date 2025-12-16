@@ -12,14 +12,15 @@ export function useApi(
   const error = ref<any>(null);
   const loading = ref(false);
   const response = ref<any>(null)
-  
+
   async function execute(body?: object) {
     try {
       loading.value = true;
-      
+      error.value = null;
+
       // Pega o token do localStorage
       const token = localStorage.getItem('access_token');
-      
+
       // Adiciona o token no header se existir
       const config = {
         ...options,
@@ -28,7 +29,7 @@ export function useApi(
           ...(token && { Authorization: `Bearer ${token}` })
         }
       };
-      
+
       /* Quando vier body, é algum método diferente do get. Do contrário, é get. */
       if (body) response.value = await $axios[method](route, body, config);
       else response.value = await $axios[method](route, config);
@@ -37,7 +38,7 @@ export function useApi(
     } catch (e: any) {
       // Captura o response mesmo em caso de erro
       response.value = e.response;
-      
+
       const err = new Error();
       if (e?.response?.data?.errors?.[0].message) err.name = `Status ${e?.response?.status} - ${e?.response?.data?.errors[0].message}`;
       else err.name = `Status ${e?.response?.status}`;
