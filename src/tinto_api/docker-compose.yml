@@ -3,13 +3,12 @@ services:
     build: .
     image: tinto_api:latest
     container_name: Tinto
-    command: task run
+    command: task dev
     volumes:
       - .:/tinto_api
     working_dir: /tinto_api
     ports:
-      - "8000:8000"
-      - "6543:6543"
+      - "7777:7777" 
     environment:
       - TZ=America/Manaus
     env_file:
