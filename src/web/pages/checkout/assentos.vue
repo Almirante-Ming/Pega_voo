@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-grayScale-50 pb-32 md:pb-10 relative">
+  <div class="min-h-screen pb-32 md:pb-10 relative">
     <div class="max-w-7xl mx-auto px-1 py-3.5">
       <div class="flex items-center gap-2 mb-4 px-3">
         <BackButton />
@@ -11,7 +11,7 @@
             <!-- Alternar voo (se for Ida e Volta) -->
             <div v-if="store.inboundFlight" class="flex gap-4">
                 <div class="flex-1">
-                    <div class="bg-primary w-fit text-white px-2 rounded-lg pb-0.5 mb-1">
+                    <div class="bg-primary w-fit text-grayScale-50 px-2 rounded-lg pb-0.5 mb-1">
                         <span class="text-sm font-medium">Ida</span>
                     </div>
 
@@ -28,14 +28,14 @@
                         </div>
                     </div>
                     <div v-if="store.selectedSeats[store.outboundFlight?.id]" 
-                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-bold shadow-sm border-2 border-white">
+                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-grayScale-50 flex items-center justify-center text-xs font-bold shadow-sm border-2 border-grayScale-50">
                         {{ store.selectedSeats[store.outboundFlight?.id] }}
                     </div>
                     </button>
                 </div>
 
                 <div class="flex-1">
-                    <div class="bg-primary w-fit text-white px-2 rounded-lg pb-0.5 mb-1">
+                    <div class="bg-primary w-fit text-grayScale-50 px-2 rounded-lg pb-0.5 mb-1">
                         <span class="text-sm font-medium">Volta</span>
                     </div>
                     <button 
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div v-if="store.selectedSeats[store.inboundFlight?.id]" 
-                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-bold shadow-sm border-2 border-white">
+                         class="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-green-600 text-grayScale-50 flex items-center justify-center text-xs font-bold shadow-sm border-2 border-grayScale-50">
                         {{ store.selectedSeats[store.inboundFlight?.id] }}
                     </div>
                     </button>
@@ -150,7 +150,6 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
  const currentFlight = ref<'outbound' | 'inbound'>('outbound');
  const { execute, data, error, loading } = useApi('get', '', {});
  
-
  const seatsData = ref<Record<string, any[]>>({}); 
  
  const requiredClass = computed(() => {
@@ -235,14 +234,12 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
  
  function isSeatDisabled(row: number, seat: string) {
      const s = getSeatData(row, seat);
-     if (!s) return true; // Seat doesn't exist (e.g. gap in map)
+     if (!s) return true;
      
      // 1. Disponibilidade
      if (!s.is_available) return true;
  
      // 2. Restrição de Classe
-     // store.ticketClass é 'economy' ou 'premium'
-     // seat.seat_class é 'economy' ou 'premium' (API)
      if (requiredClass.value !== s.seat_class) return true;
      
      return false;
@@ -250,10 +247,10 @@ import CheckoutSummary from '@/components/CheckoutSummary/index.vue';
 
 function getSeatClass(row: number, seat: string) {
     const s = getSeatData(row, seat);
-    if (!s) return 'invisible'; // Esconder assentos inexistentes
+    if (!s) return 'invisible';
 
     if (isSeatSelected(row, seat)) {
-        return 'bg-primary text-white border-primary';
+        return 'bg-primary text-grayScale-50 border-primary';
     }
     
     const isPremium = s.seat_class === 'premium';

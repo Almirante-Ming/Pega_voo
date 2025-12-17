@@ -3,3 +3,4 @@ from .send_mail import send_email
 from .check_payment import check_payment_confirmation
 from .send_confirmation_email import send_confirmation_email
 from .send_payment_error_email import send_payment_error_email
+from .send_greeting_email import send_greeting_email

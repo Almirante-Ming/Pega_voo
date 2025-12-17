@@ -14,12 +14,10 @@ def send_confirmation_email(ticket_id: int):
     db = SessionLocal()
     
     try:
-        # Fetch ticket with all related data
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
         if not ticket:
             raise Exception(f"Ticket with ID {ticket_id} not found")
         
-        # Fetch passenger details
         passenger = db.query(models.Person).filter(
             models.Person.id == ticket.passenger_id
         ).first()
@@ -27,7 +25,6 @@ def send_confirmation_email(ticket_id: int):
         if not passenger:
             raise Exception(f"Passenger with ID {ticket.passenger_id} not found")
         
-        # Fetch flight details
         flight = db.query(models.Flight).filter(
             models.Flight.id == ticket.flight_id
         ).first()
@@ -35,37 +32,34 @@ def send_confirmation_email(ticket_id: int):
         if not flight:
             raise Exception(f"Flight with ID {ticket.flight_id} not found")
         
-        # Prepare email content
-        email_subject = "Ticket Payment Confirmed - Flight Booking"
+        email_subject = "Pagamento Confirmado - Reserva de Voo"
         email_body = f"""
-Dear {passenger.full_name},
+Prezado(a) {passenger.full_name},
 
-Your flight ticket payment has been successfully confirmed!
+Seu pagamento foi confirmado com sucesso!
 
-Flight Details:
-  - From: {flight.origin_city} ({flight.origin_airport})
-  - To: {flight.destination_city} ({flight.destination_airport})
-  - Flight Number: {flight.flight_number}
-  - Seat: {ticket.seat_number}
-  - Seat Class: {ticket.seat_class.value.upper()}
-  - Price: R$ {ticket.price:.2f}
-  - Departure: {ticket.boarding_time.strftime('%Y-%m-%d %H:%M')}
-  - Arrival: {ticket.arrival_time.strftime('%Y-%m-%d %H:%M')}
+Detalhes do Voo:
+  - De: {flight.origin_city} ({flight.origin_airport})
+  - Para: {flight.destination_city} ({flight.destination_airport})
+  - Número do Voo: {flight.flight_number}
+  - Assento: {ticket.seat_number}
+  - Classe do Assento: {ticket.seat_class.value.upper()}
+  - Preço: R$ {ticket.price:.2f}
+  - Partida: {ticket.boarding_time.strftime('%d/%m/%Y às %H:%M')}
+  - Chegada: {ticket.arrival_time.strftime('%d/%m/%Y às %H:%M')}
 
-Your ticket is now confirmed and ready for check-in. Please keep this confirmation email for your records.
+Sua passagem agora está confirmada e pronta para check-in. Guarde este email de confirmação para seus registros.
 
-Important: Arrive at the airport at least 2 hours before departure.
+Importante: Chegue ao aeroporto com pelo menos 2 horas de antecedência à partida.
 
-Thank you for booking with us!
+Obrigado por reservar conosco!
 
-Best regards,
-Tinto Booking System
+Atenciosamente,
+Pega Voo
 """
         
-        # Import send_email task
         from tinto.tasks.send_mail import send_email
         
-        # Send email
         send_email.delay(passenger.email, email_subject, email_body)
         
         db.close()

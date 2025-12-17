@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
-from typing import Annotated, List, Optional
+from typing import Annotated, List, Optional, cast
 from http import HTTPStatus as HTTPStatus
 import stripe
 import os
@@ -34,7 +34,6 @@ def create_ticket(
     Returns:
         dict: Contains ticket info and checkout URL for payment
     """
-    # Validate flight exists
     flight = db.query(models.Flight).filter(models.Flight.id == ticket.flight_id).first()
     if not flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight not found")
@@ -47,17 +46,14 @@ def create_ticket(
     if not seat:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Seat {ticket.seat_number} not found on this flight")
     
-    # Check if seat is available
     if seat.is_available != True:  #type: ignore
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Seat {ticket.seat_number} is not available")
     
-    # Get seat_class from the seat (convert string to Seat_Class enum)
     try:
         seat_class_enum = Seat_Class(seat.seat_class)
     except ValueError:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Invalid seat class: {seat.seat_class}")
     
-    # Create ticket with current user as passenger and status as "reserved"
     new_ticket = models.Ticket(
         flight_id=ticket.flight_id,
         passenger_id=current_user.id,
@@ -69,21 +65,16 @@ def create_ticket(
         status="reserved"
     )
     db.add(new_ticket)
-    db.flush()  # Flush to get the ticket ID without committing
+    db.flush()
     
-    # Don't mark seat as unavailable yet - will do this after payment confirmation
-    # Just link the ticket to the seat
     setattr(seat, 'ticket_id', new_ticket.id)
     
     db.commit()
     db.refresh(new_ticket)
     
-    # Create Stripe checkout session synchronously
     try:
-        # Convert price to cents (Stripe expects cents)
         price_cents = int(float(str(new_ticket.price)) * 100)
         
-        # Create Stripe checkout session
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[

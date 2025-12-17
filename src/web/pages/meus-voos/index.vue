@@ -155,7 +155,6 @@ onMounted(async () => {
             }
         }));
 
-
         tickets.value = rawTickets.map((t: any) => {
              return {
                  ...t,

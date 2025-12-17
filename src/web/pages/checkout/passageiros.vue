@@ -99,7 +99,7 @@
                  <div class="flex justify-between items-center">
                     <span class="font-bold text-grayScale-900">Econômica</span>
                     <div v-if="currentClass === 'economy'" class="bg-primary rounded-full p-1">
-                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-white" />
+                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-grayScale-50" />
                     </div>
                  </div>
                  <p class="text-xs text-grayScale-600">Bagagem de mão incluída. Seleção de assentos padrão.</p>
@@ -120,7 +120,7 @@
                         Premium
                     </span>
                     <div v-if="currentClass === 'premium'" class="bg-purple-600 rounded-full p-1">
-                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-white" />
+                        <Icon nameIcon="CheckIcon" class="w-4 h-4 text-grayScale-50" />
                     </div>
                  </div>
                  <p class="text-xs text-grayScale-600">Mais espaço, embarque prioritário e bagagem despachada.</p>

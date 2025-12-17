@@ -1,7 +1,7 @@
 """change_seat_enum
 
-Revision ID: a3272da0f761
-Revises: 8913b06f344c
+Revision ID: 008_sdd_seat_price
+Revises: 007_enable_unaccent
 Create Date: 2025-12-09 20:50:17.004149
 
 """
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a3272da0f761'
+revision: str = '008_sdd_seat_price'
 down_revision: Union[str, None] = '007_enable_unaccent'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

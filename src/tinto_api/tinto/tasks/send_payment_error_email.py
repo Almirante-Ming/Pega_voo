@@ -14,12 +14,10 @@ def send_payment_error_email(ticket_id: int):
     db = SessionLocal()
     
     try:
-        # Fetch ticket with all related data
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
         if not ticket:
             raise Exception(f"Ticket with ID {ticket_id} not found")
         
-        # Fetch passenger details
         passenger = db.query(models.Person).filter(
             models.Person.id == ticket.passenger_id
         ).first()
@@ -27,7 +25,6 @@ def send_payment_error_email(ticket_id: int):
         if not passenger:
             raise Exception(f"Passenger with ID {ticket.passenger_id} not found")
         
-        # Fetch flight details
         flight = db.query(models.Flight).filter(
             models.Flight.id == ticket.flight_id
         ).first()
@@ -35,36 +32,33 @@ def send_payment_error_email(ticket_id: int):
         if not flight:
             raise Exception(f"Flight with ID {ticket.flight_id} not found")
         
-        # Prepare error email content
-        email_subject = "Payment Confirmation Issue - Action Required"
+        email_subject = "Problema na Confirmação de Pagamento - Ação Necessária"
         email_body = f"""
-Dear {passenger.full_name},
+Prezado(a) {passenger.full_name},
 
-We were unable to confirm your payment for the flight ticket within the expected timeframe.
+Não conseguimos confirmar seu pagamento prazo esperado.
 
-Flight Details:
-  - From: {flight.origin_city} ({flight.origin_airport})
-  - To: {flight.destination_city} ({flight.destination_airport})
-  - Flight Number: {flight.flight_number}
-  - Seat: {ticket.seat_number}
-  - Departure: {ticket.boarding_time.strftime('%Y-%m-%d %H:%M')}
+Detalhes do Voo:
+  - De: {flight.origin_city} ({flight.origin_airport})
+  - Para: {flight.destination_city} ({flight.destination_airport})
+  - Número do Voo: {flight.flight_number}
+  - Assento: {ticket.seat_number}
+  - Partida: {ticket.boarding_time.strftime('%d/%m/%Y às %H:%M')}
 
-Ticket ID: {ticket_id}
+ID da Passagem: {ticket_id}
 
-Your seat has been released back to availability. Please try booking again or contact our support team for assistance.
+Por favor, tente reservar novamente ou entre em contato com nossa equipe de suporte para assistência.
 
-If you have any questions, please contact our customer service:
+Se tiver dúvidas, por favor entre em contato com nosso atendimento ao cliente:
 Email: support@tinto.com
-Phone: +55 (XX) XXXX-XXXX
+Telefone: +55 (67) 98133-5413
 
-Thank you,
-Tinto Booking System
+Obrigado,
+Pega Voo
 """
         
-        # Import send_email task
         from tinto.tasks.send_mail import send_email
         
-        # Send error email
         send_email.delay(passenger.email, email_subject, email_body)
         
         db.close()

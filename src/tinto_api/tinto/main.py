@@ -36,3 +36,5 @@ tinto.include_router(tickets_router)
 @tinto.get('/', tags=['Health check'])
 def health_response():
     return {'sucess': True, 'message':'working'}
+
+app = tinto

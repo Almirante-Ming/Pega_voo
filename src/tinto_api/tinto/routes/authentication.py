@@ -43,7 +43,6 @@ def login_for_access_token(
  
     db.refresh(user)
     
-    # Access attributes with explicit type conversion to avoid Column type issues
     hashed_password = getattr(user, 'hashed_password', None)
     if not hashed_password:
         raise HTTPException(
@@ -109,4 +108,8 @@ def register_person(person_data: schemas.PersonRegister, db: DBSession):
     db.add(registered_person)
     db.commit()
     db.refresh(registered_person)
+    
+    from tinto.tasks.send_greeting_email import send_greeting_email
+    send_greeting_email.delay(registered_person.id)
+    
     return registered_person

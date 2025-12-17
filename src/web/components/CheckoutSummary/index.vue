@@ -36,7 +36,7 @@
             <button 
                 @click="$emit('submit')"
                 :disabled="disabled"
-                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-white py-3 rounded-lg font-bold transition-colors"
+                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-grayScale-50 py-3 rounded-lg font-bold transition-colors"
                 :class="{'opacity-75 cursor-not-allowed': disabled}"
             >
                 {{ buttonText }}
@@ -79,7 +79,7 @@
              <button 
                 @click="$emit('submit')"
                 :disabled="disabled"
-                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-white py-3 rounded-lg font-bold transition-colors"
+                class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-400 text-grayScale-50 py-3 rounded-lg font-bold transition-colors"
                 :class="{'opacity-75 cursor-not-allowed': disabled}"
             >
                 {{ buttonText }}

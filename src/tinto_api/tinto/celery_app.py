@@ -1,9 +1,9 @@
 from celery import Celery
 import os
 
-celery_host = str(os.getenv('CELERY_HOST', 'localhost'))
+celery_host = str(os.getenv('CELERY_HOST'))
 celery_pass = str(os.getenv('CELERY_PASS'))
-celery_port = 30059
+celery_port = str(os.getenv('CELERY_PORT'))
 
 
 redis_url = f'redis://:{celery_pass}@{celery_host}:{celery_port}/1' 
@@ -16,7 +16,7 @@ app.conf.update(
     accept_content=['json'],
     result_serializer='json',
     timezone='America/Manaus',
-    enable_utc=True,
+    enable_utc=False,
     task_track_started=True,
     task_time_limit=10 * 60,
 )

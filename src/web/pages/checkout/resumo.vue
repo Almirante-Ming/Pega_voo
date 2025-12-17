@@ -70,7 +70,7 @@
             <button 
                 @click="processPayment"
                 :disabled="loading"
-                class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+                class="w-full bg-primary hover:bg-primary-dark text-grayScale-50 font-semibold py-3 rounded-lg shadow-sm flex justify-center items-center gap-2 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
             >
                 <Icon v-if="!loading" nameIcon="CreditCardIcon" class="w-6 h-6" />
                 <span v-if="!loading">Ir para Pagamento</span>

@@ -27,7 +27,6 @@
                   </div>
               </div>
 
-
                <div class="flex items-start gap-4">
                   <Icon nameIcon="CalendarIcon" class="w-6 h-6 text-grayScale-500 mt-1" />
                   <div>
@@ -36,8 +35,6 @@
                   </div>
               </div>
 
-
-               
 
                <div class="flex items-start gap-4">
                   <Icon nameIcon="TicketIcon" class="w-6 h-6 text-grayScale-500 mt-1" />
@@ -50,7 +47,6 @@
           <div v-else class="text-center text-grayScale-500">
               Detalhes da reserva não disponíveis.
           </div>
-
 
           <div class="flex flex-col gap-3 mt-4">
               <button @click="router.push('/meus-voos')" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-lg font-semibold transition-colors">
@@ -87,7 +83,6 @@ onMounted(() => {
             } catch (e) {
                 console.error("Failed to parse cached flight details", e);
             }
-            // Limpar cache para não persistir para sempre
     localStorage.removeItem('last_payment_flight');
         }
     }

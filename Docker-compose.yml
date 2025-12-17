@@ -1,23 +1,94 @@
-# tambem provisorio, apenas para verificar como montar e altera nas versoes sequintes
-version : "3.9"
-services : 
-  postgres:
-    image : postgres :16 - alpine 
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: pega_voo_postgres
     environment:
-      POSTGRES_USER : app 
-      POSTGRES_PASSWORD : app 
-      POSTGRES_DB : appdb 
-      ports : ["5432:5432"] 
-  redis :
-    image : redis :7 - alpine 
-    ports: ["6379:6379"] 
-    api : 
-      build : ./ apps / api 
-      env_file : . env 
-      depends_on : [ postgres , redis ] 
-      ports : ["3000:3000"] 
-      web : 
-        build : ./ apps / web 
-        env_file : . env 
-        depends_on : [ api ] 
-        ports : ["3001:3001"]
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  broker:
+    image: redis:7-alpine
+    container_name: celery_broker
+    command: redis-server --requirepass ${CELERY_PASS}
+    ports:
+      - "${CELERY_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PASSWORD=${CELERY_PASS}
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    container_name: pega_voo_Tinto
+    command: poetry run task dev
+    ports:
+      - "8000:8000"
+      - "${DB_PORT}:6543"
+    environment:
+      - TZ=America/Manaus
+    env_file:
+      - .env
+    volumes:
+      - ./src/tinto_api:/tinto_api
+    working_dir: /tinto_api
+    depends_on:
+      - db
+    networks:
+      - task_fly_network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    container_name: celery_tasks
+    command: poetry run task worker
+    ports:
+      - "30059:30059"
+    environment:
+      - TZ=America/Manaus
+    env_file:
+      - .env
+    volumes:
+      - ./src/tinto_api:/tinto_api
+    working_dir: /tinto_api
+    depends_on:
+      - api
+      - broker
+    networks:
+      - task_fly_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    container_name: pega_voo_web
+    ports:
+      - "3000:3000"
+    environment:
+      - NUXT_PUBLIC_API_BASE_URL=${NUXT_PUBLIC_API_BASE_URL}
+      - NODE_ENV=development
+    volumes:
+      - ./src/web:/app
+      - /app/node_modules
+    command: npm run preview
+    depends_on:
+      - api
+    networks:
+      - task_fly_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  task_fly_network:
+    driver: bridge

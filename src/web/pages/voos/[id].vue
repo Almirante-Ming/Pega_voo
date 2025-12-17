@@ -66,7 +66,7 @@
     </div>
 
     <button
-      class="w-full bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors mt-4"
+      class="w-full bg-primary hover:bg-primary-dark text-grayScale-50 px-6 py-3 rounded-lg font-semibold transition-colors mt-4"
       @click="acaoPrincipal"
     >
       {{ labelBotao }}
