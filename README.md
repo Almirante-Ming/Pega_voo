@@ -14,7 +14,14 @@ o backend utliza do celery para algumas tarefas, como criacao e envio de emails,
 para recuperacao de contas, para que eles funcionem corretamente e preciso utilizar o celery instanciado com o redis como broker,
 para fins de avaliacao, deixei o .example com as variaveis que utilizamos, retirando somente algumas particulares, como senha de gmail app, senha do redis, chaves do stripe e os dados do supabase.
 
-por padrao utilizo o docker com network no modo host, caso utilize docker em windows ou mac, precisa alterar para bridge
+preencher a variavel senha no redis, caso esteja vazia durante a criacao, o celery ira falhar pois depende do redis ativo para operar.
+backend e front possuem arquivos proprios para caso necessite subir apenas um deles.
+
+caso utilize um novo banco de dados via docker, precisa subir a migracao via alembic, na pasta do backend ja tem tudo configurado, basta iniciar o venv e executar 
+
+```python
+alembic upgrade head
+```
 
 ### 2. Iniciar os Serviços
 
@@ -28,7 +35,7 @@ Isso iniciará todos os serviços definidos em `Docker-compose.yml`:
 | Serviço | Porta | Descrição |
 |---------|-------|-----------|
 | **db** | 5432 | PostgreSQL |
-| **broker** | 30059 | Redis |
+| **broker** | 6379 | Redis |
 | **api** | 8000 | FastAPI  |
 | **worker** | * | Celery |
 | **web** | 3000 | Nuxt |
@@ -42,6 +49,6 @@ Isso iniciará todos os serviços definidos em `Docker-compose.yml`:
 
 ## Estrutura do Projeto
 
-- **src/tinto_api/**: Backend em python 3.12.10 com FastAPI, Celery, Psycopg2 e Redis
+- **src/tinto_api/**: Backend em python 3.12.10 com FastAPI, postgresql, Celery, Psycopg2 e Redis
 - **src/web/**: Frontend em nodejs 24.11.1 com Nuxt 3 e TailwindCSS
 - **docs/**: Documentação da aplicação (DER, ER, atas de de reuniao, etc..)

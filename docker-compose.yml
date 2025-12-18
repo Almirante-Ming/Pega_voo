@@ -1,0 +1,89 @@
+services:
+  nuxt_front:
+    container_name: pega_voo_frontend
+    build:
+      context: ./src/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./src/web:/app              
+      - /app/node_modules           
+    command: npm run preview
+    networks:
+      - pega_voo
+    depends_on:
+      - fast_api_backend
+    
+  fast_api_backend:
+    container_name: pega_voo_backend
+    build:
+      context: ./src/tinto_api
+      dockerfile: Dockerfile
+    ports:
+      - "7777:7777"
+    environment:
+      - TZ=America/Manaus
+    env_file:
+      - .env
+    volumes:
+      - ./src/tinto_api:/app        
+    command: ["poetry", "run", "task", "dev"]
+    networks:
+      - pega_voo
+    depends_on:
+      - db
+  
+  celery_worker:
+    container_name: celery_tasks
+    build:
+      context: ./src/tinto_api
+      dockerfile: Dockerfile
+    environment:
+      - TZ=America/Manaus
+    env_file:
+      - .env
+    volumes:
+      - ./src/tinto_api:/app
+    command: ["poetry", "run", "task", "worker"]
+    networks:
+      - pega_voo
+    depends_on:
+      - redis
+      - fast_api_backend
+
+  redis:
+    image: redis:7-alpine
+    container_name: celery_broker
+    ports:
+      - "${CELERY_PORT}:6379"
+    environment:
+      - REDIS_PASSWORD=${CELERY_PASS}
+    command: >
+      sh -c "redis-server --requirepass \"$CELERY_PASS\""
+    networks:
+      - pega_voo
+  
+  db:
+    image: postgres:17-alpine
+    container_name: pega_voo_postgres
+    environment:
+      - POSTGRES_USER=${user}
+      - POSTGRES_PASSWORD=${password}
+      - POSTGRES_DB=${dbname}
+    ports:
+      - "${port}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pega_voo
+
+
+volumes:
+  postgres_data:
+
+networks:
+  pega_voo:
+    driver: bridge

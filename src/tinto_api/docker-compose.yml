@@ -21,11 +21,20 @@ services:
     volumes:
       - .:/tinto_api
     working_dir: /tinto_api
-    ports:
-      - "30059:30059"
     environment:
       - TZ=America/Manaus
     env_file:
       - .env
     depends_on:
+      - redis
       - app
+  
+  redis:
+    image: redis:7-alpine
+    container_name: celery_broker
+    ports:
+      - "${CELERY_PORT}:6379"
+    environment:
+      - REDIS_PASSWORD=${CELERY_PASS}
+    command: >
+      sh -c "redis-server --requirepass \"$CELERY_PASS\""
