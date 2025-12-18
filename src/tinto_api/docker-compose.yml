@@ -3,13 +3,12 @@ services:
     build: .
     image: tinto_api:latest
     container_name: Tinto
-    command: task run
+    command: task dev
     volumes:
       - .:/tinto_api
     working_dir: /tinto_api
     ports:
-      - "8000:8000"
-      - "6543:6543"
+      - "7777:7777" 
     environment:
       - TZ=America/Manaus
     env_file:
@@ -22,11 +21,20 @@ services:
     volumes:
       - .:/tinto_api
     working_dir: /tinto_api
-    ports:
-      - "30059:30059"
     environment:
       - TZ=America/Manaus
     env_file:
       - .env
     depends_on:
+      - redis
       - app
+  
+  redis:
+    image: redis:7-alpine
+    container_name: celery_broker
+    ports:
+      - "${CELERY_PORT}:6379"
+    environment:
+      - REDIS_PASSWORD=${CELERY_PASS}
+    command: >
+      sh -c "redis-server --requirepass \"$CELERY_PASS\""

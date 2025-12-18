@@ -30,6 +30,10 @@ class TicketCreate(BaseModel):
     seat_number: str = Field(..., description="Seat number")
 
 
+class TicketCreateMultiple(BaseModel):
+    tickets: list[TicketCreate] = Field(..., description="Array of up to 2 tickets to create", max_length=2, min_length=1)
+
+
 class TicketUpdate(BaseModel):
     flight_id: Optional[int] = None
     passenger_id: Optional[int] = None

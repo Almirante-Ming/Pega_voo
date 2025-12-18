@@ -3,7 +3,7 @@ import os
 
 celery_host = str(os.getenv('CELERY_HOST', 'localhost'))
 celery_pass = str(os.getenv('CELERY_PASS'))
-celery_port = 30059
+celery_port = int(os.getenv('CELERY_PORT', 6379))
 
 
 redis_url = f'redis://:{celery_pass}@{celery_host}:{celery_port}/1' 

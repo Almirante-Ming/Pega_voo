@@ -125,7 +125,7 @@
                 <button 
                   @click="continuar"
                   :disabled="!podeContinuar"
-                  class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-bold transition-colors"
+                  class="w-full bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-grayScale-50 py-3 rounded-lg font-bold transition-colors"
                 >
                   Continuar
                 </button>
@@ -164,7 +164,7 @@
                  <button 
                    @click="continuar"
                    :disabled="!podeContinuar"
-                   class="bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                   class="bg-primary hover:bg-primary-dark disabled:bg-grayScale-300 disabled:cursor-not-allowed text-grayScale-50 px-6 py-3 rounded-lg font-bold transition-colors"
                  >
                    Continuar
                  </button>

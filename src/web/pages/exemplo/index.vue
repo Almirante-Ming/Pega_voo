@@ -24,14 +24,14 @@
             />
         </div>
     </div>
-    <div class="bg-primary text-white p-3 rounded-md">
+    <div class="bg-primary text-grayScale-50 p-3 rounded-md">
         <p>Estado do formulário:</p>
         {{ form }}
     </div>
     <div class="w-full mt-3">
-        <button :disabled="loading" class="bg-green-600 disabled:bg-grayScale-500 w-full rounded-md text-white h-10 shadow flex justify-center items-center" @click="login">
+        <button :disabled="loading" class="bg-green-600 disabled:bg-grayScale-500 w-full rounded-md text-grayScale-50 h-10 shadow flex justify-center items-center" @click="login">
             <span v-if="!loading">Login</span>
-            <Icon v-else nameIcon="ArrowPathIcon" class="text-white animate-spin"></Icon>
+            <Icon v-else nameIcon="ArrowPathIcon" class="text-grayScale-50 animate-spin"></Icon>
         </button>
     </div>
 </template>

@@ -100,7 +100,12 @@ function formatarHora(datetime: string) {
 }
 
 function formatarData(datetime: string) {
-  return new Date(datetime).toLocaleDateString('pt-BR');
+  if (!datetime) return '';
+  if (datetime.includes('T')) {
+      return new Date(datetime).toLocaleDateString('pt-BR');
+  }
+  const [year, month, day] = datetime.split('-');
+  return `${day}/${month}/${year}`;
 }
 
 function formatarDataCurta(datetime: string) {

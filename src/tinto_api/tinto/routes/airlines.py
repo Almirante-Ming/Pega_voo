@@ -10,7 +10,6 @@ router = APIRouter(prefix="/airlines", tags=["Airlines"], dependencies=[Depends(
 
 @router.post("/", response_model=schemas.Airline)
 def create_airline(airline: schemas.AirlineCreate, db: DBSession):
-    # Check if airline with same name or code already exists
     db_airline_check = db.query(models.Airline).filter(
         or_(
             models.Airline.name == airline.name,
@@ -58,7 +57,6 @@ def update_airline(
     
     update_data = airline_update.model_dump(exclude_unset=True)
     
-    # Check for conflicts with name or code if they're being updated
     if "name" in update_data and update_data["name"] != db_airline.name:
         existing_name_check = db.query(models.Airline).filter(
             models.Airline.name == update_data["name"],
@@ -94,7 +92,6 @@ def delete_airline(
     if not airline:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Airline not found")
     
-    # Soft delete
     setattr(airline, 'status', User_Status.DELETED)
     db.commit()
     return {"message": "Airline marked as deleted"}

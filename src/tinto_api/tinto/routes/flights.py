@@ -13,25 +13,19 @@ admin_router = APIRouter(dependencies=[Depends(require_c_admin_or_sysadmin)])
 
 def build_flight_with_seats_and_prices(flight: models.Flight, db: DBSession) -> Dict:
     """Build flight response with prices by class"""
-    # Build tickets dictionary: {"economy": 100.50, "premium": 250.00}
     tickets_dict = {}
     if flight.seats:
-        # Group seats by class and get the price from first seat of each class
         seats_by_class = {}
         for seat in flight.seats:
             class_name = seat.seat_class.value if hasattr(seat.seat_class, 'value') else str(seat.seat_class)
             if class_name not in seats_by_class:
                 seats_by_class[class_name] = seat
         
-        # Get prices from seats
         for class_name, seat in seats_by_class.items():
-            # Handle seats with prices (including 0)
             if seat.price is not None:
                 tickets_dict[class_name] = float(str(seat.price))
     
-    # Build flight data with airline name
     flight_dict = flight.__dict__.copy()
-    # Get airline name
     airline_name = flight.airline.name if flight.airline else "Unknown"
     flight_dict['airline_name'] = airline_name
     flight_dict['tickets'] = tickets_dict
@@ -41,36 +35,33 @@ def build_flight_with_seats_and_prices(flight: models.Flight, db: DBSession) -> 
 
 @admin_router.post("/", response_model=schemas.Flight)
 def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
-    # Check if airline exists
     airline = db.query(models.Airline).filter(models.Airline.id == flight.airline_id).first()
     if not airline:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline not found")
     
-    # Check if flight number already exists
     existing_flight = db.query(models.Flight).filter(models.Flight.flight_number == flight.flight_number).first()
     if existing_flight:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Flight number already exists")
     
-    # Validate premium price if premium seats exist
     premium_seats = cast(int, flight.premium_seats)
     if premium_seats > 0 and flight.premium_price is None:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="premium_price is required when premium_seats > 0")
     
-    # Create flight without economy_price and premium_price (they're not part of Flight model)
+    total_seats = cast(int, flight.avaliable_seats)
+    economy_seats = total_seats - premium_seats
+    
     flight_data = flight.model_dump(exclude={'economy_price', 'premium_price'})
-    # Set status to SCHEDULED by default
+    flight_data['economy_seats'] = economy_seats
     flight_data['status'] = Flight_Status.SCHEDULED
     new_flight = models.Flight(**flight_data)
     db.add(new_flight)
     db.commit()
     db.refresh(new_flight)
-    db.refresh(new_flight, ['airline'])  # Ensure airline relationship is loaded
+    db.refresh(new_flight, ['airline'])
     
-    # Create seats for the flight (A-I columns, multiple rows)
     seat_columns = ['A', 'B', 'C', 'D', 'E', 'F']
     total_seats = cast(int, new_flight.avaliable_seats)
     
-    # Calculate number of rows needed (9 seats per row: A-I)
     seats_per_row = len(seat_columns)
     num_rows = (total_seats + seats_per_row - 1) // seats_per_row 
     
@@ -82,7 +73,6 @@ def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
                 
             seat_number = f"{row}{col}"
             
-            # Determine seat class and price: first premium_seats are "premium", rest are "economy"
             if seat_count <= premium_seats:
                 seat_class = Seat_Class.PREMIUM.value
                 seat_price = flight.premium_price
@@ -105,7 +95,6 @@ def create_flight(flight: schemas.FlightCreateRequest, db: DBSession):
     
     db.commit()
     db.refresh(new_flight, ['airline'])
-    # Return with airline_name populated
     flight_dict = new_flight.__dict__.copy()
     flight_dict['airline_name'] = new_flight.airline.name if new_flight.airline else "Unknown"
     return flight_dict
@@ -122,13 +111,11 @@ def update_flight(
     
     update_data = flight_update.model_dump(exclude_unset=True)
     
-    # Check if airline exists if airline_id is being updated
     if "airline_id" in update_data:
         airline = db.query(models.Airline).filter(models.Airline.id == update_data["airline_id"]).first()
         if not airline:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Airline not found")
     
-    # Check for flight number conflicts if it's being updated
     if "flight_number" in update_data and update_data["flight_number"] != db_flight.flight_number:
         existing_flight = db.query(models.Flight).filter(
             models.Flight.flight_number == update_data["flight_number"],
@@ -142,7 +129,6 @@ def update_flight(
     
     db.commit()
     db.refresh(db_flight, ['airline'])
-    # Return with airline_name populated
     flight_dict = db_flight.__dict__.copy()
     flight_dict['airline_name'] = db_flight.airline.name if db_flight.airline else "Unknown"
     return flight_dict
@@ -156,12 +142,10 @@ def delete_flight(
     if not flight:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Flight not found")
     
-    # Mark as cancelled instead of hard delete
     setattr(flight, 'status', Flight_Status.CANCELLED)
     db.commit()
     return {"message": "Flight cancelled"}
 
-# Public routes (require authentication but accessible to customers)
 @router.get("/", response_model=List[schemas.FlightWithSeatsAndPrices], dependencies=[Depends(require_authenticated_user)])
 def get_flights(
     db: DBSession,
@@ -172,7 +156,6 @@ def get_flights(
 ):
     query = db.query(models.Flight).filter(models.Flight.status == Flight_Status.SCHEDULED)
     
-    # Filter by origin city (case-insensitive, accent-insensitive partial match)
     if origin_city and origin_city.strip():
         search_term = origin_city.strip().lower()
         query = query.filter(
@@ -181,7 +164,6 @@ def get_flights(
             )
         )
     
-    # Filter by destination city (case-insensitive, accent-insensitive partial match)
     if destination_city and destination_city.strip():
         search_term = destination_city.strip().lower()
         query = query.filter(
@@ -190,7 +172,6 @@ def get_flights(
             )
         )
     
-    # Filter by departure date
     if departure_date and departure_date.strip():
         try:
             date_obj = datetime.strptime(departure_date.strip(), "%Y-%m-%d").date()
@@ -198,7 +179,6 @@ def get_flights(
         except ValueError:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid date format. Use YYYY-MM-DD")
     
-    # Filter by number of stops
     if stops_count is not None:
         query = query.filter(models.Flight.stops_count == stops_count)
     

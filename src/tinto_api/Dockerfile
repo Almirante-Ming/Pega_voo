@@ -21,6 +21,6 @@ RUN poetry config virtualenvs.create false \
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 7777
 
 CMD ["poetry", "run", "task", "run"]

@@ -28,7 +28,7 @@
       />
 
       <button
-        class="bg-primary disabled:bg-grayScale-600 text-white w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80 mt-8"
+        class="bg-primary disabled:bg-grayScale-600 text-grayScale-50 w-full h-12 shadow rounded-md flex justify-center items-center duration-200 hover:opacity-80 mt-8"
         @click="nextStep"
       >
         <span>Prosseguir</span>
