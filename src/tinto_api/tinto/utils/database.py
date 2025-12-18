@@ -12,8 +12,8 @@ load_dotenv('.env')
 
 USER = os.getenv("user")
 PASSWORD = os.getenv("password")
-HOST = os.getenv("host")
-PORT = os.getenv("port")
+HOST = os.getenv("host", 'localhost')
+PORT = int(os.getenv("port", 5432))
 DBNAME = os.getenv("dbname")
 
 
