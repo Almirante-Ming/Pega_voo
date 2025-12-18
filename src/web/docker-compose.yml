@@ -1,5 +1,5 @@
 services:
-  web_app:
+  nuxt_front:
     build:
       context: .
       dockerfile: Dockerfile
